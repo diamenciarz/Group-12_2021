@@ -68,27 +68,30 @@ public class Pentago {
         PrintMatrixContentsInChat(currentShapeToFit);
         int mapHeight = currentMapState.length;
         int mapLength = currentMapState[0].length;
-        // Check all 4 rotations, before going to a new position
-        for (int rotations = 0; rotations <= 3; rotations++) {
+        
+        // Check all variations, before going to a new position
+        ArrayList<int[][]> differentVariationsOfThisShape = GenerateDifferentVariationsOfThisShape(currentShapeToFit);
+        int variationAmount = differentVariationsOfThisShape.size();
+        for (int variations = 0; variations < variationAmount; variations++) {
 
-            int[][] rotatedShapeToFit = RotateShapeRight(currentShapeToFit, rotations);
+            int[][] shapeVariation = differentVariationsOfThisShape.get(variations);
             // printMatrixContentsInChat(rotatedShapeToFit);
 
-            int currentShapeHeight = rotatedShapeToFit.length;
-            int currentShapeLength = rotatedShapeToFit[0].length;
+            int currentShapeHeight = shapeVariation.length;
+            int currentShapeLength = shapeVariation[0].length;
             int xRepetitions = mapLength - currentShapeLength + 1;
             int yRepetitions = mapHeight - currentShapeHeight + 1;
             // Check all positions in range of the map
             for (int j = 0; j < yRepetitions; j++) {
                 for (int k = 0; k < xRepetitions; k++) {
 
-                    if (WillThisShapeFitOnMap(currentMapState, rotatedShapeToFit, k, j)) {
+                    if (WillThisShapeFitOnMap(currentMapState, shapeVariation, k, j)) {
 
                         int[][] emptyMap = ReturnEmptyMap(mapLength, mapHeight);
-                        int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, rotatedShapeToFit, k, j);
+                        int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, shapeVariation, k, j);
                         if (!areTwoFiguresOverlapping(currentMapState, shapeOnEmptyGrid)) {
 
-                            int[][] newMapState = PlaceShapeOnMap(currentMapState, rotatedShapeToFit, k, j);
+                            int[][] newMapState = PlaceShapeOnMap(currentMapState, shapeVariation, k, j);
                             PrintMatrixContentsInChat(newMapState);
                             boolean hasFoundHoles = CheckMatrixForLinksOfLengthAtMost(newMapState, 4);
                             if (!hasFoundHoles) {
@@ -171,29 +174,27 @@ public class Pentago {
         }
     }
 
-    public static ArrayList<ArrayList<ArrayList<Integer>>> GenerateDifferentVariationsOfThisShape(int[][] shape) {
+    public static ArrayList<int[][]> GenerateDifferentVariationsOfThisShape(int[][] shape) {
         int flippedShape[][] = FlipShapeVertically(shape);
-        ArrayList<ArrayList<ArrayList<Integer>>> shapeVariations = new ArrayList<>();
+        ArrayList<int[][]> shapeVariations = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
-            int[][] rotatedShape = RotateShapeRight(shape, i);
-            ArrayList<ArrayList<Integer>> arrayListShape = TurnArrayIntoList(rotatedShape);
-            shapeVariations.add(arrayListShape);
+            int[][] newShape = RotateShapeRight(shape, i);
+            shapeVariations.add(newShape);
         }
         for (int i = 0; i < 4; i++) {
-            int[][] rotatedShape = RotateShapeRight(flippedShape, i);
-            ArrayList<ArrayList<Integer>> arrayListShape = TurnArrayIntoList(rotatedShape);
-            shapeVariations.add(arrayListShape);
+            int[][] newShape = RotateShapeRight(flippedShape, i);;
+            shapeVariations.add(newShape);
         }
 
         shapeVariations = RemoveCopiedShapes(shapeVariations);
         return shapeVariations;
     }
 
-    private static ArrayList<ArrayList<ArrayList<Integer>>> RemoveCopiedShapes(ArrayList<ArrayList<ArrayList<Integer>>> array) {
-        ArrayList<ArrayList<ArrayList<Integer>>> newArray = new ArrayList<>();
+    private static ArrayList<int[][]> RemoveCopiedShapes(ArrayList<int[][]> array) {
+        ArrayList<int[][]> newArray = new ArrayList<>();
 
-        for (ArrayList<ArrayList<Integer>> arrayList : array) {
+        for (int[][] arrayList : array) {
             
             boolean newArrayContainsThisElement = newArray.contains(arrayList);
             if (!newArrayContainsThisElement) {
