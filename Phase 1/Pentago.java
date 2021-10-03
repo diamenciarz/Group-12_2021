@@ -20,125 +20,100 @@ public class Pentago {
 
     public static void main(String[] args) {
 
-        int[][] shape = { { 0, 1 }, { 0, 5 }, { 7, 5 } };
-        int[][] second = { { 0, 0, 0, 0 }, { 5, 5, 5, 0 }, { 0, 0, 5, 5 }, { 0, 5, 0, 0 } };
+        int[][] shape = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
+        int[][] map = { { 2, 2, 0, 0, 0 }, { 2, 0, 0, 0, 0 }, { 2, 2, 0, 0, 0 } };
 
-        int[][] arrayX = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
-        int[][] arrayU = { { 1, 0, 1 }, { 1, 1, 1 } };
-
-        int[][][] shapesToFit = { arrayX, arrayU, arrayX };
+        /*
+         * int[][][] shapesToFit;
+         * 
+         * String[] shapes = {"U","X","U"}; for (int i = 0; i < shapes.length; i++) {
+         * 
+         * }
+         */
 
         // arrayToCheck = second;
-        int xPosition = 0;
+        int xPosition = 1;
         int yPosition = 0;
-        GenerateMap(5, 3);
-        // AskForMapSize();
 
-        int[][] solution = IterateSolution(currentMapArray, shapesToFit, 0);
-        printMatrixContentsInChat(solution);
-
+        currentMapArray = ReturnEmptyMap(5, 3);
+        
+        int[][] newMapState = PlaceShapeOnMap(map, shape, xPosition, yPosition);
+        printMatrixContentsInChat(newMapState);
+        System.out.println(areTwoFiguresOverlapping(map, newMapState));
+        
+        // CallRecursiveMethod();
         scanner.close();
     }
-    // ----------------- Methods asking for user input
 
-    public static void SaveInputToBlocksArray() {
-        String answer = AskForBlocksInput();
-        int answerLength = answer.length();
+    private static void CallRecursiveMethod() {
+        int[][] arrayX = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
+        int[][] arrayU = { { 2, 0, 2 }, { 2, 2, 2 } };
+        int[][][] shapesToFit = { arrayU, arrayX, arrayU };
 
-        inputBlocksArray = new String[answerLength];
-
-        for (int i = 0; i < answerLength; i++) {
-            inputBlocksArray[i] = answer.substring(i, i + 1);
-        }
-    }
-
-    public static void AskForMapSize() {
-        int xSize;
-        int ySize;
-
-        System.out.println("Give me the x map size: ");
-        xSize = scanner.nextInt();
-        System.out.println("Give me the y map size: ");
-        ySize = scanner.nextInt();
-        scanner.nextLine();
-
-        GenerateMap(xSize, ySize);
-    }
-    // ----------------- Input Helper Methods
-
-    // Checks if input is an element of {P,L,F,V,W,Y,I,T,Z,U,N,L}
-    public static boolean IsInputCorrect(String inputString) {
-        // Create character arrayList
-        List<String> c = Arrays.asList("p", "x", "f", "v", "w", "y", "i", "t", "z", "u", "n", "l");
-        ArrayList<String> noRepetitionArray = new ArrayList<String>();
-        noRepetitionArray.addAll(c);
-
-        for (int i = 0; i < inputString.length(); i++) {
-
-            int charValue = (int) inputString.charAt(i);
-            String charAtIndex = inputString.substring(i, i + 1);
-            if (charValue >= 97 && charValue <= 122) {
-                if (charValue == 102 || charValue == 105 || charValue == 108 || charValue == 110 || charValue == 112
-                        || (charValue >= 116 & charValue <= 122)) {
-                    if (!allowInputRepetition) {
-                        if (noRepetitionArray.contains(charAtIndex)) {
-                            noRepetitionArray.remove(charAtIndex);
-                        } else {
-                            return false;
-                        }
-                        // Ok then, check other characters
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return true;
+        printMatrixContentsInChat(currentMapArray);
+        // AskForMapSize();
+        int[][] solution = IterateSolution(currentMapArray, shapesToFit, 0);
+        printMatrixContentsInChat(solution);
     }
 
     // ----------------- Powerful methods
     public static int[][] IterateSolution(int[][] currentMapState, int[][][] shapesToFitArray, int shapeIndex) {
-        int shapesToFitAmount = shapesToFitArray.length;
+        int shapesToFitAmount = shapesToFitArray.length - shapeIndex;
 
-        for (int i = 0; i < shapesToFitAmount; i++) {
+        int[][] currentShapeToFit = shapesToFitArray[shapeIndex];
+        System.out.println("Current shape: ");
+        printMatrixContentsInChat(currentShapeToFit);
+        int mapHeight = currentMapState.length;
+        int mapLength = currentMapState[0].length;
+        // Check all 4 rotations, before going to a new position
+        for (int rotations = 0; rotations <= 3; rotations++) {
 
-            int[][] currentShapeToFit = shapesToFitArray[shapeIndex];
-            int currentShapeHeight = currentShapeToFit.length;
-            int currentShapeLength = currentShapeToFit[0].length;
-            int mapHeight = currentMapState.length;
-            int mapLength = currentMapState[0].length;
-            int xRepetitions = mapHeight - currentShapeHeight + 1;
-            int yRepetitions = mapLength - currentShapeLength + 1;
+            int[][] rotatedShapeToFit = RotateShapeRight(currentShapeToFit, rotations);
+            // printMatrixContentsInChat(rotatedShapeToFit);
+
+            int currentShapeHeight = rotatedShapeToFit.length;
+            int currentShapeLength = rotatedShapeToFit[0].length;
+            int xRepetitions = mapLength - currentShapeLength + 1;
+            int yRepetitions = mapHeight - currentShapeHeight + 1;
+            // Check all positions in range of the map
             for (int j = 0; j < yRepetitions; j++) {
-
                 for (int k = 0; k < xRepetitions; k++) {
-                    for (int rotations = 1; rotations <= 4; rotations++) {
 
-                        int[][] rotatedShapeToFit = RotateShapeRight(currentShapeToFit, rotations);
-                        if (WillThisShapeFitOnMap(rotatedShapeToFit, i, j)) {
+                    if (WillThisShapeFitOnMap(currentMapState, rotatedShapeToFit, k, j)) {
 
-                            int[][] newMapState = PlaceShapeOnMap(rotatedShapeToFit, i, j);
+                        int[][] newMapState = PlaceShapeOnMap(currentMapState, rotatedShapeToFit, k, j);
+                        if (!areTwoFiguresOverlapping(currentMapState, newMapState)) {
+
+                            printMatrixContentsInChat(newMapState);
                             boolean hasFoundHoles = CheckMatrixForLinksOfLengthAtMost(newMapState, 4);
                             if (!hasFoundHoles) {
 
-                                int[][] solution = IterateSolution(newMapState, shapesToFitArray, shapeIndex + 1);
-                                if (!IsSolutionInvalid(solution)) {
-
-                                    currentMapState = newMapState;
+                                boolean hasFittedTheLastShape = shapesToFitAmount - 1 == shapeIndex;
+                                if (hasFittedTheLastShape) {
+                                    return newMapState;
+                                } else {
+                                    int[][] solution = IterateSolution(newMapState, shapesToFitArray, shapeIndex + 1);
+                                    if (!IsSolutionInvalid(solution)) {
+                                        System.out.println("Solution");
+                                        return solution;
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        System.err.println("Shape did not fit on map");
                     }
                 }
             }
         }
-        return currentMapState;
+
+        // Else, solution is invalid
+        int invalidSolution[][] = { { -1, -1 } };
+        return invalidSolution;
     }
 
-    public static int[][] PlaceShapeOnMap(int shape[][], int xPosition, int yPosition) {
-        int[][] mapStateArray = GetACopyOfThisArray(currentMapArray);
+    public static int[][] PlaceShapeOnMap(int mapArray[][], int shape[][], int xPosition, int yPosition) {
+        int[][] mapStateArray = GetACopyOfThisArray(mapArray);
 
         int shapeHeight = shape.length;
         int shapeLength = shape[0].length;
@@ -164,8 +139,8 @@ public class Pentago {
         return returnArray;
     }
 
-    public static void GenerateMap(int xMapSize, int yMapSize) {
-        currentMapArray = new int[yMapSize][xMapSize];
+    public static int[][] ReturnEmptyMap(int xMapSize, int yMapSize) {
+        return new int[yMapSize][xMapSize];
     }
 
     public static String AskForBlocksInput() {
@@ -185,8 +160,7 @@ public class Pentago {
 
     // ----------------- Helper Methods
     public static boolean IsSolutionInvalid(int[][] solution) {
-        if (allowInputRepetition) {
-            solution[0][0] = -1;
+        if (solution[0][0] == -1) {
             return true;
         } else {
             return false;
@@ -194,35 +168,38 @@ public class Pentago {
     }
 
     public static int[][] RotateShapeRight(int shape[][], int times) {
-        int originalShapeHeight = shape.length;
-        int originalShapeLength = shape[0].length;
 
-        int[][] rotatedShape = new int[originalShapeLength][originalShapeHeight];
+        int[][] rotatedShape = shape;
+        if (times > 0) {
+            int originalShapeHeight = shape.length;
+            int originalShapeLength = shape[0].length;
 
-        int rotatedShapeHeight = rotatedShape.length;
-        int rotatedShapeLength = rotatedShape[0].length;
+            rotatedShape = new int[originalShapeLength][originalShapeHeight];
 
-        for (int i = 0; i < originalShapeHeight; i++) {
-            for (int j = 0; j < originalShapeLength; j++) {
-                rotatedShape[j][rotatedShapeLength - (i + 1)] = shape[i][j];
+            int rotatedShapeLength = rotatedShape[0].length;
+
+            for (int i = 0; i < originalShapeHeight; i++) {
+                for (int j = 0; j < originalShapeLength; j++) {
+                    rotatedShape[j][rotatedShapeLength - (i + 1)] = shape[i][j];
+                }
             }
+            rotatedShape = RotateShapeRight(rotatedShape, times - 1);
+            return rotatedShape;
+
+        } else {
+            return rotatedShape;
         }
-        times--;
-        if (times != 0) {
-            rotatedShape = RotateShapeRight(rotatedShape, times);
-        }
-        return rotatedShape;
     }
 
-    public static boolean WillThisShapeFitOnMap(int shape[][], int xPosition, int yPosition) {
+    public static boolean WillThisShapeFitOnMap(int mapArray[][], int shape[][], int xPosition, int yPosition) {
         boolean willFit = true;
 
-        int MaxYPosition = shape.length + yPosition;
-        if (MaxYPosition > currentMapArray.length) {
+        int maxYPosition = shape.length + yPosition;
+        if (maxYPosition > mapArray.length) {
             willFit = false;
         }
-        int MaxXPosition = shape[0].length + xPosition;
-        if (MaxXPosition > currentMapArray[0].length) {
+        int maxXPosition = shape[0].length + xPosition;
+        if (maxXPosition > mapArray[0].length) {
             willFit = false;
         }
         return willFit;
@@ -233,7 +210,7 @@ public class Pentago {
         // Limit search to not go out of the smaller array
         int ySize = firstArray.length;
         if (secondArray.length < ySize) {
-            ySize = secondArray[0].length;
+            ySize = secondArray.length;
         }
 
         int xSize = firstArray[0].length;
@@ -246,9 +223,11 @@ public class Pentago {
 
                 boolean areOverlapping = (firstArray[i][j] != 0 && secondArray[i][j] != 0);
                 if (areOverlapping) {
-                    System.out.println("Are overlapping at: " + j + "x" + i);
-                    System.out.println("First equals: " + firstArray[i][j]);
-                    System.out.println("Second equals: " + secondArray[i][j]);
+                    /*
+                     * System.out.println("Are overlapping at: " + j + "x" + i);
+                     * System.out.println("First equals: " + firstArray[i][j]);
+                     * System.out.println("Second equals: " + secondArray[i][j]);
+                     */
                     return true;
                 }
             }
@@ -258,12 +237,12 @@ public class Pentago {
 
     // Checks, if there is a link on the map of this size or shorter
     public static boolean CheckMatrixForLinksOfLengthAtMost(int[][] inputMatrix, int maxLinkLength) {
-        arrayToCheck = inputMatrix;
+        arrayToCheck = GetACopyOfThisArray(inputMatrix);
 
-        int yMapSize = inputMatrix.length;
+        int yMapSize = arrayToCheck.length;
         for (int i = 0; i < yMapSize; i++) {
 
-            int xMapSize = inputMatrix[i].length;
+            int xMapSize = arrayToCheck[i].length;
             for (int j = 0; j < xMapSize; j++) {
                 if (CheckIfTileEmpty(arrayToCheck, j, i)) {
                     if (LinkCheck(j, i, 0, yMapSize * xMapSize) <= maxLinkLength) {
@@ -277,10 +256,10 @@ public class Pentago {
 
     // Checks, if there is a link on the map of this size or longer
     public static boolean CheckMatrixForLinksOfLengthAtLeast(int[][] inputMatrix, int maxLinkLength) {
-        arrayToCheck = inputMatrix;
+        arrayToCheck = GetACopyOfThisArray(inputMatrix);
 
-        for (int i = 0; i < inputMatrix.length; i++) {
-            for (int j = 0; j < inputMatrix[i].length; j++) {
+        for (int i = 0; i < arrayToCheck.length; i++) {
+            for (int j = 0; j < arrayToCheck[i].length; j++) {
                 if (CheckIfTileEmpty(arrayToCheck, j, i)) {
                     if (LinkCheck(j, i, 0, maxLinkLength) >= maxLinkLength) {
                         return true;
@@ -350,6 +329,7 @@ public class Pentago {
         }
         boolean xOutOfBounds = xPosition >= inputArray[yPosition].length || xPosition < 0;
         if (xOutOfBounds) {
+
             return false;
         }
         boolean tileEmpty = inputArray[yPosition][xPosition] == 0;
@@ -365,6 +345,66 @@ public class Pentago {
         }
     }
 
+    // ----------------- Methods asking for user input
+
+    public static void SaveInputToBlocksArray() {
+        String answer = AskForBlocksInput();
+        int answerLength = answer.length();
+
+        inputBlocksArray = new String[answerLength];
+
+        for (int i = 0; i < answerLength; i++) {
+            inputBlocksArray[i] = answer.substring(i, i + 1);
+        }
+    }
+
+    public static void AskForMapSize() {
+        int xSize;
+        int ySize;
+
+        System.out.println("Give me the x map size: ");
+        xSize = scanner.nextInt();
+        System.out.println("Give me the y map size: ");
+        ySize = scanner.nextInt();
+        scanner.nextLine();
+
+        currentMapArray = ReturnEmptyMap(xSize, ySize);
+    }
+    // ----------------- Input Helper Methods
+
+    // Checks if input is an element of {P,L,F,V,W,Y,I,T,Z,U,N,L}
+    public static boolean IsInputCorrect(String inputString) {
+        // Create character arrayList
+        List<String> c = Arrays.asList("p", "x", "f", "v", "w", "y", "i", "t", "z", "u", "n", "l");
+        ArrayList<String> noRepetitionArray = new ArrayList<String>();
+        noRepetitionArray.addAll(c);
+
+        for (int i = 0; i < inputString.length(); i++) {
+
+            int charValue = (int) inputString.charAt(i);
+            String charAtIndex = inputString.substring(i, i + 1);
+            if (charValue >= 97 && charValue <= 122) {
+                if (charValue == 102 || charValue == 105 || charValue == 108 || charValue == 110 || charValue == 112
+                        || (charValue >= 116 & charValue <= 122)) {
+                    if (!allowInputRepetition) {
+                        if (noRepetitionArray.contains(charAtIndex)) {
+                            noRepetitionArray.remove(charAtIndex);
+                        } else {
+                            return false;
+                        }
+                        // Ok then, check other characters
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // ----------------- Other Methods
     // For debuging
     public static void printMatrixContentsInChat(int[][] matrixToPrint) {
         System.out.println("Printing a new matrix");
@@ -392,5 +432,68 @@ public class Pentago {
         }
 
         return isMatrixRectangular;
+    }
+}
+
+class ShapeContainer {
+
+    public ShapeContainer() {
+
+    }
+
+    // Shapes as arrays
+    private static int[][] arrayP = { { 1, 1 }, { 1, 1 }, { 1, 0 } };
+    private static int[][] arrayX = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
+    private static int[][] arrayF = { { 0, 1, 1 }, { 1, 1, 0 }, { 0, 1, 0 } };
+    private static int[][] arrayV = { { 1, 0, 0 }, { 1, 0, 0 }, { 1, 1, 1 } };
+    private static int[][] arrayW = { { 1, 0, 0 }, { 1, 1, 0 }, { 0, 1, 1 } };
+    private static int[][] arrayY = { { 0, 1 }, { 1, 1 }, { 0, 1 }, { 0, 1 } };
+    private static int[][] arrayI = { { 1 }, { 1 }, { 1 }, { 1 }, { 1 } };
+    private static int[][] arrayT = { { 1, 1, 1 }, { 0, 1, 0 }, { 0, 1, 0 } };
+    private static int[][] arrayZ = { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 } };
+    private static int[][] arrayU = { { 1, 0, 1 }, { 1, 1, 1 } };
+    private static int[][] arrayN = { { 1, 1, 0, 0 }, { 0, 1, 1, 1 } };
+    private static int[][] arrayL = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 } };
+
+    // private static String[] blocksArray;
+
+    public static int[][] GetShapeArray(String inputShape) {
+        if (inputShape.toLowerCase() == "p") {
+            return arrayP;
+        }
+        if (inputShape.toLowerCase() == "x") {
+            return arrayX;
+        }
+        if (inputShape.toLowerCase() == "f") {
+            return arrayF;
+        }
+        if (inputShape.toLowerCase() == "v") {
+            return arrayV;
+        }
+        if (inputShape.toLowerCase() == "w") {
+            return arrayW;
+        }
+        if (inputShape.toLowerCase() == "y") {
+            return arrayY;
+        }
+        if (inputShape.toLowerCase() == "i") {
+            return arrayI;
+        }
+        if (inputShape.toLowerCase() == "t") {
+            return arrayT;
+        }
+        if (inputShape.toLowerCase() == "z") {
+            return arrayZ;
+        }
+        if (inputShape.toLowerCase() == "u") {
+            return arrayU;
+        }
+        if (inputShape.toLowerCase() == "n") {
+            return arrayN;
+        }
+        if (inputShape.toLowerCase() == "l") {
+            return arrayL;
+        }
+        return null;
     }
 }
