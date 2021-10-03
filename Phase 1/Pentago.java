@@ -1,7 +1,7 @@
-import java.util.Scanner; // Import the Scanner class
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Pentago {
 
@@ -11,7 +11,7 @@ public class Pentago {
 
     // Startup settings variables
     public static boolean enableDebugMessages = false;
-    public static boolean allowInputRepetition = false;
+    public static boolean allowInputRepetition = true;
     public static int choices = 0;
 
     // Internal variables
@@ -25,27 +25,21 @@ public class Pentago {
     }
 
     private static void StartProgram() {
-        //Input methods
+        // Input methods
         AskForMapSize();
         SaveInputToBlocksArray();
         FillshapesToFitArrayList();
-
+        // No more inputs from now on
         scanner.close();
 
-        int[][] solution = IterateSolution(currentMapArray, shapesToFit, 0);
-        System.out.println("Solution trials: " + choices);
-        PrintMatrixContentsInChat(solution);
-    }
+        int[][] solution = RecursiveSolution(currentMapArray, shapesToFit, 0);
 
-    private static void FillshapesToFitArrayList() {
-        for (String blockName : inputBlocksArray) {
-            int[][] block = shapeContainer.GetShapeArray(blockName);
-            shapesToFit.add(block);
-        }
+        System.out.println("Solution trials: " + choices);
+        PrintMatrixContentsInChatUsingLetters(solution);
     }
 
     // ----------------- Powerful methods
-    public static int[][] IterateSolution(int[][] currentMapState, ArrayList<int[][]> shapesToFitArray,
+    public static int[][] RecursiveSolution(int[][] currentMapState, ArrayList<int[][]> shapesToFitArray,
             int shapeIndex) {
         int shapesToFitAmount = shapesToFitArray.size() - 1;
 
@@ -85,7 +79,7 @@ public class Pentago {
                             if (hasFittedTheLastShape) {
                                 return newMapState;
                             } else {
-                                int[][] solution = IterateSolution(newMapState, shapesToFitArray, shapeIndex + 1);
+                                int[][] solution = RecursiveSolution(newMapState, shapesToFitArray, shapeIndex + 1);
                                 if (!IsSolutionInvalid(solution)) {
                                     return solution;
                                 }
@@ -148,6 +142,13 @@ public class Pentago {
     }
 
     // ----------------- Helper Methods
+    private static void FillshapesToFitArrayList() {
+        for (String blockName : inputBlocksArray) {
+            int[][] block = shapeContainer.GetShapeArray(blockName);
+            shapesToFit.add(block);
+        }
+    }
+
     private static boolean IsSolutionInvalid(int[][] solution) {
         if (solution[0][0] == -1) {
             return true;
@@ -224,36 +225,6 @@ public class Pentago {
         return true;
     }
 
-    private static ArrayList<ArrayList<Integer>> TurnArrayIntoList(int[][] array) {
-        ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
-
-        for (int j = 0; j < array.length; j++) {
-            ArrayList<Integer> arrayList = new ArrayList<>();
-            for (int k = 0; k < array.length; k++) {
-                arrayList.add(array[j][k]);
-            }
-            arrayListList.add(arrayList);
-        }
-        return arrayListList;
-    }
-
-    private static ArrayList<ArrayList<ArrayList<Integer>>> TurnArrayIntoList(int[][][] array) {
-        ArrayList<ArrayList<ArrayList<Integer>>> arrayListListList = new ArrayList<>();
-
-        for (int i = 0; i < array.length; i++) {
-            ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
-            for (int j = 0; j < array.length; j++) {
-                ArrayList<Integer> arrayList = new ArrayList<>();
-                for (int k = 0; k < array.length; k++) {
-                    arrayList.add(array[i][j][k]);
-                }
-                arrayListList.add(arrayList);
-            }
-            arrayListListList.add(arrayListList);
-        }
-        return arrayListListList;
-    }
-
     private static int[][] FlipShapeVertically(int shape[][]) {
         int[][] flippedShape = GetACopyOfThisArray(shape);
 
@@ -293,20 +264,6 @@ public class Pentago {
         } else {
             return rotatedShape;
         }
-    }
-
-    private static boolean WillThisShapeFitOnMap(int mapArray[][], int shape[][], int xPosition, int yPosition) {
-        boolean willFit = true;
-
-        int maxYPosition = shape.length + yPosition;
-        if (maxYPosition > mapArray.length) {
-            willFit = false;
-        }
-        int maxXPosition = shape[0].length + xPosition;
-        if (maxXPosition > mapArray[0].length) {
-            willFit = false;
-        }
-        return willFit;
     }
 
     // Checks, if two figures have some common tiles
@@ -354,20 +311,6 @@ public class Pentago {
     }
 
     // Checks, if there is a link on the map of this size or longer
-    private static boolean CheckMatrixForLinksOfLengthAtLeast(int[][] inputMatrix, int maxLinkLength) {
-        arrayToCheck = GetACopyOfThisArray(inputMatrix);
-
-        for (int i = 0; i < arrayToCheck.length; i++) {
-            for (int j = 0; j < arrayToCheck[i].length; j++) {
-                if (CheckIfTileEmpty(arrayToCheck, j, i)) {
-                    if (LinkCheck(j, i, 0, maxLinkLength) >= maxLinkLength) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     // Recursive empty space counter // Leave total = 0, when calling this method
     private static int LinkCheck(int xPosition, int yPosition, int total, int cutoffLength) {
@@ -494,6 +437,7 @@ public class Pentago {
                         // Ok then, check other characters
                     }
                 } else {
+                    System.out.println("Repetition is not currently allowed");
                     return false;
                 }
             } else {
@@ -503,7 +447,6 @@ public class Pentago {
         return true;
     }
 
-    // ----------------- Other Methods
     // For debuging
     private static void PrintMatrixContentsInChat(int[][] matrixToPrint) {
         System.out.println("Printing a new matrix");
@@ -517,6 +460,141 @@ public class Pentago {
         }
     }
 
+    private static void PrintMatrixContentsInChatUsingLetters(int[][] matrixToPrint) {
+        System.out.println("Printing a new matrix");
+
+        String[][] stringArray = GetLettersForMatrix(matrixToPrint);
+
+        for (int i = 0; i < stringArray.length; i++) {
+            for (int j = 0; j < stringArray[i].length; j++) {
+                System.out.print(stringArray[i][j] + " ");
+                ;
+            }
+            System.out.println("");
+        }
+    }
+
+    private static String[][] GetLettersForMatrix(int[][] matrixToPrint) {
+
+        String[][] letterMatrix;
+        if (IsThisMatrixRectangular(matrixToPrint)) {
+
+            letterMatrix = new String[matrixToPrint.length][matrixToPrint[0].length];
+
+            for (int i = 0; i < matrixToPrint.length; i++) {
+                for (int j = 0; j < matrixToPrint[0].length; j++) {
+                    letterMatrix[i][j] = TurnNumberToLetter(matrixToPrint[i][j]);
+                }
+            }
+
+        } else {
+            System.out.println("Output matrix is not rectangular - this should not be the case");
+            return null;
+        }
+        return letterMatrix;
+    }
+
+    private static String TurnNumberToLetter(int number) {
+        if (number == 1) {
+            return "P";
+        }
+        if (number == 2) {
+            return "X";
+        }
+        if (number == 3) {
+            return "F";
+        }
+        if (number == 4) {
+            return "V";
+        }
+        if (number == 5) {
+            return "W";
+        }
+        if (number == 6) {
+            return "Y";
+        }
+        if (number == 7) {
+            return "I";
+        }
+        if (number == 8) {
+            return "T";
+        }
+        if (number == 9) {
+            return "Z";
+        }
+        if (number == 10) {
+            return "U";
+        }
+        if (number == 11) {
+            return "N";
+        }
+        if (number == 12) {
+            return "L";
+        }
+        System.out.println("This letter output should not be null");
+        return null;
+    }
+
+    // ----------------- Unused Methods
+    private static ArrayList<ArrayList<Integer>> TurnArrayIntoList(int[][] array) {
+        ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
+
+        for (int j = 0; j < array.length; j++) {
+            ArrayList<Integer> arrayList = new ArrayList<>();
+            for (int k = 0; k < array.length; k++) {
+                arrayList.add(array[j][k]);
+            }
+            arrayListList.add(arrayList);
+        }
+        return arrayListList;
+    }
+
+    private static ArrayList<ArrayList<ArrayList<Integer>>> TurnArrayIntoList(int[][][] array) {
+        ArrayList<ArrayList<ArrayList<Integer>>> arrayListListList = new ArrayList<>();
+
+        for (int i = 0; i < array.length; i++) {
+            ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
+            for (int j = 0; j < array.length; j++) {
+                ArrayList<Integer> arrayList = new ArrayList<>();
+                for (int k = 0; k < array.length; k++) {
+                    arrayList.add(array[i][j][k]);
+                }
+                arrayListList.add(arrayList);
+            }
+            arrayListListList.add(arrayListList);
+        }
+        return arrayListListList;
+    }
+
+    private static boolean WillThisShapeFitOnMap(int mapArray[][], int shape[][], int xPosition, int yPosition) {
+        boolean willFit = true;
+
+        int maxYPosition = shape.length + yPosition;
+        if (maxYPosition > mapArray.length) {
+            willFit = false;
+        }
+        int maxXPosition = shape[0].length + xPosition;
+        if (maxXPosition > mapArray[0].length) {
+            willFit = false;
+        }
+        return willFit;
+    }
+
+    private static boolean CheckMatrixForLinksOfLengthAtLeast(int[][] inputMatrix, int maxLinkLength) {
+        arrayToCheck = GetACopyOfThisArray(inputMatrix);
+
+        for (int i = 0; i < arrayToCheck.length; i++) {
+            for (int j = 0; j < arrayToCheck[i].length; j++) {
+                if (CheckIfTileEmpty(arrayToCheck, j, i)) {
+                    if (LinkCheck(j, i, 0, maxLinkLength) >= maxLinkLength) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private static void PrintArrayListContentsInChat(ArrayList<ArrayList<Integer>> arrayListToPrint) {
         System.out.println("Printing a new arrayList");
 
@@ -528,7 +606,7 @@ public class Pentago {
         }
     }
 
-    private static void PrintArrayListListContentsInChat(ArrayList<int[][]> arrayListToPrint) {
+    private static void PrintArrayListArrayContentsInChat(ArrayList<int[][]> arrayListToPrint) {
         System.out.println("Printing a new arrayList");
 
         for (int i = 0; i < arrayListToPrint.size(); i++) {
@@ -536,8 +614,7 @@ public class Pentago {
         }
     }
 
-    // Unused
-    private static boolean isThisMatrixRectangular(int[][] inputMatrix) {
+    private static boolean IsThisMatrixRectangular(int[][] inputMatrix) {
         int horizontalMatrixSize = inputMatrix[0].length;
         // Let's give this matrix some benefit of a doubt
         boolean isMatrixRectangular = true;

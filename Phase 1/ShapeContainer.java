@@ -21,42 +21,43 @@ public class ShapeContainer {
     // private static String[] blocksArray;
 
     public int[][] GetShapeArray(String inputShape) {
-        if (inputShape.toLowerCase() == "p") {
+        if (inputShape.toLowerCase().compareTo("p") == 0) {
             return arrayP;
         }
-        if (inputShape.toLowerCase() == "x") {
+        if (inputShape.toLowerCase().compareTo("x") == 0) {
             return arrayX;
         }
-        if (inputShape.toLowerCase() == "f") {
+        if (inputShape.toLowerCase().compareTo("f") == 0) {
             return arrayF;
         }
-        if (inputShape.toLowerCase() == "v") {
+        if (inputShape.toLowerCase().compareTo("v") == 0) {
             return arrayV;
         }
-        if (inputShape.toLowerCase() == "w") {
+        if (inputShape.toLowerCase().compareTo("w") == 0) {
             return arrayW;
         }
-        if (inputShape.toLowerCase() == "y") {
+        if (inputShape.toLowerCase().compareTo("y") == 0) {
             return arrayY;
         }
-        if (inputShape.toLowerCase() == "i") {
+        if (inputShape.toLowerCase().compareTo("i") == 0) {
             return arrayI;
         }
-        if (inputShape.toLowerCase() == "t") {
+        if (inputShape.toLowerCase().compareTo("t") == 0) {
             return arrayT;
         }
-        if (inputShape.toLowerCase() == "z") {
+        if (inputShape.toLowerCase().compareTo("z") == 0) {
             return arrayZ;
         }
-        if (inputShape.toLowerCase() == "u") {
+        if (inputShape.toLowerCase().compareTo("u") == 0) {
             return arrayU;
         }
-        if (inputShape.toLowerCase() == "n") {
+        if (inputShape.toLowerCase().compareTo("n") == 0) {
             return arrayN;
         }
-        if (inputShape.toLowerCase() == "l") {
+        if (inputShape.toLowerCase().compareTo("l") == 0) {
             return arrayL;
         }
+        System.out.println("Did  not find such a shape - error imminenet");
         return null;
     }
 }
