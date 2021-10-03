@@ -44,8 +44,6 @@ public class Pentago {
         int shapesToFitAmount = shapesToFitArray.size() - 1;
 
         int[][] currentShapeToFit = shapesToFitArray.get(shapeIndex);
-        System.out.println("Current shape: ");
-        PrintMatrixContentsInChat(currentShapeToFit);
         int mapHeight = currentMapState.length;
         int mapLength = currentMapState[0].length;
 
@@ -74,11 +72,15 @@ public class Pentago {
                         boolean hasFoundHoles = CheckMatrixForLinksOfLengthAtMost(newMapState, 4);
                         if (!hasFoundHoles) {
 
-                            PrintMatrixContentsInChat(newMapState);
                             boolean hasFittedTheLastShape = shapesToFitAmount == shapeIndex;
                             if (hasFittedTheLastShape) {
                                 return newMapState;
                             } else {
+                                System.out.println("Shape: ");
+                                PrintMatrixContentsInChatUsingLetters(currentShapeToFit);
+                                System.out.println("Current state of the map: ");
+                                PrintMatrixContentsInChatUsingLetters(newMapState);
+
                                 int[][] solution = RecursiveSolution(newMapState, shapesToFitArray, shapeIndex + 1);
                                 if (!IsSolutionInvalid(solution)) {
                                     return solution;
@@ -449,8 +451,6 @@ public class Pentago {
 
     // For debuging
     private static void PrintMatrixContentsInChat(int[][] matrixToPrint) {
-        System.out.println("Printing a new matrix");
-
         for (int i = 0; i < matrixToPrint.length; i++) {
             for (int j = 0; j < matrixToPrint[i].length; j++) {
                 System.out.print(matrixToPrint[i][j] + " ");
@@ -461,7 +461,6 @@ public class Pentago {
     }
 
     private static void PrintMatrixContentsInChatUsingLetters(int[][] matrixToPrint) {
-        System.out.println("Printing a new matrix");
 
         String[][] stringArray = GetLettersForMatrix(matrixToPrint);
 
@@ -531,9 +530,28 @@ public class Pentago {
         if (number == 12) {
             return "L";
         }
-        System.out.println("This letter output should not be null");
-        return null;
+        //System.out.println("This letter output should not be null");
+        return "0";
     }
+
+    private static boolean IsThisMatrixRectangular(int[][] inputMatrix) {
+        int horizontalMatrixSize = inputMatrix[0].length;
+        // Let's give this matrix some benefit of a doubt
+        boolean isMatrixRectangular = true;
+
+        for (int i = 0; i < inputMatrix.length; i++) {
+            if (inputMatrix[i].length != horizontalMatrixSize) {
+                isMatrixRectangular = false;
+            }
+
+        }
+
+        return isMatrixRectangular;
+    }
+    // 12x5 PXFVWYTZUNLI Trials: 1.273.335
+    // 12x5 PIXFVZWYTLUN Trials: 16.040.305
+    // 12x5 TPIXLVZWYFUN Trials: 3.729.160
+    // 6x5 PPIPPI Trials: 101 | PPPPII 817
 
     // ----------------- Unused Methods
     private static ArrayList<ArrayList<Integer>> TurnArrayIntoList(int[][] array) {
@@ -596,7 +614,6 @@ public class Pentago {
     }
 
     private static void PrintArrayListContentsInChat(ArrayList<ArrayList<Integer>> arrayListToPrint) {
-        System.out.println("Printing a new arrayList");
 
         for (int i = 0; i < arrayListToPrint.size(); i++) {
             for (int j = 0; j < arrayListToPrint.get(i).size(); j++) {
@@ -607,25 +624,9 @@ public class Pentago {
     }
 
     private static void PrintArrayListArrayContentsInChat(ArrayList<int[][]> arrayListToPrint) {
-        System.out.println("Printing a new arrayList");
 
         for (int i = 0; i < arrayListToPrint.size(); i++) {
             PrintMatrixContentsInChat(arrayListToPrint.get(i));
         }
-    }
-
-    private static boolean IsThisMatrixRectangular(int[][] inputMatrix) {
-        int horizontalMatrixSize = inputMatrix[0].length;
-        // Let's give this matrix some benefit of a doubt
-        boolean isMatrixRectangular = true;
-
-        for (int i = 0; i < inputMatrix.length; i++) {
-            if (inputMatrix[i].length != horizontalMatrixSize) {
-                isMatrixRectangular = false;
-            }
-
-        }
-
-        return isMatrixRectangular;
     }
 }
