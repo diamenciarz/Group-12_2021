@@ -32,16 +32,17 @@ public class Pentago {
          */
 
         // arrayToCheck = second;
-        int xPosition = 1;
+        int xPosition = 0;
         int yPosition = 0;
 
         currentMapArray = ReturnEmptyMap(5, 3);
-        
-        int[][] newMapState = PlaceShapeOnMap(map, shape, xPosition, yPosition);
-        printMatrixContentsInChat(newMapState);
-        System.out.println(areTwoFiguresOverlapping(map, newMapState));
-        
-        // CallRecursiveMethod();
+        /*
+         * int[][] newMapState = PlaceShapeOnMap(ReturnEmptyMap(5, 3), shape, xPosition,
+         * yPosition); printMatrixContentsInChat(newMapState);
+         * System.out.println(areTwoFiguresOverlapping(map, newMapState));
+         */
+
+        CallRecursiveMethod();
         scanner.close();
     }
 
@@ -50,19 +51,21 @@ public class Pentago {
         int[][] arrayU = { { 2, 0, 2 }, { 2, 2, 2 } };
         int[][][] shapesToFit = { arrayU, arrayX, arrayU };
 
-        printMatrixContentsInChat(currentMapArray);
+        PrintMatrixContentsInChat(currentMapArray);
         // AskForMapSize();
         int[][] solution = IterateSolution(currentMapArray, shapesToFit, 0);
-        printMatrixContentsInChat(solution);
+
+        System.out.println("Solution");
+        PrintMatrixContentsInChat(solution);
     }
 
     // ----------------- Powerful methods
     public static int[][] IterateSolution(int[][] currentMapState, int[][][] shapesToFitArray, int shapeIndex) {
-        int shapesToFitAmount = shapesToFitArray.length - shapeIndex;
+        int shapesToFitAmount = shapesToFitArray.length - 1;
 
         int[][] currentShapeToFit = shapesToFitArray[shapeIndex];
         System.out.println("Current shape: ");
-        printMatrixContentsInChat(currentShapeToFit);
+        PrintMatrixContentsInChat(currentShapeToFit);
         int mapHeight = currentMapState.length;
         int mapLength = currentMapState[0].length;
         // Check all 4 rotations, before going to a new position
@@ -81,10 +84,12 @@ public class Pentago {
 
                     if (WillThisShapeFitOnMap(currentMapState, rotatedShapeToFit, k, j)) {
 
-                        int[][] newMapState = PlaceShapeOnMap(currentMapState, rotatedShapeToFit, k, j);
-                        if (!areTwoFiguresOverlapping(currentMapState, newMapState)) {
+                        int[][] emptyMap = ReturnEmptyMap(mapLength, mapHeight);
+                        int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, rotatedShapeToFit, k, j);
+                        if (!areTwoFiguresOverlapping(currentMapState, shapeOnEmptyGrid)) {
 
-                            printMatrixContentsInChat(newMapState);
+                            int[][] newMapState = PlaceShapeOnMap(currentMapState, rotatedShapeToFit, k, j);
+                            PrintMatrixContentsInChat(newMapState);
                             boolean hasFoundHoles = CheckMatrixForLinksOfLengthAtMost(newMapState, 4);
                             if (!hasFoundHoles) {
 
@@ -94,7 +99,6 @@ public class Pentago {
                                 } else {
                                     int[][] solution = IterateSolution(newMapState, shapesToFitArray, shapeIndex + 1);
                                     if (!IsSolutionInvalid(solution)) {
-                                        System.out.println("Solution");
                                         return solution;
                                     }
                                 }
@@ -165,6 +169,86 @@ public class Pentago {
         } else {
             return false;
         }
+    }
+
+    public static ArrayList<ArrayList<ArrayList<Integer>>> GenerateDifferentVariationsOfThisShape(int[][] shape) {
+        int flippedShape[][] = FlipShapeVertically(shape);
+        ArrayList<ArrayList<ArrayList<Integer>>> shapeVariations = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            int[][] rotatedShape = RotateShapeRight(shape, i);
+            ArrayList<ArrayList<Integer>> arrayListShape = TurnArrayIntoList(rotatedShape);
+            shapeVariations.add(arrayListShape);
+        }
+        for (int i = 0; i < 4; i++) {
+            int[][] rotatedShape = RotateShapeRight(flippedShape, i);
+            ArrayList<ArrayList<Integer>> arrayListShape = TurnArrayIntoList(rotatedShape);
+            shapeVariations.add(arrayListShape);
+        }
+
+        shapeVariations = RemoveCopiedShapes(shapeVariations);
+        return shapeVariations;
+    }
+
+    private static ArrayList<ArrayList<ArrayList<Integer>>> RemoveCopiedShapes(ArrayList<ArrayList<ArrayList<Integer>>> array) {
+        ArrayList<ArrayList<ArrayList<Integer>>> newArray = new ArrayList<>();
+
+        for (ArrayList<ArrayList<Integer>> arrayList : array) {
+            
+            boolean newArrayContainsThisElement = newArray.contains(arrayList);
+            if (!newArrayContainsThisElement) {
+                newArray.add(arrayList);
+            }
+        }
+
+        return newArray;
+    }
+
+    private static ArrayList<ArrayList<Integer>> TurnArrayIntoList(int[][] array) {
+        ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
+
+        for (int j = 0; j < array.length; j++) {
+            ArrayList<Integer> arrayList = new ArrayList<>();
+            for (int k = 0; k < array.length; k++) {
+                arrayList.add(array[j][k]);
+            }
+            arrayListList.add(arrayList);
+        }
+        return arrayListList;
+    }
+
+    private static ArrayList<ArrayList<ArrayList<Integer>>> TurnArrayIntoList(int[][][] array) {
+        ArrayList<ArrayList<ArrayList<Integer>>> arrayListListList = new ArrayList<>();
+
+        for (int i = 0; i < array.length; i++) {
+            ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
+            for (int j = 0; j < array.length; j++) {
+                ArrayList<Integer> arrayList = new ArrayList<>();
+                for (int k = 0; k < array.length; k++) {
+                    arrayList.add(array[i][j][k]);
+                }
+                arrayListList.add(arrayList);
+            }
+            arrayListListList.add(arrayListList);
+        }
+        return arrayListListList;
+    }
+
+    public static int[][] FlipShapeVertically(int shape[][]) {
+        int[][] flippedShape = GetACopyOfThisArray(shape);
+
+        int originalShapeHeight = shape.length;
+        int originalShapeLength = shape[0].length;
+
+        int flippedShapeLength = flippedShape[0].length;
+
+        for (int i = 0; i < originalShapeHeight; i++) {
+            for (int j = 0; j < originalShapeLength; j++) {
+                flippedShape[i][flippedShapeLength - (j + 1)] = shape[i][j];
+            }
+        }
+        return flippedShape;
+
     }
 
     public static int[][] RotateShapeRight(int shape[][], int times) {
@@ -282,7 +366,7 @@ public class Pentago {
         }
 
         if (enableDebugMessages) {
-            printMatrixContentsInChat(arrayToCheck);
+            PrintMatrixContentsInChat(arrayToCheck);
         }
 
         // check right
@@ -406,7 +490,7 @@ public class Pentago {
 
     // ----------------- Other Methods
     // For debuging
-    public static void printMatrixContentsInChat(int[][] matrixToPrint) {
+    public static void PrintMatrixContentsInChat(int[][] matrixToPrint) {
         System.out.println("Printing a new matrix");
 
         for (int i = 0; i < matrixToPrint.length; i++) {
@@ -415,6 +499,23 @@ public class Pentago {
                 ;
             }
             System.out.println("");
+        }
+    }
+    public static void PrintArrayListContentsInChat(ArrayList<ArrayList<Integer>> arrayListToPrint) {
+        System.out.println("Printing a new arrayList");
+
+        for (int i = 0; i < arrayListToPrint.size(); i++) {
+            for (int j = 0; j < arrayListToPrint.get(i).size(); j++) {
+                System.out.print(arrayListToPrint.get(i).get(j) + " ");
+            }
+            System.out.println("");
+        }
+    }
+    public static void PrintArrayListListContentsInChat(ArrayList<ArrayList<ArrayList<Integer>>> arrayListToPrint) {
+        System.out.println("Printing a new arrayList");
+
+        for (int i = 0; i < arrayListToPrint.size(); i++) {
+            PrintArrayListContentsInChat(arrayListToPrint.get(i));
         }
     }
 
