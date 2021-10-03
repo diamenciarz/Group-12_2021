@@ -7,6 +7,7 @@ public class Pentago {
 
     // Instances
     static Scanner scanner = new Scanner(System.in);
+    static ShapeContainer shapeContainer = new ShapeContainer();
 
     // Startup settings variables
     public static boolean enableDebugMessages = false;
@@ -17,54 +18,38 @@ public class Pentago {
     public static int[][] arrayToCheck; // Dont modify this in any method
     public static int[][] currentMapArray;
     public static String[] inputBlocksArray;
+    static ArrayList<int[][]> shapesToFit = new ArrayList<>();
 
     public static void main(String[] args) {
-
-        int[][] shape = { { 0, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 } };
-        int[][] map = { { 2, 2, 0, 0, 0 }, { 2, 0, 0, 0, 0 }, { 2, 2, 0, 0, 0 } };
-
-        /*
-         * int[][][] shapesToFit;
-         * 
-         * String[] shapes = {"U","X","U"}; for (int i = 0; i < shapes.length; i++) {
-         * 
-         * }
-         */
-
-        // arrayToCheck = second;
-        int xPosition = 0;
-        int yPosition = 0;
-
-        currentMapArray = ReturnEmptyMap(5, 3);
-        /*
-         * int[][] newMapState = PlaceShapeOnMap(ReturnEmptyMap(5, 3), shape, xPosition,
-         * yPosition); printMatrixContentsInChat(newMapState);
-         * System.out.println(areTwoFiguresOverlapping(map, newMapState));
-         */
-
-        // PrintArrayListListContentsInChat(GenerateDifferentVariationsOfThisShape(shape));
-        CallRecursiveMethod();
-        scanner.close();
+        StartProgram();
     }
 
-    private static void CallRecursiveMethod() {
-        int[][] arrayX = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
-        int[][] arrayU = { { 2, 0, 2 }, { 2, 2, 2 } };
-        int[][][] shapesToFit = { arrayU, arrayX, arrayU };
+    private static void StartProgram() {
+        //Input methods
+        AskForMapSize();
+        SaveInputToBlocksArray();
+        FillshapesToFitArrayList();
 
-        PrintMatrixContentsInChat(currentMapArray);
-        // AskForMapSize();
+        scanner.close();
+
         int[][] solution = IterateSolution(currentMapArray, shapesToFit, 0);
-
         System.out.println("Solution trials: " + choices);
         PrintMatrixContentsInChat(solution);
     }
 
-    // ----------------- Powerful methods
-    public static int[][] IterateSolution(int[][] currentMapState, int[][][] shapesToFitArray, int shapeIndex) {
-        int shapesToFitAmount = shapesToFitArray.length - 1;
+    private static void FillshapesToFitArrayList() {
+        for (String blockName : inputBlocksArray) {
+            int[][] block = shapeContainer.GetShapeArray(blockName);
+            shapesToFit.add(block);
+        }
+    }
 
-        int[][] currentShapeToFit = shapesToFitArray[shapeIndex];
+    // ----------------- Powerful methods
+    public static int[][] IterateSolution(int[][] currentMapState, ArrayList<int[][]> shapesToFitArray,
+            int shapeIndex) {
+        int shapesToFitAmount = shapesToFitArray.size() - 1;
+
+        int[][] currentShapeToFit = shapesToFitArray.get(shapeIndex);
         System.out.println("Current shape: ");
         PrintMatrixContentsInChat(currentShapeToFit);
         int mapHeight = currentMapState.length;
@@ -92,11 +77,11 @@ public class Pentago {
                     if (!areTwoFiguresOverlapping(currentMapState, shapeOnEmptyGrid)) {
 
                         int[][] newMapState = PlaceShapeOnMap(currentMapState, shapeVariation, k, j);
-                        PrintMatrixContentsInChat(newMapState);
                         boolean hasFoundHoles = CheckMatrixForLinksOfLengthAtMost(newMapState, 4);
                         if (!hasFoundHoles) {
 
-                            boolean hasFittedTheLastShape = shapesToFitAmount - 1 == shapeIndex;
+                            PrintMatrixContentsInChat(newMapState);
+                            boolean hasFittedTheLastShape = shapesToFitAmount == shapeIndex;
                             if (hasFittedTheLastShape) {
                                 return newMapState;
                             } else {
@@ -565,68 +550,5 @@ public class Pentago {
         }
 
         return isMatrixRectangular;
-    }
-}
-
-class ShapeContainer {
-
-    public ShapeContainer() {
-
-    }
-
-    // Shapes as arrays
-    private static int[][] arrayP = { { 1, 1 }, { 1, 1 }, { 1, 0 } };
-    private static int[][] arrayX = { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } };
-    private static int[][] arrayF = { { 0, 1, 1 }, { 1, 1, 0 }, { 0, 1, 0 } };
-    private static int[][] arrayV = { { 1, 0, 0 }, { 1, 0, 0 }, { 1, 1, 1 } };
-    private static int[][] arrayW = { { 1, 0, 0 }, { 1, 1, 0 }, { 0, 1, 1 } };
-    private static int[][] arrayY = { { 0, 1 }, { 1, 1 }, { 0, 1 }, { 0, 1 } };
-    private static int[][] arrayI = { { 1 }, { 1 }, { 1 }, { 1 }, { 1 } };
-    private static int[][] arrayT = { { 1, 1, 1 }, { 0, 1, 0 }, { 0, 1, 0 } };
-    private static int[][] arrayZ = { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 } };
-    private static int[][] arrayU = { { 1, 0, 1 }, { 1, 1, 1 } };
-    private static int[][] arrayN = { { 1, 1, 0, 0 }, { 0, 1, 1, 1 } };
-    private static int[][] arrayL = { { 0, 0, 0, 1 }, { 1, 1, 1, 1 } };
-
-    // private static String[] blocksArray;
-
-    public static int[][] GetShapeArray(String inputShape) {
-        if (inputShape.toLowerCase() == "p") {
-            return arrayP;
-        }
-        if (inputShape.toLowerCase() == "x") {
-            return arrayX;
-        }
-        if (inputShape.toLowerCase() == "f") {
-            return arrayF;
-        }
-        if (inputShape.toLowerCase() == "v") {
-            return arrayV;
-        }
-        if (inputShape.toLowerCase() == "w") {
-            return arrayW;
-        }
-        if (inputShape.toLowerCase() == "y") {
-            return arrayY;
-        }
-        if (inputShape.toLowerCase() == "i") {
-            return arrayI;
-        }
-        if (inputShape.toLowerCase() == "t") {
-            return arrayT;
-        }
-        if (inputShape.toLowerCase() == "z") {
-            return arrayZ;
-        }
-        if (inputShape.toLowerCase() == "u") {
-            return arrayU;
-        }
-        if (inputShape.toLowerCase() == "n") {
-            return arrayN;
-        }
-        if (inputShape.toLowerCase() == "l") {
-            return arrayL;
-        }
-        return null;
     }
 }
