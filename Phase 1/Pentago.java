@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+
+
 public class Pentago {
 
     // Instances
@@ -22,6 +24,11 @@ public class Pentago {
 
     public static void main(String[] args) {
         StartProgram();
+
+
+        //12 by 5
+        //PXFVWYTZUNLI
+
     }
 
     private static void StartProgram() {
@@ -38,6 +45,8 @@ public class Pentago {
 
         System.out.println("Solution trials: " + choices);
         PrintMatrixContentsInChatUsingLetters(solution);
+
+        new UI(solution[0].length, solution.length, 40).setState(solution);
     }
 
     // ----------------- Powerful methods
