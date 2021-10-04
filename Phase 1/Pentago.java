@@ -27,6 +27,8 @@ public class Pentago {
     private static void StartProgram() {
         // Input methods
         AskForMapSize();
+        PrintMatrixContentsInChatUsingLetters(currentMapArray);
+
         SaveInputToBlocksArray();
         FillshapesToFitArrayList();
         // No more inputs from now on
@@ -76,11 +78,12 @@ public class Pentago {
                             if (hasFittedTheLastShape) {
                                 return newMapState;
                             } else {
-                                System.out.println("Shape: ");
-                                PrintMatrixContentsInChatUsingLetters(currentShapeToFit);
-                                System.out.println("Current state of the map: ");
-                                PrintMatrixContentsInChatUsingLetters(newMapState);
-
+                                if (enableDebugMessages) {
+                                    System.out.println("Shape: ");
+                                    PrintMatrixContentsInChatUsingLetters(currentShapeToFit);
+                                    System.out.println("Current state of the map: ");
+                                    PrintMatrixContentsInChatUsingLetters(newMapState);
+                                }
                                 int[][] solution = RecursiveSolution(newMapState, shapesToFitArray, shapeIndex + 1);
                                 if (!IsSolutionInvalid(solution)) {
                                     return solution;
