@@ -25,10 +25,11 @@ public class Pentago {
     public static void main(String[] args) {
         StartProgram();
 
-
         //12 by 5
         //PXFVWYTZUNLI
 
+        // 6 by 5
+        // TWZLIY
     }
 
     private static void StartProgram() {
@@ -46,7 +47,7 @@ public class Pentago {
         System.out.println("Solution trials: " + choices);
         PrintMatrixContentsInChatUsingLetters(solution);
 
-        new UI(solution[0].length, solution.length, 40).setState(solution);
+        new UI(solution[0].length, solution.length, 50).setState(solution);
     }
 
     // ----------------- Powerful methods
@@ -103,6 +104,9 @@ public class Pentago {
                 }
             }
         }
+
+        // "Live animation" of recursive algorithm (takes forever)
+        new UI(currentMapState[0].length, currentMapState.length, 50).setState(currentMapState);
 
         // Else, solution is invalid
         int invalidSolution[][] = { { -1, -1 } };
