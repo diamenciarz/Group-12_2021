@@ -103,18 +103,18 @@ public class UI extends JPanel
      */
     private Color GetColorOfID(int i)
     {
-        if(i==0) {return Color.BLUE;}
-        else if(i==1) {return Color.ORANGE;}
-        else if(i==2) {return Color.CYAN;}
-        else if(i==3) {return Color.GREEN;}
-        else if(i==4) {return Color.MAGENTA;}
-        else if(i==5) {return Color.PINK;}
-        else if(i==6) {return Color.RED;}
-        else if(i==7) {return Color.YELLOW;}
-        else if(i==8) {return new Color(0, 0, 0);}
-        else if(i==9) {return new Color(0, 0, 100);}
-        else if(i==10) {return new Color(100, 0,0);}
-        else if(i==11) {return new Color(0, 100, 0);}
+        if(i==1) {return Color.BLUE;}
+        else if(i==2) {return Color.ORANGE;}
+        else if(i==3) {return Color.CYAN;}
+        else if(i==4) {return Color.GREEN;}
+        else if(i==5) {return Color.MAGENTA;}
+        else if(i==6) {return Color.PINK;}
+        else if(i==7) {return Color.RED;}
+        else if(i==8) {return Color.YELLOW;}
+        else if(i==9) {return new Color(0, 0, 0);}
+        else if(i==10) {return new Color(0, 0, 100);}
+        else if(i==11) {return new Color(100, 0,0);}
+        else if(i==12) {return new Color(0, 100, 0);}
         else {return Color.LIGHT_GRAY;}
     }
 
@@ -124,11 +124,11 @@ public class UI extends JPanel
      */
     public void setState(int[][] _state)
     {
-        for (int i = 0; i < state.length; i++)
+        for (int i = 0; i < state[i].length; i++)
         {
-            for (int j = 0; j < state[i].length; j++)
+            for (int j = 0; j < state.length; j++)
             {
-                state[i][j] = _state[i][j];
+                state[j][i] = _state[i][j];
             }
         }
 
