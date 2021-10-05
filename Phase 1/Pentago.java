@@ -12,47 +12,61 @@ public class Pentago {
     // Startup settings variables
     public static boolean enableDebugMessages = false;
     public static boolean allowInputRepetition = true;
-    public static int choices = 0;
+    public static int solutionSteps = 0;
     public static int xMapSize;
     public static int yMapSize;
     // Time counter
     static final long startTime = System.currentTimeMillis();
 
     // Internal variables
-    public static int[][] arrayToCheck; // Dont modify this in any method
+    public static int[][] temporaryHelperArray; // Dont modify this in any method
     public static int[][] currentMapArray;
     public static String[] inputBlocksArray;
     static ArrayList<int[][]> shapesToFit = new ArrayList<>();
 
     public static void main(String[] args) {
-        StartProgram();
+
+        int[][] testMap = { { 0, 0, 1, 1 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 1 } };
+
+        // int[][] solution = RecursiveHoleShapeCounter(3, 0,
+        // GetEmptyMap(testMap[0].length, testMap.length), testMap);
+        ArrayList<int[]> solution2 = GetNonFilledRowAndColumnIndexes(testMap);
+        PrintArrayContentsInChat(solution2.get(0));
+        PrintArrayContentsInChat(solution2.get(0));
+
+        // StartProgram();
+
     }
 
     private static void StartProgram() {
         // Input methods
+        GetUserInput();
+
+        if (!IsTheMapTooSmallForGivenShapes()) {
+            GetSolution();
+        } else {
+            System.out.println("The map is too small to fit the shapes");
+        }
+    }
+
+    private static void GetUserInput() {
         AskForMapSize();
         PrintMatrixContentsInChatUsingLetters(currentMapArray);
 
         SaveInputToBlocksArray();
-        if (!IsTheMapTooSmallForGivenShapes()) {
+    }
 
-            FillshapesToFitArrayList();
-            // No more inputs from now on
-            scanner.close();
+    private static void GetSolution() {
+        FillshapesToFitArrayList();
+        // No more inputs from now on
+        scanner.close();
 
-            int[][] solution = RecursiveSolution(currentMapArray, shapesToFit, 0);
+        int[][] solution = RecursiveSolution(currentMapArray, shapesToFit, 0);
 
-            System.out.println("Solution trials: " + choices);
-            PrintMatrixContentsInChatUsingLetters(solution);
-            PrintTime();
+        System.out.println("Solution trials: " + solutionSteps);
+        PrintMatrixContentsInChatUsingLetters(solution);
+        PrintTime();
 
-            // Graphic display
-            new UI(solution[0].length, solution.length, 40, choices ).setState(solution);
-        } else {
-            System.out.println("The map is too small to fit the shapes");
-        }
-        
-        
     }
 
     private static void PrintTime() {
@@ -86,8 +100,8 @@ public class Pentago {
             for (int j = 0; j < yRepetitions; j++) {
                 for (int k = 0; k < xRepetitions; k++) {
 
-                    choices++;
-                    int[][] emptyMap = ReturnEmptyMap(mapLength, mapHeight);
+                    solutionSteps++;
+                    int[][] emptyMap = GetEmptyMap(mapLength, mapHeight);
                     int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, shapeVariation, k, j);
                     if (!areTwoFiguresOverlapping(currentMapState, shapeOnEmptyGrid)) {
 
@@ -98,13 +112,14 @@ public class Pentago {
                             if (hasFittedTheLastShape) {
                                 return newMapState;
                             } else {
+                                int[][] solution = RecursiveSolution(newMapState, shapesToFitArray, shapeIndex + 1);
+
                                 if (enableDebugMessages) {
                                     System.out.println("Shape: ");
                                     PrintMatrixContentsInChatUsingLetters(currentShapeToFit);
                                     System.out.println("Current state of the map: ");
                                     PrintMatrixContentsInChatUsingLetters(newMapState);
                                 }
-                                int[][] solution = RecursiveSolution(newMapState, shapesToFitArray, shapeIndex + 1);
                                 if (!IsSolutionInvalid(solution)) {
                                     return solution;
                                 }
@@ -119,6 +134,7 @@ public class Pentago {
         int invalidSolution[][] = { { -1, -1 } };
         return invalidSolution;
     }
+    // private static int[][] PruneConditions()
 
     private static int[][] PlaceShapeOnMap(int mapArray[][], int shape[][], int xPosition, int yPosition) {
         int[][] mapStateArray = GetACopyOfThisArray(mapArray);
@@ -147,7 +163,7 @@ public class Pentago {
         return returnArray;
     }
 
-    private static int[][] ReturnEmptyMap(int xMapSize, int yMapSize) {
+    private static int[][] GetEmptyMap(int xMapSize, int yMapSize) {
         return new int[yMapSize][xMapSize];
     }
 
@@ -328,18 +344,18 @@ public class Pentago {
     }
 
     private static boolean AreAllHolesMultiplicationsOfFive(int[][] inputMatrix) {
-        arrayToCheck = GetACopyOfThisArray(inputMatrix);
+        temporaryHelperArray = GetACopyOfThisArray(inputMatrix);
         boolean areAllHolesMultiplicationsOfFive = true;
 
-        int yMapSize = arrayToCheck.length;
+        int yMapSize = temporaryHelperArray.length;
         for (int i = 0; i < yMapSize; i++) {
 
-            int xMapSize = arrayToCheck[i].length;
+            int xMapSize = temporaryHelperArray[i].length;
             for (int j = 0; j < xMapSize; j++) {
 
-                if (CheckIfTileEmpty(arrayToCheck, j, i)) {
+                if (CheckIfTileEmpty(temporaryHelperArray, j, i)) {
 
-                    int holeSize = LinkCheck(j, i, 0, yMapSize * xMapSize);
+                    int holeSize = RecursiveHoleSizeCounter(j, i, 0, yMapSize * xMapSize);
                     if (holeSize % 5 != 0) {
                         areAllHolesMultiplicationsOfFive = false;
                         break;
@@ -349,49 +365,49 @@ public class Pentago {
         }
         return areAllHolesMultiplicationsOfFive;
     }
-    
+
     // Recursive empty space counter // Leave total = 0, when calling this method
-    private static int LinkCheck(int xPosition, int yPosition, int total, int cutoffLength) {
+    private static int RecursiveHoleSizeCounter(int xPosition, int yPosition, int total, int cutoffLength) {
         // Initialization variables
         int checkLimit = cutoffLength;
         int countNewTiles = 1;
         // Modify map array and check break condition
-        arrayToCheck[yPosition][xPosition] = 1; // Mark its own tile as already checked
+        temporaryHelperArray[yPosition][xPosition] = 1; // Mark its own tile as already checked
         if ((countNewTiles + total) >= checkLimit) {
             return countNewTiles;
         }
 
         if (enableDebugMessages) {
-            PrintMatrixContentsInChat(arrayToCheck);
+            PrintMatrixContentsInChat(temporaryHelperArray);
         }
 
         // check right
-        if (CheckIfTileEmpty(arrayToCheck, xPosition + 1, yPosition)) {
-            countNewTiles += LinkCheck(xPosition + 1, yPosition, countNewTiles + total, cutoffLength);
+        if (CheckIfTileEmpty(temporaryHelperArray, xPosition + 1, yPosition)) {
+            countNewTiles += RecursiveHoleSizeCounter(xPosition + 1, yPosition, countNewTiles + total, cutoffLength);
 
             if ((countNewTiles + total) >= checkLimit) {
                 return countNewTiles;
             }
         }
         // check down
-        if (CheckIfTileEmpty(arrayToCheck, xPosition, yPosition + 1)) {
-            countNewTiles += LinkCheck(xPosition, yPosition + 1, countNewTiles + total, cutoffLength);
+        if (CheckIfTileEmpty(temporaryHelperArray, xPosition, yPosition + 1)) {
+            countNewTiles += RecursiveHoleSizeCounter(xPosition, yPosition + 1, countNewTiles + total, cutoffLength);
 
             if ((countNewTiles + total) >= checkLimit) {
                 return countNewTiles;
             }
         }
         // check left
-        if (CheckIfTileEmpty(arrayToCheck, xPosition - 1, yPosition)) {
-            countNewTiles += LinkCheck(xPosition - 1, yPosition, countNewTiles + total, cutoffLength);
+        if (CheckIfTileEmpty(temporaryHelperArray, xPosition - 1, yPosition)) {
+            countNewTiles += RecursiveHoleSizeCounter(xPosition - 1, yPosition, countNewTiles + total, cutoffLength);
 
             if ((countNewTiles + total) >= checkLimit) {
                 return countNewTiles;
             }
         }
         // check up
-        if (CheckIfTileEmpty(arrayToCheck, xPosition, yPosition - 1)) {
-            countNewTiles += LinkCheck(xPosition, yPosition - 1, countNewTiles + total, cutoffLength);
+        if (CheckIfTileEmpty(temporaryHelperArray, xPosition, yPosition - 1)) {
+            countNewTiles += RecursiveHoleSizeCounter(xPosition, yPosition - 1, countNewTiles + total, cutoffLength);
 
             if ((countNewTiles + total) >= checkLimit) {
                 return countNewTiles;
@@ -399,6 +415,140 @@ public class Pentago {
         }
 
         return countNewTiles;
+    }
+
+    private static int[][] RecursiveHoleShapeCounter(int xPosition, int yPosition, int[][] currentShapeSaved,
+            int[][] currentStateOfTheMap) {
+        // Modify map array and check break condition
+        currentStateOfTheMap[yPosition][xPosition] = 1; // Mark its own tile as already checked
+        currentShapeSaved[yPosition][xPosition] = 1;
+        // check right
+        if (CheckIfTileEmpty(currentStateOfTheMap, xPosition + 1, yPosition)) {
+            RecursiveHoleShapeCounter(xPosition + 1, yPosition, currentShapeSaved, currentStateOfTheMap);
+        }
+        // check down
+        if (CheckIfTileEmpty(currentStateOfTheMap, xPosition, yPosition - 1)) {
+            RecursiveHoleShapeCounter(xPosition, yPosition - 1, currentShapeSaved, currentStateOfTheMap);
+        }
+        // Check left
+        if (CheckIfTileEmpty(currentStateOfTheMap, xPosition - 1, yPosition)) {
+            RecursiveHoleShapeCounter(xPosition - 1, yPosition, currentShapeSaved, currentStateOfTheMap);
+        }
+        // check up
+        if (CheckIfTileEmpty(currentStateOfTheMap, xPosition, yPosition + 1)) {
+            RecursiveHoleShapeCounter(xPosition, yPosition + 1, currentShapeSaved, currentStateOfTheMap);
+        }
+
+        return currentShapeSaved;
+    }
+
+    private static int[][] TrimShape(int[][] inputShape) {
+        int ySize = inputShape.length;
+        int xSize = inputShape[0].length;
+
+        ArrayList<Integer> nonEmptyRowIndexes = new ArrayList<>();
+        ArrayList<Integer> nonEmptyColumnIndexes = new ArrayList<>();
+        // Find all rows and columns that are not empty and save them to a list
+        for (int y = 0; y < ySize; y++) {
+            for (int x = 0; x < xSize; x++) {
+                if (inputShape[y][x] == 1) {
+
+                    nonEmptyColumnIndexes.add(x);
+                    nonEmptyRowIndexes.add(y);
+                }
+            }
+        }
+        int minColumnIndex = GetMinimumValueFromArrayList(nonEmptyColumnIndexes);
+        int maxColumnIndex = GetMaximumValueFromArrayList(nonEmptyColumnIndexes);
+        int minRowIndex = GetMinimumValueFromArrayList(nonEmptyRowIndexes);
+        int maxRowIndex = GetMaximumValueFromArrayList(nonEmptyRowIndexes);
+
+        int xMapSize = maxColumnIndex - minColumnIndex + 1;
+        int yMapSize = maxRowIndex - minRowIndex + 1;
+
+        int[][] returnArray = GetEmptyMap(xMapSize, yMapSize);
+
+        for (int x = 0; x < xMapSize; x++) {
+            for (int y = 0; y < yMapSize; y++) {
+                returnArray[y][x] = inputShape[y + minRowIndex][x + minColumnIndex];
+            }
+        }
+
+        return returnArray;
+    }
+
+    private static ArrayList<int[]> GetNonFilledRowAndColumnIndexes(int[][] inputArray) {
+        int ySize = inputArray.length;
+        int xSize = inputArray[0].length;
+        ArrayList<Integer> nonFilledRowIndexes = new ArrayList<>();
+        ArrayList<Integer> nonFilledColumnIndexes = new ArrayList<>();
+
+        for (int i = 0; i < ySize; i++) {
+            nonFilledRowIndexes.add(i);
+        }
+        for (int i = 0; i < xSize; i++) {
+            nonFilledColumnIndexes.add(i);
+        }
+        // Find all rows and columns that are filled and remove them from the list
+        for (int y = ySize - 1; y >= 0; y--) {
+            boolean isRowFilled = true;
+            for (int x = xSize - 1; x >= 0; x--) {
+                if (inputArray[y][x] == 0) {
+                    isRowFilled = false;
+                }
+            }
+            if (isRowFilled) {
+                nonFilledRowIndexes.remove(y);
+            }
+        }
+        for (int x = xSize - 1; x >= 0; x--) {
+            boolean isColumnFilled = true;
+            for (int y = ySize - 1; y >= 0; y--) {
+                if (inputArray[y][x] == 0) {
+                    isColumnFilled = false;
+                }
+            }
+            if (isColumnFilled) {
+                nonFilledColumnIndexes.remove(x);
+            }
+        }
+        int[] nonEmptyRowArray = new int[nonFilledRowIndexes.size()];
+        for (int i = 0; i < nonFilledRowIndexes.size(); i++) {
+            nonEmptyRowArray[i] = nonFilledRowIndexes.get(i);
+
+        }
+        int[] nonEmptyColumnArray = new int[nonFilledColumnIndexes.size()];
+        for (int i = 0; i < nonFilledColumnIndexes.size(); i++) {
+            nonEmptyColumnArray[i] = nonFilledColumnIndexes.get(i);
+        }
+
+        ArrayList<int[]> returnArrayList = new ArrayList<>();
+        returnArrayList.add(nonEmptyRowArray);
+        returnArrayList.add(nonEmptyColumnArray);
+
+        return returnArrayList;
+    }
+
+    private static int GetMinimumValueFromArrayList(ArrayList<Integer> arrayList) {
+        int currentMinimum = arrayList.get(0);
+        for (int i = 0; i < arrayList.size(); i++) {
+            int currentArrayElement = arrayList.get(i);
+            if (currentMinimum > currentArrayElement) {
+                currentMinimum = currentArrayElement;
+            }
+        }
+        return currentMinimum;
+    }
+
+    private static int GetMaximumValueFromArrayList(ArrayList<Integer> arrayList) {
+        int currentMaximum = arrayList.get(0);
+        for (int i = 0; i < arrayList.size(); i++) {
+            int currentArrayElement = arrayList.get(i);
+            if (currentMaximum < currentArrayElement) {
+                currentMaximum = currentArrayElement;
+            }
+        }
+        return currentMaximum;
     }
 
     // Basic check
@@ -444,7 +594,7 @@ public class Pentago {
         yMapSize = scanner.nextInt();
         scanner.nextLine();
 
-        currentMapArray = ReturnEmptyMap(xMapSize, yMapSize);
+        currentMapArray = GetEmptyMap(xMapSize, yMapSize);
     }
     // ----------------- Input Helper Methods
 
@@ -490,6 +640,13 @@ public class Pentago {
             }
             System.out.println("");
         }
+    }
+
+    private static void PrintArrayContentsInChat(int[] arrayToPrint) {
+        for (int i = 0; i < arrayToPrint.length; i++) {
+            System.out.print(arrayToPrint[i] + " ");
+        }
+        System.out.println("");
     }
 
     private static void PrintMatrixContentsInChatUsingLetters(int[][] matrixToPrint) {
@@ -638,12 +795,12 @@ public class Pentago {
     }
 
     private static boolean CheckMatrixForLinksOfLengthAtLeast(int[][] inputMatrix, int maxLinkLength) {
-        arrayToCheck = GetACopyOfThisArray(inputMatrix);
+        temporaryHelperArray = GetACopyOfThisArray(inputMatrix);
 
-        for (int i = 0; i < arrayToCheck.length; i++) {
-            for (int j = 0; j < arrayToCheck[i].length; j++) {
-                if (CheckIfTileEmpty(arrayToCheck, j, i)) {
-                    if (LinkCheck(j, i, 0, maxLinkLength) >= maxLinkLength) {
+        for (int i = 0; i < temporaryHelperArray.length; i++) {
+            for (int j = 0; j < temporaryHelperArray[i].length; j++) {
+                if (CheckIfTileEmpty(temporaryHelperArray, j, i)) {
+                    if (RecursiveHoleSizeCounter(j, i, 0, maxLinkLength) >= maxLinkLength) {
                         return true;
                     }
                 }
@@ -668,19 +825,20 @@ public class Pentago {
             PrintMatrixContentsInChat(arrayListToPrint.get(i));
         }
     }
+
     // Checks, if there is a link on the map of this size or shorter
     private static boolean CheckMatrixForLinksOfLengthAtMost(int[][] inputMatrix, int maxLinkLength) {
-        arrayToCheck = GetACopyOfThisArray(inputMatrix);
+        temporaryHelperArray = GetACopyOfThisArray(inputMatrix);
 
-        int yMapSize = arrayToCheck.length;
+        int yMapSize = temporaryHelperArray.length;
         for (int i = 0; i < yMapSize; i++) {
 
-            int xMapSize = arrayToCheck[i].length;
+            int xMapSize = temporaryHelperArray[i].length;
             for (int j = 0; j < xMapSize; j++) {
 
-                if (CheckIfTileEmpty(arrayToCheck, j, i)) {
+                if (CheckIfTileEmpty(temporaryHelperArray, j, i)) {
 
-                    if (LinkCheck(j, i, 0, yMapSize * xMapSize) <= maxLinkLength) {
+                    if (RecursiveHoleSizeCounter(j, i, 0, yMapSize * xMapSize) <= maxLinkLength) {
                         return true;
                     }
                 }
