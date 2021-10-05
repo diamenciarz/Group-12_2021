@@ -13,7 +13,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class UI extends JPanel
 {
-    private JFrame window;
+    private JFrame window = new JFrame();
     private int[][] state;
     private int size;
 
@@ -23,15 +23,34 @@ public class UI extends JPanel
      * @param y y position of the GUI
      * @param _size size of the GUI
      */
-    public UI(int x, int y, int _size)
+    public UI(int x, int y, int _size, int trials)
     {
         size = _size;
         setPreferredSize(new Dimension(x * size, y * size));
 
-        window = new JFrame("Pentomino");
+        JPanel panel = new JPanel();
+        JLabel labelTitle = new JLabel("PENTOMINOES", SwingConstants.CENTER);
+        JLabel trialsLabel = new JLabel("Number of trials: " + trials);
+        
+        Font font1 = new Font("Calbri", Font.BOLD, 12);
+        Font font2 = new Font("Calibri", Font.BOLD, 30);
+        
+        trialsLabel.setFont(font1);
+        labelTitle.setFont(font2);
+        labelTitle.setForeground(Color.RED);
+
+        panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        panel.setLayout(new GridLayout(0,1));
+        //panel.add(labelTitle);
+
+        panel.add(this);
+        panel.add(trialsLabel);
+
+        window.setLayout(new GridLayout(0,1));
+        window.add(panel, BorderLayout.CENTER);
+
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.add(this);
+        window.setTitle("Pentominoes");
         window.pack();
         window.setVisible(true);
 
