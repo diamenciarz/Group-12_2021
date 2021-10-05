@@ -47,6 +47,7 @@ public class Pentago {
         System.out.println("Solution trials: " + choices);
         PrintMatrixContentsInChatUsingLetters(solution);
 
+        // Graphic display
         new UI(solution[0].length, solution.length, 50).setState(solution);
     }
 
@@ -106,7 +107,8 @@ public class Pentago {
         }
 
         // "Live animation" of recursive algorithm (takes forever)
-        new UI(currentMapState[0].length, currentMapState.length, 50).setState(currentMapState);
+        // remove below code to just show final result
+        // new UI(currentMapState[0].length, currentMapState.length, 50).setState(currentMapState);
 
         // Else, solution is invalid
         int invalidSolution[][] = { { -1, -1 } };
