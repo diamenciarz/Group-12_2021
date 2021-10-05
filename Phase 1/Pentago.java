@@ -13,6 +13,10 @@ public class Pentago {
     public static boolean enableDebugMessages = false;
     public static boolean allowInputRepetition = true;
     public static int choices = 0;
+    public static int xMapSize;
+    public static int yMapSize;
+    // Time counter
+    static final long startTime = System.currentTimeMillis();
 
     // Internal variables
     public static int[][] arrayToCheck; // Dont modify this in any method
@@ -30,14 +34,26 @@ public class Pentago {
         PrintMatrixContentsInChatUsingLetters(currentMapArray);
 
         SaveInputToBlocksArray();
-        FillshapesToFitArrayList();
-        // No more inputs from now on
-        scanner.close();
+        if (!IsTheMapTooSmallForGivenShapes()) {
 
-        int[][] solution = RecursiveSolution(currentMapArray, shapesToFit, 0);
+            FillshapesToFitArrayList();
+            // No more inputs from now on
+            scanner.close();
 
-        System.out.println("Solution trials: " + choices);
-        PrintMatrixContentsInChatUsingLetters(solution);
+            int[][] solution = RecursiveSolution(currentMapArray, shapesToFit, 0);
+
+            System.out.println("Solution trials: " + choices);
+            PrintMatrixContentsInChatUsingLetters(solution);
+            PrintTime();
+        } else {
+            System.out.println("The map is too small to fit the shapes");
+        }
+    }
+
+    private static void PrintTime() {
+        final long endTime = System.currentTimeMillis();
+
+        System.out.println("Total execution time: " + (endTime - startTime));
     }
 
     // ----------------- Powerful methods
@@ -71,8 +87,7 @@ public class Pentago {
                     if (!areTwoFiguresOverlapping(currentMapState, shapeOnEmptyGrid)) {
 
                         int[][] newMapState = PlaceShapeOnMap(currentMapState, shapeVariation, k, j);
-                        boolean hasFoundHoles = CheckMatrixForLinksOfLengthAtMost(newMapState, 4);
-                        if (!hasFoundHoles) {
+                        if (AreAllHolesMultiplicationsOfFive(newMapState)) {
 
                             boolean hasFittedTheLastShape = shapesToFitAmount == shapeIndex;
                             if (hasFittedTheLastShape) {
@@ -230,6 +245,17 @@ public class Pentago {
         return true;
     }
 
+    private static boolean IsTheMapTooSmallForGivenShapes() {
+        int combinedBlockArea = inputBlocksArray.length * 5;
+        int mapArea = xMapSize * yMapSize;
+        boolean areGivenShapesTooBig = combinedBlockArea > mapArea;
+        ;
+        if (areGivenShapesTooBig) {
+            return true;
+        }
+        return false;
+    }
+
     private static int[][] FlipShapeVertically(int shape[][]) {
         int[][] flippedShape = GetACopyOfThisArray(shape);
 
@@ -296,27 +322,29 @@ public class Pentago {
         return false;
     }
 
-    // Checks, if there is a link on the map of this size or shorter
-    private static boolean CheckMatrixForLinksOfLengthAtMost(int[][] inputMatrix, int maxLinkLength) {
+    private static boolean AreAllHolesMultiplicationsOfFive(int[][] inputMatrix) {
         arrayToCheck = GetACopyOfThisArray(inputMatrix);
+        boolean areAllHolesMultiplicationsOfFive = true;
 
         int yMapSize = arrayToCheck.length;
         for (int i = 0; i < yMapSize; i++) {
 
             int xMapSize = arrayToCheck[i].length;
             for (int j = 0; j < xMapSize; j++) {
+
                 if (CheckIfTileEmpty(arrayToCheck, j, i)) {
-                    if (LinkCheck(j, i, 0, yMapSize * xMapSize) <= maxLinkLength) {
-                        return true;
+
+                    int holeSize = LinkCheck(j, i, 0, yMapSize * xMapSize);
+                    if (holeSize % 5 != 0) {
+                        areAllHolesMultiplicationsOfFive = false;
+                        break;
                     }
                 }
             }
         }
-        return false;
+        return areAllHolesMultiplicationsOfFive;
     }
-
-    // Checks, if there is a link on the map of this size or longer
-
+    
     // Recursive empty space counter // Leave total = 0, when calling this method
     private static int LinkCheck(int xPosition, int yPosition, int total, int cutoffLength) {
         // Initialization variables
@@ -393,7 +421,6 @@ public class Pentago {
     }
 
     // ----------------- Methods asking for user input
-
     private static void SaveInputToBlocksArray() {
         String answer = AskForBlocksInput();
         int answerLength = answer.length();
@@ -406,16 +433,13 @@ public class Pentago {
     }
 
     private static void AskForMapSize() {
-        int xSize;
-        int ySize;
-
         System.out.println("Give me the x map size: ");
-        xSize = scanner.nextInt();
+        xMapSize = scanner.nextInt();
         System.out.println("Give me the y map size: ");
-        ySize = scanner.nextInt();
+        yMapSize = scanner.nextInt();
         scanner.nextLine();
 
-        currentMapArray = ReturnEmptyMap(xSize, ySize);
+        currentMapArray = ReturnEmptyMap(xMapSize, yMapSize);
     }
     // ----------------- Input Helper Methods
 
@@ -533,7 +557,7 @@ public class Pentago {
         if (number == 12) {
             return "L";
         }
-        //System.out.println("This letter output should not be null");
+        // System.out.println("This letter output should not be null");
         return "0";
     }
 
@@ -551,10 +575,17 @@ public class Pentago {
 
         return isMatrixRectangular;
     }
-    // 12x5 PXFVWYTZUNLI Trials: 1.273.335
-    // 12x5 PIXFVZWYTLUN Trials: 16.040.305
-    // 12x5 TPIXLVZWYFUN Trials: 3.729.160
-    // 6x5 PPIPPI Trials: 101 | PPPPII 817
+    // ----------Original solution:
+    // 12x5 PXFVWYTZUNLI Trials: 1.273.335 214.655 Time: 3852
+    // 12x5 PIXFVZWYTLUN Trials: 16.040.305 Time: 10876
+    // 12x5 TPIXLVZWYFUN Trials: 3.729.160 Time: 4267
+    // 6x5 PPIPPI Trials: 101 Time: 2151 | PPPPII 817 Time: 2388
+
+    // ----------Magic improvements:
+    // 12x5 PXFVWYTZUNLI Trials: 214.655 Time: 3504
+    // 12x5 PIXFVZWYTLUN Trials: 5.457.073 Time: 5716
+    // 12x5 TPIXLVZWYFUN Trials: 997.256 Time: 10.000 - 3.300
+    // 6x5 PPIPPI Trials: 101 Time: 2151 | PPPPII 445 Time: 3029
 
     // ----------------- Unused Methods
     private static ArrayList<ArrayList<Integer>> TurnArrayIntoList(int[][] array) {
@@ -631,5 +662,25 @@ public class Pentago {
         for (int i = 0; i < arrayListToPrint.size(); i++) {
             PrintMatrixContentsInChat(arrayListToPrint.get(i));
         }
+    }
+    // Checks, if there is a link on the map of this size or shorter
+    private static boolean CheckMatrixForLinksOfLengthAtMost(int[][] inputMatrix, int maxLinkLength) {
+        arrayToCheck = GetACopyOfThisArray(inputMatrix);
+
+        int yMapSize = arrayToCheck.length;
+        for (int i = 0; i < yMapSize; i++) {
+
+            int xMapSize = arrayToCheck[i].length;
+            for (int j = 0; j < xMapSize; j++) {
+
+                if (CheckIfTileEmpty(arrayToCheck, j, i)) {
+
+                    if (LinkCheck(j, i, 0, yMapSize * xMapSize) <= maxLinkLength) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
