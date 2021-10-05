@@ -48,6 +48,9 @@ public class Pentago {
         } else {
             System.out.println("The map is too small to fit the shapes");
         }
+        
+        // Graphic display
+        new UI(solution[0].length, solution.length, 40, choices ).setState(solution);
     }
 
     private static void PrintTime() {
