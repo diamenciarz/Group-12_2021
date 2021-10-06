@@ -12,7 +12,7 @@ public class Pentago {
     // Startup settings variables
     public static boolean enableDebugMessages = false;
     public static boolean allowInputRepetition = true;
-    public static int solutionSteps = 0;
+    private static int solutionSteps = 0;
     public static int xMapSize;
     public static int yMapSize;
     // Time counter
@@ -83,6 +83,9 @@ public class Pentago {
         PrintMatrixContentsInChatUsingLetters(solution);
         PrintTime();
 
+    }
+    public int GetSolutionStepAmount(){
+        return solutionSteps;
     }
 
     private static void PrintTime() {
