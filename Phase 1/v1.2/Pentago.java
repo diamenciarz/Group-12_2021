@@ -25,16 +25,24 @@ public class Pentago {
     static ArrayList<int[][]> shapesToFit = new ArrayList<>();
 
     public static void main(String[] args) {
-
-        int[][] testMap = { { 0, 0, 1, 1 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 1 } };
-
-        // int[][] solution = RecursiveHoleShapeCounter(3, 0,
-        // GetEmptyMap(testMap[0].length, testMap.length), testMap);
-        ArrayList<int[]> solution2 = GetNonFilledRowAndColumnIndexes(testMap);
+        /*
+        ArrayList<int[]> solution2 = GetAvailableRowAndColumnIndexes(testMap, 3, 2);
         PrintArrayContentsInChat(solution2.get(0));
-        PrintArrayContentsInChat(solution2.get(0));
+        PrintArrayContentsInChat(solution2.get(1));
+        int[][] testMap = { { 1, 0, 1, 0 }, { 0, 1, 0, 1}, { 1, 0, 0, 0 }, { 0, 1, 1, 1} };
+        ArrayList<int[][]> shapeList = new ArrayList<>();
+        int [][] shape =  { { 0, 1, 0}, { 1, 1, 1},{ 0, 1, 0}};
+        shapeList.add(shape);
 
-        // StartProgram();
+        int [][] fittedShape = GetFirstHoleShapeOfSizeFive(testMap);
+        if ( fittedShape != null) {
+            PrintMatrixContentsInChat(fittedShape);
+            
+        }else{
+            System.out.println("Nope");
+        }
+        */
+        StartProgram();
 
     }
 
@@ -78,7 +86,6 @@ public class Pentago {
     // ----------------- Powerful methods
     public static int[][] RecursiveSolution(int[][] currentMapState, ArrayList<int[][]> shapesToFitArray,
             int shapeIndex) {
-                
         int shapesToFitAmount = shapesToFitArray.size() - 1;
 
         int[][] currentShapeToFit = shapesToFitArray.get(shapeIndex);
@@ -91,35 +98,48 @@ public class Pentago {
         for (int variations = 0; variations < variationAmount; variations++) {
 
             int[][] shapeVariation = differentVariationsOfThisShape.get(variations);
-            // printMatrixContentsInChat(rotatedShapeToFit);
 
             int currentShapeHeight = shapeVariation.length;
             int currentShapeLength = shapeVariation[0].length;
-            int xRepetitions = mapLength - currentShapeLength + 1;
-            int yRepetitions = mapHeight - currentShapeHeight + 1;
+
+            ArrayList<int[]> nonFilledRowsAndColumns = GetAvailableRowAndColumnIndexes(currentMapState,
+            currentShapeLength,currentShapeHeight );
             // Check all positions in range of the map
-            for (int j = 0; j < yRepetitions; j++) {
-                for (int k = 0; k < xRepetitions; k++) {
+            for (int y : nonFilledRowsAndColumns.get(0)) {
+                for (int x : nonFilledRowsAndColumns.get(1)) {
 
                     solutionSteps++;
                     int[][] emptyMap = GetEmptyMap(mapLength, mapHeight);
-                    int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, shapeVariation, k, j);
+                    int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, shapeVariation, x, y);
                     if (!areTwoFiguresOverlapping(currentMapState, shapeOnEmptyGrid)) {
 
-                        int[][] newMapState = PlaceShapeOnMap(currentMapState, shapeVariation, k, j);
+                        int[][] currentMapStateCopy = GetACopyOfThisMatrix(currentMapState);
+                        currentMapStateCopy = TryToFitShapesDirectlyToHoles(currentMapStateCopy,shapesToFitArray);
+                        int[][] newMapState;
+                        if (currentMapStateCopy != null) {
+                            newMapState = currentMapStateCopy;
+                        }else{
+                            newMapState = PlaceShapeOnMap(currentMapState, shapeVariation, x, y);
+                        }
                         if (AreAllHolesMultiplicationsOfFive(newMapState)) {
 
+                            if (enableDebugMessages) {
+                            PrintMatrixContentsInChatUsingLetters(newMapState);
+                            }
                             boolean hasFittedTheLastShape = shapesToFitAmount == shapeIndex;
                             if (hasFittedTheLastShape) {
                                 return newMapState;
                             } else {
+
                                 int[][] solution = RecursiveSolution(newMapState, shapesToFitArray, shapeIndex + 1);
 
                                 if (enableDebugMessages) {
+
                                     System.out.println("Shape: ");
                                     PrintMatrixContentsInChatUsingLetters(currentShapeToFit);
                                     System.out.println("Current state of the map: ");
                                     PrintMatrixContentsInChatUsingLetters(newMapState);
+
                                 }
                                 if (!IsSolutionInvalid(solution)) {
                                     return solution;
@@ -137,8 +157,36 @@ public class Pentago {
     }
     // private static int[][] PruneConditions()
 
+    private static int[][] TryToFitShapesDirectlyToHoles(int[][] currentMapState, ArrayList<int[][]> shapeArrayList){
+        int[][] holeShape = GetFirstHoleShapeOfSizeFive(currentMapState);
+        if (holeShape != null) {
+            for (int i = 0; i < shapeArrayList.size(); i++) {
+                ArrayList<int[][]> currentShapeVariations = GenerateDifferentVariationsOfThisShape(shapeArrayList.get(i));
+                for (int[][] shapeVariation : currentShapeVariations) {
+    
+                    int[][] trimmedHoleShape = TrimShape(holeShape);
+                    if (AreTheseArraysTheSame(shapeVariation, trimmedHoleShape)) {
+                        System.out.println("Found shape");
+    
+                        int[][] returnMapState = PlaceShapeOnMap(currentMapState, holeShape, 0, 0);
+                        shapeArrayList.remove(i);
+                        int [][] recursiveMapState = {{1}};
+                        while (recursiveMapState != null) {
+                            recursiveMapState = TryToFitShapesDirectlyToHoles(returnMapState, shapeArrayList);
+                            if (recursiveMapState != null) {
+                                returnMapState = recursiveMapState;
+                            }
+                        }
+                        return returnMapState;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private static int[][] PlaceShapeOnMap(int mapArray[][], int shape[][], int xPosition, int yPosition) {
-        int[][] mapStateArray = GetACopyOfThisArray(mapArray);
+        int[][] mapStateArray = GetACopyOfThisMatrix(mapArray);
 
         int shapeHeight = shape.length;
         int shapeLength = shape[0].length;
@@ -154,12 +202,20 @@ public class Pentago {
         return mapStateArray;
     }
 
-    private static int[][] GetACopyOfThisArray(int[][] arrayToCopy) {
+    private static int[][] GetACopyOfThisMatrix(int[][] arrayToCopy) {
         int[][] returnArray = new int[arrayToCopy.length][arrayToCopy[0].length];
         for (int i = 0; i < returnArray.length; i++) {
             for (int j = 0; j < returnArray[0].length; j++) {
                 returnArray[i][j] = arrayToCopy[i][j];
             }
+        }
+        return returnArray;
+    }
+
+    private static int[] GetACopyOfThisArray(int[] arrayToCopy) {
+        int[] returnArray = new int[arrayToCopy.length];
+        for (int j = 0; j < returnArray.length; j++) {
+            returnArray[j] = arrayToCopy[j];
         }
         return returnArray;
     }
@@ -279,7 +335,7 @@ public class Pentago {
     }
 
     private static int[][] FlipShapeVertically(int shape[][]) {
-        int[][] flippedShape = GetACopyOfThisArray(shape);
+        int[][] flippedShape = GetACopyOfThisMatrix(shape);
 
         int originalShapeHeight = shape.length;
         int originalShapeLength = shape[0].length;
@@ -345,7 +401,7 @@ public class Pentago {
     }
 
     private static boolean AreAllHolesMultiplicationsOfFive(int[][] inputMatrix) {
-        temporaryHelperArray = GetACopyOfThisArray(inputMatrix);
+        temporaryHelperArray = GetACopyOfThisMatrix(inputMatrix);
         boolean areAllHolesMultiplicationsOfFive = true;
 
         int yMapSize = temporaryHelperArray.length;
@@ -377,11 +433,6 @@ public class Pentago {
         if ((countNewTiles + total) >= checkLimit) {
             return countNewTiles;
         }
-
-        if (enableDebugMessages) {
-            PrintMatrixContentsInChat(temporaryHelperArray);
-        }
-
         // check right
         if (CheckIfTileEmpty(temporaryHelperArray, xPosition + 1, yPosition)) {
             countNewTiles += RecursiveHoleSizeCounter(xPosition + 1, yPosition, countNewTiles + total, cutoffLength);
@@ -416,6 +467,52 @@ public class Pentago {
         }
 
         return countNewTiles;
+    }
+
+    private static ArrayList<Integer> TurnArrayIntoList(int[] array) {
+        ArrayList<Integer> arrayList = new ArrayList<>();
+
+        for (int k = 0; k < array.length; k++) {
+            arrayList.add(array[k]);
+        }
+        return arrayList;
+    }
+    
+    private static int[][] GetFirstHoleShapeOfSizeFive(int[][] currentStateOfTheMap){
+        int[][] currentStateOfTheMapCopy = GetACopyOfThisMatrix(currentStateOfTheMap);
+
+        int xMapSize = currentStateOfTheMapCopy[0].length;
+        int yMapSize = currentStateOfTheMapCopy.length;
+        for (int i = 0; i < yMapSize; i++) {
+            for (int j = 0; j < xMapSize; j++) {
+                if (CheckIfTileEmpty(currentStateOfTheMapCopy, j, i)) {
+
+                    temporaryHelperArray =GetACopyOfThisMatrix(currentStateOfTheMapCopy);
+                    int currentHoleSize = RecursiveHoleSizeCounter(j, i, 0, yMapSize * xMapSize);
+                    if (currentHoleSize == 5) {
+                        int[][] emptyGrid = GetEmptyMap(xMapSize, yMapSize);
+                        int [][] holeShape = RecursiveHoleShapeCounter(j, i, emptyGrid, currentStateOfTheMapCopy);
+                        return holeShape;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    private static int[][] GetFirstHoleShape(int[][] currentStateOfTheMap){
+        temporaryHelperArray = GetACopyOfThisMatrix(currentStateOfTheMap);
+
+        for (int i = 0; i < temporaryHelperArray.length; i++) {
+            for (int j = 0; j < temporaryHelperArray[i].length; j++) {
+                if (CheckIfTileEmpty(temporaryHelperArray, j, i)) {
+
+                    int[][] emptyGrid = GetEmptyMap(temporaryHelperArray[i].length, temporaryHelperArray.length);
+                    return RecursiveHoleShapeCounter(j, i, emptyGrid, temporaryHelperArray);
+                    
+                }
+            }
+        }
+        return null;
     }
 
     private static int[][] RecursiveHoleShapeCounter(int xPosition, int yPosition, int[][] currentShapeSaved,
@@ -478,56 +575,101 @@ public class Pentago {
         return returnArray;
     }
 
-    private static ArrayList<int[]> GetNonFilledRowAndColumnIndexes(int[][] inputArray) {
-        int ySize = inputArray.length;
-        int xSize = inputArray[0].length;
-        ArrayList<Integer> nonFilledRowIndexes = new ArrayList<>();
-        ArrayList<Integer> nonFilledColumnIndexes = new ArrayList<>();
+    private static ArrayList<int[]> GetAvailableRowAndColumnIndexes(int[][] inputMatrix, int shapeLength,
+            int shapeHeight) {
+        int ySize = inputMatrix.length;
+        int xSize = inputMatrix[0].length;
+        int[] nonFilledRowIndexes = CreateArrayWithINumberofIValues(ySize);
+        int[] nonFilledColumnIndexes = CreateArrayWithINumberofIValues(xSize);
 
-        for (int i = 0; i < ySize; i++) {
-            nonFilledRowIndexes.add(i);
-        }
-        for (int i = 0; i < xSize; i++) {
-            nonFilledColumnIndexes.add(i);
-        }
-        // Find all rows and columns that are filled and remove them from the list
+        // Find all rows that are filled and remove (2k-1) of them from the list
         for (int y = ySize - 1; y >= 0; y--) {
             boolean isRowFilled = true;
             for (int x = xSize - 1; x >= 0; x--) {
-                if (inputArray[y][x] == 0) {
+                if (inputMatrix[y][x] == 0) {
                     isRowFilled = false;
                 }
             }
             if (isRowFilled) {
-                nonFilledRowIndexes.remove(y);
+                for (int i = ((-shapeHeight) + 1); i < 1; i++) {
+                    boolean isIndexInBounds = ((y + i) >= 0) && (y + i) < ySize;
+                    if (isIndexInBounds) {
+                        nonFilledRowIndexes[y + i] = -1;
+                    }
+                }
             }
         }
+        // Find all columns that are filled and remove (2k-1) of them from the list
         for (int x = xSize - 1; x >= 0; x--) {
             boolean isColumnFilled = true;
             for (int y = ySize - 1; y >= 0; y--) {
-                if (inputArray[y][x] == 0) {
+                if (inputMatrix[y][x] == 0) {
                     isColumnFilled = false;
                 }
             }
             if (isColumnFilled) {
-                nonFilledColumnIndexes.remove(x);
+                for (int i = ((-shapeLength) + 1); i < 1; i++) {
+                    boolean isIndexInBounds = ((x + i) >= 0) && ((x + i) < xSize);
+                    if (isIndexInBounds) {
+                        nonFilledColumnIndexes[x + i] = -1;
+                    }
+                }
             }
         }
-        int[] nonEmptyRowArray = new int[nonFilledRowIndexes.size()];
-        for (int i = 0; i < nonFilledRowIndexes.size(); i++) {
-            nonEmptyRowArray[i] = nonFilledRowIndexes.get(i);
+        // Remove last indexes from the map, as the shapes have some size of their own
+        for (int i = 0; i < shapeLength; i++) {
+            int indexToRemove = xSize - i;
+            boolean isIndexInBounds = (indexToRemove >= 0) && (indexToRemove < xSize);
+            if (isIndexInBounds) {
+                nonFilledColumnIndexes[indexToRemove] = -1;
+            }
 
         }
-        int[] nonEmptyColumnArray = new int[nonFilledColumnIndexes.size()];
-        for (int i = 0; i < nonFilledColumnIndexes.size(); i++) {
-            nonEmptyColumnArray[i] = nonFilledColumnIndexes.get(i);
+        for (int i = 0; i < shapeHeight; i++) {
+            int indexToRemove = ySize - i;
+            boolean isIndexInBounds = (indexToRemove >= 0) && (indexToRemove < ySize);
+            if (isIndexInBounds) {
+                nonFilledRowIndexes[indexToRemove] = -1;
+            }
+
         }
 
+        nonFilledRowIndexes = RemoveValueFromArray(nonFilledRowIndexes, -1);
+        nonFilledColumnIndexes = RemoveValueFromArray(nonFilledColumnIndexes, -1);
+        // Check, how many rows and columns are left
+
+        // Add the arrays to the return list
         ArrayList<int[]> returnArrayList = new ArrayList<>();
-        returnArrayList.add(nonEmptyRowArray);
-        returnArrayList.add(nonEmptyColumnArray);
+        returnArrayList.add(nonFilledRowIndexes);
+        returnArrayList.add(nonFilledColumnIndexes);
 
         return returnArrayList;
+    }
+
+    private static int[] RemoveValueFromArray(int[] array, int value) {
+        ArrayList<Integer> copiedList = TurnArrayIntoList(array);
+
+        for (int i = array.length - 1; i >= 0; i--) {
+            if (copiedList.get(i) == value) {
+                copiedList.remove(i);
+            }
+        }
+
+        array = new int[copiedList.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = copiedList.get(i);
+
+        }
+        return array;
+    }
+
+    private static int[] CreateArrayWithINumberofIValues(int length) {
+        int[] nonFilledRowIndexes = new int[length];
+
+        for (int i = 0; i < length; i++) {
+            nonFilledRowIndexes[i] = i;
+        }
+        return nonFilledRowIndexes;
     }
 
     private static int GetMinimumValueFromArrayList(ArrayList<Integer> arrayList) {
@@ -751,7 +893,8 @@ public class Pentago {
     // 6x5 PPIPPI Trials: 101 Time: 2151 | PPPPII 445 Time: 3029
 
     // ----------------- Unused Methods
-    private static ArrayList<ArrayList<Integer>> TurnArrayIntoList(int[][] array) {
+
+    private static ArrayList<ArrayList<Integer>> TurnMatrixInto2List(int[][] array) {
         ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();
 
         for (int j = 0; j < array.length; j++) {
@@ -764,7 +907,7 @@ public class Pentago {
         return arrayListList;
     }
 
-    private static ArrayList<ArrayList<ArrayList<Integer>>> TurnArrayIntoList(int[][][] array) {
+    private static ArrayList<ArrayList<ArrayList<Integer>>> Turn3ArrayInto3List(int[][][] array) {
         ArrayList<ArrayList<ArrayList<Integer>>> arrayListListList = new ArrayList<>();
 
         for (int i = 0; i < array.length; i++) {
@@ -796,7 +939,7 @@ public class Pentago {
     }
 
     private static boolean CheckMatrixForLinksOfLengthAtLeast(int[][] inputMatrix, int maxLinkLength) {
-        temporaryHelperArray = GetACopyOfThisArray(inputMatrix);
+        temporaryHelperArray = GetACopyOfThisMatrix(inputMatrix);
 
         for (int i = 0; i < temporaryHelperArray.length; i++) {
             for (int j = 0; j < temporaryHelperArray[i].length; j++) {
@@ -829,7 +972,7 @@ public class Pentago {
 
     // Checks, if there is a link on the map of this size or shorter
     private static boolean CheckMatrixForLinksOfLengthAtMost(int[][] inputMatrix, int maxLinkLength) {
-        temporaryHelperArray = GetACopyOfThisArray(inputMatrix);
+        temporaryHelperArray = GetACopyOfThisMatrix(inputMatrix);
 
         int yMapSize = temporaryHelperArray.length;
         for (int i = 0; i < yMapSize; i++) {
