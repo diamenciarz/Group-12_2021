@@ -52,6 +52,7 @@ public class UI extends JPanel
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setTitle("Pentominoes");
         window.pack();
+        window.setLocationRelativeTo(null);
         window.setVisible(true);
 
         state = new int[x][y];
@@ -62,6 +63,7 @@ public class UI extends JPanel
                 state[i][j] = -1;
             }
         }
+
     }
 
     /**

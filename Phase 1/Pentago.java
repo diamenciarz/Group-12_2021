@@ -64,6 +64,7 @@ public class Pentago {
     // ----------------- Powerful methods
     public static int[][] RecursiveSolution(int[][] currentMapState, ArrayList<int[][]> shapesToFitArray,
             int shapeIndex) {
+                
         int shapesToFitAmount = shapesToFitArray.size() - 1;
 
         int[][] currentShapeToFit = shapesToFitArray.get(shapeIndex);
