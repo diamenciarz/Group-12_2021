@@ -57,6 +57,7 @@ public class Pentago {
         GetUserInput();
 
         if (!IsTheMapTooSmallForGivenShapes()) {
+            //Create the button here
             GetSolution();
         } else {
             System.out.println("The map is too small to fit the shapes");
@@ -76,7 +77,8 @@ public class Pentago {
         scanner.close();
 
         int[][] solution = NewRecursiveSolution(currentMapArray, shapesToFit);
-
+        //int[][] solution = RecursiveSolution(currentMapArray, shapesToFit,0);
+        
         System.out.println("Solution trials: " + solutionSteps);
         PrintMatrixContentsInChatUsingLetters(solution);
         PrintTime();
@@ -158,9 +160,7 @@ public class Pentago {
     }
 
     private static int[][] NewRecursiveSolution(int[][] currentMapState, ArrayList<int[][]> shapesLeftToFitArray) {
-        //System.out.println("Printing shapes left to fit: ");
         ArrayList<int[][]> shapesLeftToFitArrayCopy = GetACopyOfThisArrayList(shapesLeftToFitArray);
-        //PrintArrayListArrayContentsInChat(shapesLeftToFitArrayCopy);
 
         int[][] newMapState;
         int[][] currentMapStateCopy = GetACopyOfThisMatrix(currentMapState);
@@ -170,7 +170,6 @@ public class Pentago {
         if (mapWithFittedShapes != null) {
             // First algorithm
             newMapState = mapWithFittedShapes;
-            //PrintMatrixContentsInChatUsingLetters(newMapState);
 
             solutionSteps++;
             boolean hasFittedTheLastShape = shapesLeftToFitForTheNextStep.isEmpty();
@@ -211,8 +210,11 @@ public class Pentago {
                             newMapState = PlaceShapeOnMap(currentMapStateCopy, shapeVariation, x, y);
 
                             if (AreAllHolesMultiplicationsOfFive(newMapState)) {
-
-                                PrintMatrixContentsInChatUsingLetters(newMapState);
+                                
+                                if (enableDebugMessages) {
+                                    System.out.println("Placed block normally");
+                                    PrintMatrixContentsInChatUsingLetters(newMapState);
+                                }
                                 ArrayList<int[][]> shapesLeftToFitForTheSecondAlgorithm = GetACopyOfThisArrayList(shapesLeftToFitArrayCopy);
                                 shapesLeftToFitForTheSecondAlgorithm.remove(0);
                                 boolean hasFittedTheLastShape = shapesLeftToFitForTheSecondAlgorithm.isEmpty();
@@ -257,8 +259,7 @@ public class Pentago {
 
                     int[][] trimmedHoleShape = TrimShape(holeShape);
                     if (AreTheseArraysTheSame(shapeVariation, trimmedHoleShape)) {
-                        System.out.println("Found shape");
-
+                        
                         int shapeNumber = GetShapeNumber(shapeVariation);
                         int[][] untrimmedShape = ChangeShapeNumbersTo(holeShape, shapeNumber);
                         int[][] returnMapState = PlaceShapeOnMap(currentMapState, untrimmedShape, 0, 0);
@@ -991,9 +992,17 @@ public class Pentago {
 
     // ----------Magic improvements:
     // 12x5 PXFVWYTZUNLI Trials: 214.655 Time: 3504
-    // 12x5 PIXFVZWYTLUN Trials: 5.457.073 Time: 5716
+    // 12x5 PIXFVZWYTLUN Trials: 5.457.073 Time: 5716 ||| 3398557 ||| 3104004
     // 12x5 TPIXLVZWYFUN Trials: 997.256 Time: 10.000 - 3.300
     // 6x5 PPIPPI Trials: 101 Time: 2151 | PPPPII 445 Time: 3029
+    // 6x5 uuxiii Trials: 1141 | 
+
+    // ----------Complex pruning:
+    // 12x5 PXFVWYTZUNLI Trials: 142.409 Time: 3504
+    // 12x5 PIXFVZWYTLUN Trials: 3.104.004 Time: 5716 ||| 3398557 ||| 3104004
+    // 12x5 TPIXLVZWYFUN Trials: 633.112 Time: 10.000 - 3.300
+    // 6x5 PPIPPI Trials: 101 Time: 2151 | PPPPII 445 Time: 3029
+    // 6x5 uuxiii Trials: 1141 | 
 
     // ----------------- Unused Methods
 
