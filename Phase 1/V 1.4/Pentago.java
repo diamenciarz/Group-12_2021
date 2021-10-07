@@ -8,6 +8,7 @@ public class Pentago {
     // Instances
     static Scanner scanner = new Scanner(System.in);
     static ShapeContainer shapeContainer = new ShapeContainer();
+    static UI ui = new UI();
 
     // Startup settings variables
     public static boolean enableDebugMessages = false;
@@ -15,41 +16,36 @@ public class Pentago {
     private static int solutionSteps = 0;
     public static int xMapSize;
     public static int yMapSize;
+    private static long lastSavedTime;
     // Time counter
     static final long startTime = System.currentTimeMillis();
 
     // Internal variables
-    public static int[][] temporaryHelperArray; // Dont modify this in any method
-    public static int[][] currentMapArray;
-    public static String[] inputBlocksArray;
+    private static int[][] temporaryHelperArray; // Dont modify this in any method
+    private static int[][] currentMapArray;
+    private static String[] inputBlocksArray;
     static ArrayList<int[][]> shapesToFit = new ArrayList<>();
 
     public static void main(String[] args) {
 
-        /*
-         * ArrayList<int[]> solution2 = GetAvailableRowAndColumnIndexes(testMap, 3, 2);
-         * PrintArrayContentsInChat(solution2.get(0));
-         * PrintArrayContentsInChat(solution2.get(1));
-         int[][] testMap = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 2 } };
-         ArrayList<int[][]> shapeList = new ArrayList<>();
-         int[][] shape = { { 1, 1 }, { 1, 1 }, { 0, 1 } };
-         int[][] shape2 = { { 3, 0 }, { 3, 0 }, { 3, 0 }, { 3, 3 } };
-         int[][] shape3 = { { 4, 0 }, { 4, 0 }, { 4, 4 }, { 0, 4 } };
-         shapeList.add(shape);
-         shapeList.add(shape2);
-         shapeList.add(shape3);
- 
-         int[][] fittedShape = TryToFitShapesDirectlyToHoles(testMap, shapeList);
-         if (fittedShape != null) {
-             PrintMatrixContentsInChat(fittedShape);
- 
-         } else {
-             System.out.println("Nope");
-         }
-         */
+        // 12x5 PIXFVZWYTLUN
 
         StartProgram();
+        //StartTest();
 
+    }
+    private static void StartTest(){
+        currentMapArray = GetEmptyMap(4, 5);
+
+        String answer = "uxui";
+        int answerLength = answer.length();
+
+        inputBlocksArray = new String[answerLength];
+
+        for (int i = 0; i < answerLength; i++) {
+            inputBlocksArray[i] = answer.substring(i, i + 1);
+        }
+        GetSolution();
     }
 
     private static void StartProgram() {
@@ -81,17 +77,25 @@ public class Pentago {
         
         System.out.println("Solution trials: " + solutionSteps);
         PrintMatrixContentsInChatUsingLetters(solution);
-        PrintTime();
+
+        CountTime();
+        //ui.UpdateTrials(GetSolutionStepAmount());
+        ui.UpdateGrid(solution);
+        
 
     }
-    public int GetSolutionStepAmount(){
+    public static int GetSolutionStepAmount(){
         return solutionSteps;
     }
 
-    private static void PrintTime() {
+    private static void CountTime() {
         final long endTime = System.currentTimeMillis();
 
-        System.out.println("Total execution time: " + (endTime - startTime));
+        lastSavedTime = endTime - startTime;
+        System.out.println("Total execution time: " + lastSavedTime);
+    }
+    public long GetTime(){
+        return lastSavedTime;
     }
 
     // ----------------- Powerful methods
@@ -206,17 +210,18 @@ public class Pentago {
                 for (int y : nonFilledRowsAndColumns.get(0)) {
                     for (int x : nonFilledRowsAndColumns.get(1)) {
 
-                        solutionSteps++;
                         int[][] emptyMap = GetEmptyMap(mapLength, mapHeight);
                         int[][] shapeOnEmptyGrid = PlaceShapeOnMap(emptyMap, shapeVariation, x, y);
                         if (!areTwoFiguresOverlapping(currentMapStateCopy, shapeOnEmptyGrid)) {
                             newMapState = PlaceShapeOnMap(currentMapStateCopy, shapeVariation, x, y);
-
+                            
                             if (AreAllHolesMultiplicationsOfFive(newMapState)) {
                                 
+                                solutionSteps++;
                                 if (enableDebugMessages) {
                                     System.out.println("Placed block normally");
                                     PrintMatrixContentsInChatUsingLetters(newMapState);
+                                    ui.UpdateGrid(newMapState);
                                 }
                                 ArrayList<int[][]> shapesLeftToFitForTheSecondAlgorithm = GetACopyOfThisArrayList(shapesLeftToFitArrayCopy);
                                 shapesLeftToFitForTheSecondAlgorithm.remove(0);
@@ -892,13 +897,6 @@ public class Pentago {
         }
     }
 
-    private static void PrintArrayContentsInChat(int[] arrayToPrint) {
-        for (int i = 0; i < arrayToPrint.length; i++) {
-            System.out.print(arrayToPrint[i] + " ");
-        }
-        System.out.println("");
-    }
-
     private static void PrintMatrixContentsInChatUsingLetters(int[][] matrixToPrint) {
         System.out.println("Printing new Matrix");
         String[][] stringArray = GetLettersForMatrix(matrixToPrint);
@@ -1002,7 +1000,7 @@ public class Pentago {
 
     // ----------Complex pruning:
     // 12x5 PXFVWYTZUNLI Trials: 142.409 Time: 3504
-    // 12x5 PIXFVZWYTLUN Trials: 3.104.004 Time: 5716 ||| 3398557 ||| 3104004
+    // 12x5 PIXFVZWYTLUN Trials: 3.104.004 Time: 5716 
     // 12x5 TPIXLVZWYFUN Trials: 633.112 Time: 10.000 - 3.300
     // 6x5 PPIPPI Trials: 101 Time: 2151 | PPPPII 445 Time: 3029
     // 6x5 uuxiii Trials: 1141 | 
@@ -1023,6 +1021,12 @@ public class Pentago {
             }
         }
         return null;
+    }
+    private static void PrintArrayContentsInChat(int[] arrayToPrint) {
+        for (int i = 0; i < arrayToPrint.length; i++) {
+            System.out.print(arrayToPrint[i] + " ");
+        }
+        System.out.println("");
     }
     private static ArrayList<ArrayList<Integer>> TurnMatrixInto2List(int[][] array) {
         ArrayList<ArrayList<Integer>> arrayListList = new ArrayList<>();

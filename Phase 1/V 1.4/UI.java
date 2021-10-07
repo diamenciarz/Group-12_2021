@@ -26,6 +26,8 @@ public class UI extends JPanel {
     static Font font2;
 
     public static UI thisUI;
+    private static boolean hasCreatedDisplay;
+    private static boolean hasCreatedTrials;
 
     /**
      * Constructor for the GUI. Sets everything up
@@ -38,24 +40,57 @@ public class UI extends JPanel {
         // labelTitle = new JLabel("PENTOMINOES", SwingConstants.CENTER);
         font1 = new Font("Calbri", Font.BOLD, 12);
         font2 = new Font("Calibri", Font.BOLD, 30);
-        trialsLabel = new JLabel();
+        //labelTitle = new JLabel();
+        //trialsLabel = new JLabel();
         thisUI = this;
+        hasCreatedDisplay = false;
+        hasCreatedTrials = false;
+
     }
 
-    public static void UpdateTrials(int trials) {
-        trialsLabel = new JLabel("Number of trials: " + trials);
-        trialsLabel.setFont(font1);
-        // panel.add(labelTitle);
-        SetDisplay();
+    public void UpdateGrid(int[][] _state) {
+
+        int x = _state[0].length;
+        int y = _state.length;
+
+        int sizeOfEachSquare = CountSquareSize(x, y);
+
+        if (!hasCreatedDisplay) {
+            CreateDisplay();
+        }
+        SetDisplay(_state, sizeOfEachSquare);
+        // Tells the system a frame update is required
+        thisUI.repaint();
+    }
+
+    public void UpdateTrials(int trials) {
+        if (!hasCreatedTrials) {
+            CreateTrials();
+        }
+        trialsLabel.setText("Number of trials: " + trials);
+        //trialsLabel.setFont(font1);
         panel.add(trialsLabel);
 
+        thisUI.repaint();
+
     }
 
-    public static void CreateDisplay(int x, int y, int _size) {
+    private static void SetDisplay(int[][] _state, int _size) {
+        int x = _state[0].length;
+        int y = _state.length;
         size = _size;
-        thisUI.setPreferredSize(new Dimension(x * size, y * size));
 
-        state = new int[x][y];
+        int deltaXSize = 00;
+        int deltaYSize = 00;
+
+        thisUI.setPreferredSize(new Dimension(x * size + deltaXSize, y * size + deltaYSize));
+
+        OverrideStateWithMinusOnes(x, y);
+        FillStateValues(_state);
+    }
+
+    private static void OverrideStateWithMinusOnes(int x, int y) {
+        state = new int[y][x];
         for (int i = 0; i < state.length; i++) {
             for (int j = 0; j < state[i].length; j++) {
                 state[i][j] = -1;
@@ -63,9 +98,31 @@ public class UI extends JPanel {
         }
     }
 
-    public static void SetDisplay() {
-        // labelTitle.setFont(font2);
-        // labelTitle.setForeground(Color.RED);
+    private static void FillStateValues(int[][] newState) {
+        for (int y = 0; y < state.length; y++) {
+            for (int x = 0; x < state[y].length; x++) {
+                state[y][x] = newState[y][x];
+            }
+        }
+    }
+
+    private static void CreateTrials() {
+
+        trialsLabel = new JLabel("Number of trials: " + 0);
+        labelTitle = new JLabel("Pentominoes");
+        panel.add(labelTitle);
+        panel.add(trialsLabel);
+        
+        trialsLabel.setFont(font1);
+        labelTitle.setFont(font2);
+        labelTitle.setForeground(Color.RED);
+        window.pack();
+        window.setVisible(true);
+
+        hasCreatedTrials = true;
+    }
+
+    private static void CreateDisplay() {
 
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setLayout(new GridLayout(0, 1));
@@ -81,6 +138,7 @@ public class UI extends JPanel {
         window.pack();
         window.setVisible(true);
 
+        hasCreatedDisplay = true;
     }
 
     /**
@@ -137,6 +195,7 @@ public class UI extends JPanel {
             return Color.YELLOW;
         } else if (i == 9) {
             return new Color(0, 0, 0);
+
         } else if (i == 10) {
             return new Color(0, 0, 100);
         } else if (i == 11) {
@@ -153,21 +212,17 @@ public class UI extends JPanel {
      * 
      * @param _state information about the new state of the GUI
      */
-    public static void UpdateGrid(int[][] _state) {
+    private static int CountSquareSize(int x, int y) {
+        int xScreenSize = 1920 - 300;
+        int yScreenSize = 1080 - 300;
 
-        int x = _state[0].length;
-        int y = _state.length;
-        int sizeOfEachSquare = 40; // Update later
+        int squareLength = xScreenSize / x;
+        int squareHeight = yScreenSize / y;
 
-        CreateDisplay(x, y, sizeOfEachSquare);
-        SetDisplay();
-        for (int i = 0; i < state[i].length; i++) {
-            for (int j = 0; j < state.length; j++) {
-                state[j][i] = _state[i][j];
-            }
+        if (squareHeight > squareLength) {
+            return squareLength;
+        } else {
+            return squareHeight;
         }
-
-        // Tells the system a frame update is required
-        thisUI.repaint();
     }
 }
