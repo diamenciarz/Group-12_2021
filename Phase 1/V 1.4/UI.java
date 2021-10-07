@@ -22,12 +22,14 @@ public class UI extends JPanel {
     static JPanel panel = new JPanel();
     static JLabel labelTitle;
     static JLabel trialsLabel;
+    static JLabel timeLable;
     static Font font1;
     static Font font2;
 
     public static UI thisUI;
     private static boolean hasCreatedDisplay;
     private static boolean hasCreatedTrials;
+    private static boolean hasCreatedTime;
 
     /**
      * Constructor for the GUI. Sets everything up
@@ -45,6 +47,7 @@ public class UI extends JPanel {
         thisUI = this;
         hasCreatedDisplay = false;
         hasCreatedTrials = false;
+        hasCreatedTime = false;
 
     }
 
@@ -73,6 +76,16 @@ public class UI extends JPanel {
 
         thisUI.repaint();
 
+    }
+
+    public void UpdateTime(long time){
+        if (!hasCreatedTime){
+            CreateTime();
+        }
+        timeLable.setText("Total execution time: "+ time);
+        panel.add(timeLable);
+
+        thisUI.repaint();
     }
 
     private static void SetDisplay(int[][] _state, int _size) {
@@ -110,6 +123,7 @@ public class UI extends JPanel {
 
         trialsLabel = new JLabel("Number of trials: " + 0);
         labelTitle = new JLabel("Pentominoes");
+        
         panel.add(labelTitle);
         panel.add(trialsLabel);
         
@@ -120,6 +134,18 @@ public class UI extends JPanel {
         window.setVisible(true);
 
         hasCreatedTrials = true;
+    }
+
+    public static void CreateTime(){
+        timeLable = new JLabel("Total execution time: " + 0);
+        
+        panel.add(timeLable);
+
+        timeLable.setFont(font1);
+        window.pack();
+        window.setVisible(true);
+
+        hasCreatedTime = true;
     }
 
     private static void CreateDisplay() {

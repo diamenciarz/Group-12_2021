@@ -9,7 +9,6 @@ public class Pentago {
     static Scanner scanner = new Scanner(System.in);
     static ShapeContainer shapeContainer = new ShapeContainer();
     static UI ui = new UI();
-
     // Startup settings variables
     public static boolean enableDebugMessages = false;
     public static boolean allowInputRepetition = true;
@@ -81,6 +80,7 @@ public class Pentago {
         CountTime();
         //ui.UpdateTrials(GetSolutionStepAmount());
         ui.UpdateGrid(solution);
+        //ui.UpdateTime(lastSavedTime);
         
 
     }
@@ -90,7 +90,6 @@ public class Pentago {
 
     private static void CountTime() {
         final long endTime = System.currentTimeMillis();
-
         lastSavedTime = endTime - startTime;
         System.out.println("Total execution time: " + lastSavedTime);
     }
