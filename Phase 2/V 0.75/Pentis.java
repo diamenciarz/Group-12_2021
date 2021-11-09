@@ -23,8 +23,10 @@ public class Pentis {
 
     // Timer variables
     public static TimeListener myListener = new TimeListener();
-    public static Timer t = new Timer(1000, myListener); 
+    public static Timer spaceTime = new Timer(10, myListener);
+    public static Timer normalTime = new Timer(1000, myListener);
     final int startDelay = 1000;
+    static boolean spaceBar = false;
      
     public static void main(String[] args) throws InterruptedException {
 
@@ -44,15 +46,24 @@ public class Pentis {
 
         // Timer start
         Thread.sleep(1000);
-        while(setupStartingVariables){
-            t.start();
-        }
+        normalTime.start();;
+        
     }
 
     private static void ResetMap() {
         System.out.println("reset map");
         setupEmptyMap();
         takeNextShapeFromQueue();
+
+        // after space bar pressed and piece reaches bottom
+        backToNormalTime();
+
+    }
+
+    // after space bar pressed and piece reaches bottom
+    private static void backToNormalTime() {
+        spaceTime.stop();;
+        normalTime.start();
     }
 
     private static void setupEmptyMap() {
@@ -123,6 +134,12 @@ public class Pentis {
         }
         if (input == 'o') {
         }
+        // if (input == ' ') {
+            
+        //     //normalTime.stop();
+        //     //spaceTime.start();
+        //     //pressedKey('s');
+        // }
         currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
 
         displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
@@ -140,13 +157,19 @@ public class Pentis {
 
                 if (doesCurrentShapePositionOverlapBlocks()) {
                     handleCollisionWithBlocks();
+
                 }else{
+
                     placeShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
                     takeNextShapeFromQueue();
+                    
+                    // after space bar pressed and piece reaches bottom
+                    backToNormalTime();
                 }
 
             } else {
                 handleCollisionWithBlocks();
+
             }
         }
     }
@@ -171,6 +194,10 @@ public class Pentis {
         if (doesCurrentShapePositionOverlapBlocks()) {
             placeShapeOnMap(lastShapeState, 0, 0);
             takeNextShapeFromQueue();
+
+            // space bar pressed
+            backToNormalTime();
+
         } else {
             displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
         }
