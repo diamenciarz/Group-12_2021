@@ -127,12 +127,12 @@ public class UI extends JPanel {
         gridPanel.setLayout(new GridLayout(0, 1));
         gridPanel.add(thisUI);
 
-        nextPiecePanel.setBackground(Color.gray);
+        nextPiecePanel.setBackground(Color.lightGray);
         nextPiecePanel.setBounds(10+10+273, 10, 200,200);
 
         scoreLabel = new JLabel("Score");
         //scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        scorePanel.setBackground(Color.gray);
+        scorePanel.setBackground(Color.lightGray    );
         //scorePanel.setLayout(new GridLayout(0, 1));
         scorePanel.setBounds(10+10+273,10+10+200,200,200);
         scorePanel.add(scoreLabel);
@@ -143,6 +143,8 @@ public class UI extends JPanel {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        frame.getContentPane().setBackground(new Color(249,207,221));
+        //frame.getContentPane().setBackground(Color.black);
 
         frame.setLocationRelativeTo(null);
         frame.setTitle("Pentominotris");
@@ -172,7 +174,7 @@ public class UI extends JPanel {
         localGraphics2D.fill(getVisibleRect());
 
         // draw lines
-        localGraphics2D.setColor(Color.GRAY);
+        localGraphics2D.setColor(new Color(230,230,200));
         for (int i = 0; i <= state.length; i++) {
             localGraphics2D.drawLine(i * size, 0, i * size, state[0].length * size);
         }
@@ -215,7 +217,6 @@ public class UI extends JPanel {
             return Color.YELLOW;
         } else if (i == 9) {
             return new Color(0, 0, 0);
-
         } else if (i == 10) {
             return new Color(0, 0, 100);
         } else if (i == 11) {
@@ -223,7 +224,7 @@ public class UI extends JPanel {
         } else if (i == 12) {
             return new Color(0, 100, 0);
         } else {
-            return Color.LIGHT_GRAY;
+            return Color.WHITE;
         }
     }
 
