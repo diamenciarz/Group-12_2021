@@ -3,9 +3,6 @@
  * @version 2022.0
  */
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -33,7 +30,7 @@ public class UI extends JPanel {
 
     public static UI thisUI;
     private static boolean hasCreatedDisplay;
-    private static boolean hasCreatedTrials;
+    //private static boolean hasCreatedTrials;
 
     /**
      * Constructor for the GUI. Sets everything up
@@ -50,7 +47,7 @@ public class UI extends JPanel {
         // trialsLabel = new JLabel();
         thisUI = this;
         hasCreatedDisplay = false;
-        hasCreatedTrials = false;
+        //hasCreatedTrials = false;
 
     }
 
@@ -103,21 +100,21 @@ public class UI extends JPanel {
         }
     }
 
-    private static void CreateTrials() {
+    // private static void CreateTrials() {
 
-        trialsLabel = new JLabel("Number of trials: " + 0);
-        labelTitle = new JLabel("Pentominoes");
-        gridPanel.add(labelTitle);
-        gridPanel.add(trialsLabel);
+    //     trialsLabel = new JLabel("Number of trials: " + 0);
+    //     labelTitle = new JLabel("Pentominoes");
+    //     gridPanel.add(labelTitle);
+    //     gridPanel.add(trialsLabel);
 
-        trialsLabel.setFont(font1);
-        labelTitle.setFont(font2);
-        labelTitle.setForeground(Color.RED);
-        frame.pack();
-        frame.setVisible(true);
+    //     trialsLabel.setFont(font1);
+    //     labelTitle.setFont(font2);
+    //     labelTitle.setForeground(Color.RED);
+    //     frame.pack();
+    //     frame.setVisible(true);
 
-        hasCreatedTrials = true;
-    }
+    //     //hasCreatedTrials = true;
+    // }
 
     private static void CreateDisplay() {
 
@@ -245,20 +242,20 @@ public class UI extends JPanel {
     }
     
     private static void setupKeyListener(){
-        frame.addKeyListener(new KeyListener());
+        frame.addKeyListener(new Input());
     }
 }
 
-class KeyListener extends KeyAdapter {
+// class KeyListener extends KeyAdapter {
 
-    @Override
-    public void keyPressed(KeyEvent event) {
-        char ch = event.getKeyChar();
-        int keyCode = event.getKeyCode();
-        boolean isInputCorrect = (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D) || (keyCode == KeyEvent.VK_Q) || (keyCode == KeyEvent.VK_E) || (keyCode == KeyEvent.VK_O);
-        if (isInputCorrect) {
-            Pentis.pressedKey(ch);
-            Pentis.t.restart();
-        }
-    }
-}
+//     @Override
+//     public void keyPressed(KeyEvent event) {
+//         char ch = event.getKeyChar();
+//         int keyCode = event.getKeyCode();
+//         boolean isInputCorrect = (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D) || (keyCode == KeyEvent.VK_Q) || (keyCode == KeyEvent.VK_E) || (keyCode == KeyEvent.VK_O);
+//         if (isInputCorrect) {
+//             Pentis.pressedKey(ch);
+//             Pentis.t.restart();
+//         }
+//     }
+// }
