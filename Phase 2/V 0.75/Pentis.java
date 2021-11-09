@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import javax.swing.Timer; 
+import java.lang.Thread;
 
 public class Pentis {
 
@@ -12,28 +14,39 @@ public class Pentis {
     private static int[][] currentMapMatrix;
     private static int[][] lastShapeState;
     private static int currentShapeXPosition;
-    private static int currentShapeYPosition;
+    static int currentShapeYPosition;
     private static char lastKeyPressed = 't';
     private static boolean setupStartingVariables = false;
     public static int score;
 
     private static ArrayList<int[][]> shapesQueue = new ArrayList<>();
 
-    public static void main(String[] args) {
+    // Timer variables
+    public static TimeListener myListener = new TimeListener();
+    public static Timer t = new Timer(1000, myListener); 
+    final int startDelay = 1000;
+     
+    public static void main(String[] args) throws InterruptedException {
 
         startProgram();
     }
 
     // Startup methods
-    private static void startProgram() {
+    private static void startProgram() throws InterruptedException {
         // Setup methods
         ResetMap();
-
+        
         int[][] shapePlacedOnGrid = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), currentShape, currentShapeXPosition,
                 currentShapeYPosition);
         ui.updateGrid(shapePlacedOnGrid);
         // Enter Loop
         setupStartingVariables = true;
+
+        // Timer start
+        Thread.sleep(1000);
+        while(setupStartingVariables){
+            t.start();
+        }
     }
 
     private static void ResetMap() {
@@ -115,7 +128,7 @@ public class Pentis {
         displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
     }
 
-    private static void tryMoveCurrentShape(int deltaX, int deltaY) {
+    static void tryMoveCurrentShape(int deltaX, int deltaY) {
         boolean doesCurrentShapeCollideWithBorders = !HelperMethods.willThisShapeFitOnMap(currentMapMatrix,
                 currentShape, currentShapeXPosition + deltaX, currentShapeYPosition + deltaY);
         if (!doesCurrentShapeCollideWithBorders) {
@@ -185,4 +198,9 @@ public class Pentis {
     private static int[][] GetEmptyMap() {
         return HelperMethods.getEmptyMatrix(xMapSize, yMapSize);
     }
+   
+    
 }
+
+
+

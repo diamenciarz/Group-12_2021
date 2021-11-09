@@ -1,4 +1,3 @@
-
 /**
  * @author Department of Data Science and Knowledge Engineering (DKE)
  * @version 2022.0
@@ -157,8 +156,6 @@ public class UI extends JPanel {
         frame.add(nextPiecePanel);
         frame.add(scorePanel);
        
-
-
         hasCreatedDisplay = true;
         setupKeyListener();
     }
@@ -261,6 +258,7 @@ class KeyListener extends KeyAdapter {
         boolean isInputCorrect = (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D) || (keyCode == KeyEvent.VK_Q) || (keyCode == KeyEvent.VK_E) || (keyCode == KeyEvent.VK_O);
         if (isInputCorrect) {
             Pentis.pressedKey(ch);
+            Pentis.t.restart();
         }
     }
 }
