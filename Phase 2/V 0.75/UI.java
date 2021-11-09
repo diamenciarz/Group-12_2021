@@ -54,8 +54,10 @@ public class UI extends JPanel {
 
     public void updateGrid(int[][] matrixToDisplay) {
 
-        int x = matrixToDisplay[0].length;
-        int y = matrixToDisplay.length;
+        // int x = matrixToDisplay[0].length;
+        // int y = matrixToDisplay.length;
+        int x = matrixToDisplay.length;
+        int y = matrixToDisplay[0].length;
 
         int sizeOfEachSquare = CountSquareSize(x, y);
 
@@ -70,6 +72,8 @@ public class UI extends JPanel {
     private static void SetDisplay(int[][] _state, int _size) {
         int x = _state[0].length;
         int y = _state.length;
+        // int x = _state.length;
+        // int y = _state[0].length;
         size = _size;
 
         thisUI.setMaximumSize(new Dimension(x * size, y * size));
@@ -79,7 +83,9 @@ public class UI extends JPanel {
     }
 
     private static void OverrideStateWithMinusOnes(int x, int y) {
-        state = new int[y][x];
+        //state = new int[y][x];
+        state = new int[x][y];
+
         for (int i = 0; i < state.length; i++) {
             for (int j = 0; j < state[i].length; j++) {
                 state[i][j] = -1;
@@ -90,7 +96,7 @@ public class UI extends JPanel {
     private static void FillStateValues(int[][] newState) {
         for (int y = 0; y < state.length; y++) {
             for (int x = 0; x < state[y].length; x++) {
-                state[y][x] = newState[y][x];
+                state[y][x] = newState[x][y];
             }
         }
     }
