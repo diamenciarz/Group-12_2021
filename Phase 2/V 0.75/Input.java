@@ -16,7 +16,7 @@ class Input extends KeyAdapter {
         (keyCode == KeyEvent.VK_E) || 
         (keyCode == KeyEvent.VK_O) ||
         (keyCode == KeyEvent.VK_SPACE);
-        if (isInputCorrect && !(keyCode == KeyEvent.VK_SPACE) && (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D)) {
+        if (isInputCorrect && !(keyCode == KeyEvent.VK_SPACE) && (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_Q || keyCode == KeyEvent.VK_E)) {
             Pentis.pressedKey(ch);
         } else if (isInputCorrect && !(keyCode == KeyEvent.VK_SPACE)) {
             Pentis.normalTime.restart();
