@@ -19,11 +19,13 @@ import java.awt.geom.Rectangle2D;
  */
 public class UI extends JPanel {
 
-    private static JFrame window = new JFrame();
+    private static JFrame frame = new JFrame();
     private static int[][] state;
     private static int size;
 
-    static JPanel panel = new JPanel();
+    static JPanel gridPanel = new JPanel();
+    static JPanel scorePanel = new JPanel();
+    static JLabel score;
     static JLabel labelTitle;
     static JLabel trialsLabel;
     static Font font1;
@@ -105,33 +107,41 @@ public class UI extends JPanel {
 
         trialsLabel = new JLabel("Number of trials: " + 0);
         labelTitle = new JLabel("Pentominoes");
-        panel.add(labelTitle);
-        panel.add(trialsLabel);
+        gridPanel.add(labelTitle);
+        gridPanel.add(trialsLabel);
 
         trialsLabel.setFont(font1);
         labelTitle.setFont(font2);
         labelTitle.setForeground(Color.RED);
-        window.pack();
-        window.setVisible(true);
+        frame.pack();
+        frame.setVisible(true);
 
         hasCreatedTrials = true;
     }
 
     private static void CreateDisplay() {
 
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.setLayout(new GridLayout(0, 1));
+        gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        gridPanel.setBounds(0, 0, 293,701);
+        gridPanel.setLayout(new GridLayout(0, 1));
 
-        panel.add(thisUI);
+        gridPanel.add(thisUI);
 
-        window.setLayout(new GridLayout(0, 1));
-        window.add(panel, BorderLayout.CENTER);
-        window.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //frame.setLayout(new GridLayout(0, 1));
+        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setTitle("Pentominoes");
-        window.pack();
-        window.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+        frame.setLocationRelativeTo(null);
+        frame.setTitle("Pentominotris");
+        frame.setLayout(null);
+        frame.setSize(900,900);
+        //frame.pack();
+        frame.setVisible(true);
+
+        frame.add(gridPanel);
+
 
         hasCreatedDisplay = true;
         setupKeyListener();
@@ -223,7 +233,7 @@ public class UI extends JPanel {
     }
     
     private static void setupKeyListener(){
-        window.addKeyListener(new KeyListener());
+        frame.addKeyListener(new KeyListener());
     }
 }
 
