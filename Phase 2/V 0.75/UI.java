@@ -25,7 +25,8 @@ public class UI extends JPanel {
 
     static JPanel gridPanel = new JPanel();
     static JPanel scorePanel = new JPanel();
-    static JLabel score;
+    static JPanel nextPiecePanel = new JPanel();
+    static JLabel scoreLabel;
     static JLabel labelTitle;
     static JLabel trialsLabel;
     static Font font1;
@@ -121,11 +122,21 @@ public class UI extends JPanel {
 
     private static void CreateDisplay() {
 
-        gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        gridPanel.setBounds(0, 0, 293,701);
+        //gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        gridPanel.setBounds(10, 10, 273,681);
         gridPanel.setLayout(new GridLayout(0, 1));
-
         gridPanel.add(thisUI);
+
+        nextPiecePanel.setBackground(Color.gray);
+        nextPiecePanel.setBounds(10+10+273, 10, 200,200);
+
+        scoreLabel = new JLabel("Score");
+        //scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        scorePanel.setBackground(Color.gray);
+        //scorePanel.setLayout(new GridLayout(0, 1));
+        scorePanel.setBounds(10+10+273,10+10+200,200,200);
+        scorePanel.add(scoreLabel);
+
 
         //frame.setLayout(new GridLayout(0, 1));
         //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -136,11 +147,14 @@ public class UI extends JPanel {
         frame.setLocationRelativeTo(null);
         frame.setTitle("Pentominotris");
         frame.setLayout(null);
-        frame.setSize(900,900);
+        frame.setSize(503,880);
         //frame.pack();
         frame.setVisible(true);
 
         frame.add(gridPanel);
+        frame.add(nextPiecePanel);
+        frame.add(scorePanel);
+       
 
 
         hasCreatedDisplay = true;
