@@ -54,10 +54,6 @@ public class Pentis {
         System.out.println("reset map");
         setupEmptyMap();
         takeNextShapeFromQueue();
-
-        // after space bar pressed and piece reaches bottom
-        backToNormalTime();
-
     }
 
     // after space bar pressed and piece reaches bottom
@@ -71,6 +67,9 @@ public class Pentis {
     }
 
     private static void takeNextShapeFromQueue() {
+        // after space bar pressed and piece reaches bottom
+        backToNormalTime();
+
         if (shapesQueue.size() < 12) {
             add12ShapesToQueue();
         }
@@ -162,9 +161,7 @@ public class Pentis {
 
                     placeShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
                     takeNextShapeFromQueue();
-                    
-                    // after space bar pressed and piece reaches bottom
-                    backToNormalTime();
+                
                 }
 
             } else {
@@ -194,9 +191,6 @@ public class Pentis {
         if (doesCurrentShapePositionOverlapBlocks()) {
             placeShapeOnMap(lastShapeState, 0, 0);
             takeNextShapeFromQueue();
-
-            // space bar pressed
-            backToNormalTime();
 
         } else {
             displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
