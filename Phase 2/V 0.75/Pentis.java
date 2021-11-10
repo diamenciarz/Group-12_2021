@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import javax.swing.Timer; 
-import java.lang.Thread;
 
 public class Pentis {
 
@@ -14,40 +12,28 @@ public class Pentis {
     private static int[][] currentMapMatrix;
     private static int[][] lastShapeState;
     private static int currentShapeXPosition;
-    static int currentShapeYPosition;
+    private static int currentShapeYPosition;
     private static char lastKeyPressed = 't';
     private static boolean setupStartingVariables = false;
     public static int score;
 
     private static ArrayList<int[][]> shapesQueue = new ArrayList<>();
 
-    // Timer variables
-    public static TimeListener myListener = new TimeListener();
-    public static Timer spaceTime = new Timer(10, myListener);
-    public static Timer normalTime = new Timer(1000, myListener);
-    final int startDelay = 1000;
-    static boolean spaceBar = false;
-     
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         startProgram();
     }
 
     // Startup methods
-    private static void startProgram() throws InterruptedException {
+    private static void startProgram() {
         // Setup methods
         ResetMap();
-        
+
         int[][] shapePlacedOnGrid = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), currentShape, currentShapeXPosition,
                 currentShapeYPosition);
         ui.updateGrid(shapePlacedOnGrid);
         // Enter Loop
         setupStartingVariables = true;
-
-        // Timer start
-        Thread.sleep(1000);
-        normalTime.start();;
-        
     }
 
     private static void ResetMap() {
@@ -56,20 +42,11 @@ public class Pentis {
         takeNextShapeFromQueue();
     }
 
-    // after space bar pressed and piece reaches bottom
-    private static void backToNormalTime() {
-        spaceTime.stop();;
-        normalTime.start();
-    }
-
     private static void setupEmptyMap() {
         currentMapMatrix = HelperMethods.getEmptyMatrix(xMapSize, yMapSize);
     }
 
     private static void takeNextShapeFromQueue() {
-        // after space bar pressed and piece reaches bottom
-        backToNormalTime();
-
         if (shapesQueue.size() < 12) {
             add12ShapesToQueue();
         }
@@ -133,73 +110,104 @@ public class Pentis {
         }
         if (input == 'o') {
         }
-        // if (input == ' ') {
-            
-        //     //normalTime.stop();
-        //     //spaceTime.start();
-        //     //pressedKey('s');
-        // }
         currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
 
         displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
     }
 
-    static void tryMoveCurrentShape(int deltaX, int deltaY) {
+    private static void tryMoveCurrentShape(int deltaX, int deltaY) {
+        // Check collision with borders
         boolean doesCurrentShapeCollideWithBorders = !HelperMethods.willThisShapeFitOnMap(currentMapMatrix,
                 currentShape, currentShapeXPosition + deltaX, currentShapeYPosition + deltaY);
+
         if (!doesCurrentShapeCollideWithBorders) {
             currentShapeXPosition += deltaX;
             currentShapeYPosition += deltaY;
 
-            int shapeBottomIndex = currentShapeYPosition + currentShape.length + deltaY;
-            if (shapeBottomIndex > currentMapMatrix.length) {
-
-                if (doesCurrentShapePositionOverlapBlocks()) {
-                    handleCollisionWithBlocks();
-
-                }else{
-
-                    placeShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
-                    takeNextShapeFromQueue();
-                
-                }
-
+            boolean isMovingSideways = deltaX != 0;
+            if (isMovingSideways) {
+                checkSideCollision(deltaX, deltaY);
             } else {
-                handleCollisionWithBlocks();
-
+                checkBottomCollision(deltaY);
             }
         }
     }
 
-    private static void displayShapeOnMap(int[][] shape, int xPosition, int yPosition) {
-        int[][] displayMatrix = HelperMethods.placeShapeOnMatrix(currentMapMatrix, shape, xPosition, yPosition);
-        ui.updateGrid(displayMatrix);
+    private static void checkSideCollision(int deltaX, int deltaY) {
+        if (doesShapePositionOverlapBlocks(currentShape)) {
+            currentShapeXPosition -= deltaX;
+            currentShapeYPosition -= deltaY;
+        }
+    }
+
+    private static void checkBottomCollision(int deltaY) {
+        int shapeBottomIndex = currentShapeYPosition + currentShape.length + deltaY;
+        boolean collidedWitBottomBorder = shapeBottomIndex > currentMapMatrix.length;
+        if (collidedWitBottomBorder) {
+            handleCollisionWithBottomBorder();
+        } else {
+            handleCollisionWithBlocks();
+        }
     }
 
     private static void tryRotateCurrentShape(int rotation) {
         int[][] rotatedShape = HelperMethods.rotateShapeRight(currentShape, rotation);
-        boolean isRotatedShapeInBounds = HelperMethods.willThisShapeFitOnMap(currentMapMatrix, rotatedShape,
-                currentShapeXPosition, currentShapeYPosition);
+        int deltaXToMove = getDeltaXPositionToMoveShapeInBounds(rotatedShape);
 
-        if (isRotatedShapeInBounds) {
-            currentShape = rotatedShape;
+        boolean shapeOutOfBounds = deltaXToMove > 0;
+        int xPosition = currentShapeXPosition;
+        if (shapeOutOfBounds) {
+            xPosition -= deltaXToMove;
         }
-        handleCollisionWithBlocks();
-    }
+        if (!doesShapePositionOverlapBlocks(rotatedShape, xPosition, currentShapeYPosition)) {
 
-    private static void handleCollisionWithBlocks() {
-        if (doesCurrentShapePositionOverlapBlocks()) {
-            placeShapeOnMap(lastShapeState, 0, 0);
-            takeNextShapeFromQueue();
-
-        } else {
+            if (shapeOutOfBounds) {
+                currentShapeXPosition -= deltaXToMove;
+            }
+            currentShape = rotatedShape;
             displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
         }
     }
 
-    private static boolean doesCurrentShapePositionOverlapBlocks() {
-        int[][] shapePlacedOnGrid = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), currentShape, currentShapeXPosition,
+    private static int getDeltaXPositionToMoveShapeInBounds(int[][] shape) {
+        int shapeRightIndex = currentShapeXPosition + shape[0].length;
+        int deltaPosition = shapeRightIndex - currentMapMatrix[0].length;
+
+        return deltaPosition;
+    }
+
+    private static void handleCollisionWithBlocks() {
+        if (doesShapePositionOverlapBlocks(currentShape)) {
+            // Place the last shape position on the map
+            placeShapeOnMap(lastShapeState, 0, 0);
+            takeNextShapeFromQueue();
+        } else {
+            // Display the moved shape. It is placed correctly
+            displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
+        }
+    }
+
+    private static void handleCollisionWithBottomBorder() {
+        if (doesShapePositionOverlapBlocks(currentShape)) {
+            handleCollisionWithBlocks();
+        } else {
+            placeShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
+            takeNextShapeFromQueue();
+        }
+    }
+
+    private static boolean doesShapePositionOverlapBlocks(int[][] shape) {
+        int[][] shapePlacedOnGrid = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), shape, currentShapeXPosition,
                 currentShapeYPosition);
+
+        if (HelperMethods.areTwoFiguresOverlapping(currentMapMatrix, shapePlacedOnGrid)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean doesShapePositionOverlapBlocks(int[][] shape, int xPosition, int yPosition) {
+        int[][] shapePlacedOnGrid = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), shape, xPosition, yPosition);
 
         if (HelperMethods.areTwoFiguresOverlapping(currentMapMatrix, shapePlacedOnGrid)) {
             return true;
@@ -211,6 +219,11 @@ public class Pentis {
         currentMapMatrix = HelperMethods.placeShapeOnMatrix(currentMapMatrix, shape, xPosition, yPosition);
     }
 
+    private static void displayShapeOnMap(int[][] shape, int xPosition, int yPosition) {
+        int[][] displayMatrix = HelperMethods.placeShapeOnMatrix(currentMapMatrix, shape, xPosition, yPosition);
+        ui.updateGrid(displayMatrix);
+    }
+
     private static void resetCurrentShapePosition() {
         currentShapeXPosition = 0;
         currentShapeYPosition = 0;
@@ -219,9 +232,4 @@ public class Pentis {
     private static int[][] GetEmptyMap() {
         return HelperMethods.getEmptyMatrix(xMapSize, yMapSize);
     }
-   
-    
 }
-
-
-
