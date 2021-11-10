@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import javax.swing.Timer;
+import java.lang.Thread;
 
 public class Pentis {
 
-    static ShapeContainer shapeContainer = new ShapeContainer();
     static UI ui = new UI();
     public static int xMapSize = 8;
     public static int yMapSize = 20;
@@ -19,13 +20,19 @@ public class Pentis {
 
     private static ArrayList<int[][]> shapesQueue = new ArrayList<>();
 
-    public static void main(String[] args) {
+    // Timer variables
+    public static TimeListener myListener = new TimeListener();
+    public static Timer spaceTime = new Timer(10, myListener);
+    public static Timer normalTime = new Timer(1000, myListener);
+    final static int startDelay = 1000;
+
+    public static void main(String[] args) throws InterruptedException {
 
         startProgram();
     }
 
     // Startup methods
-    private static void startProgram() {
+    private static void startProgram() throws InterruptedException {
         // Setup methods
         ResetMap();
 
@@ -34,6 +41,10 @@ public class Pentis {
         ui.updateGrid(shapePlacedOnGrid);
         // Enter Loop
         setupStartingVariables = true;
+
+        // Timer start
+        doSlowTimer();
+        Thread.sleep(startDelay);
     }
 
     private static void ResetMap() {
@@ -47,13 +58,16 @@ public class Pentis {
     }
 
     private static void takeNextShapeFromQueue() {
+        doSlowTimer();
+
         if (shapesQueue.size() < 12) {
             add12ShapesToQueue();
-        }
 
+            // after space bar pressed and piece reaches bottom
+        }
         currentShape = shapesQueue.get(0);
         shapesQueue.remove(0);
-
+        
         resetCurrentShapePosition();
 
         if (!doesNextShapeFitOnMap()) {
@@ -79,11 +93,11 @@ public class Pentis {
         lastKeyPressed = key;
 
         if (setupStartingVariables) {
-            tryMoveCurrentShape();
+            saveLastShapeState();
         }
     }
 
-    private static void tryMoveCurrentShape() {
+    private static void saveLastShapeState() {
         lastShapeState = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), currentShape, currentShapeXPosition,
                 currentShapeYPosition);
 
@@ -97,6 +111,7 @@ public class Pentis {
             tryMoveCurrentShape(-1, 0);
         }
         if (input == 's') {
+            resetTimer();
             tryMoveCurrentShape(0, 1);
         }
         if (input == 'd') {
@@ -108,9 +123,11 @@ public class Pentis {
         if (input == 'e') {
             tryRotateCurrentShape(1);
         }
+        if (input == ' ') {
+            doFastTimer();
+        }
         if (input == 'o') {
         }
-        currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
 
         displayShapeOnMap(currentShape, currentShapeXPosition, currentShapeYPosition);
     }
@@ -131,6 +148,7 @@ public class Pentis {
                 checkBottomCollision(deltaY);
             }
         }
+        currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
     }
 
     private static void checkSideCollision(int deltaX, int deltaY) {
@@ -231,5 +249,17 @@ public class Pentis {
 
     private static int[][] GetEmptyMap() {
         return HelperMethods.getEmptyMatrix(xMapSize, yMapSize);
+    }
+
+    public static void doFastTimer() {
+        spaceTime.start();
+        normalTime.stop();
+    }
+    public static void doSlowTimer() {
+        spaceTime.stop();
+        normalTime.start();
+    }
+    public static void resetTimer(){
+        normalTime.restart();
     }
 }
