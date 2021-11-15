@@ -7,6 +7,9 @@ public class Pentis {
     static UI ui = new UI();
     public static int xMapSize = 8;
     public static int yMapSize = 20;
+    public static int score;
+    public static boolean isRowFull = false;
+    public static ArrayList<Integer> highScores = new ArrayList<>();
 
     // Private variables
     private static int[][] currentShape;
@@ -16,8 +19,6 @@ public class Pentis {
     private static int currentShapeYPosition;
     private static char lastKeyPressed = 't';
     private static boolean setupStartingVariables = false;
-    public static int score;
-
     private static ArrayList<int[][]> shapesQueue = new ArrayList<>();
 
     // Timer variables
@@ -42,6 +43,7 @@ public class Pentis {
         // Enter Loop
         setupStartingVariables = true;
 
+
         // Timer start
         doSlowTimer();
         Thread.sleep(startDelay);
@@ -51,6 +53,8 @@ public class Pentis {
         System.out.println("reset map");
         setupEmptyMap();
         takeNextShapeFromQueue();
+        score = 0;
+        highScores.add(score);
     }
 
     private static void setupEmptyMap() {
@@ -149,6 +153,7 @@ public class Pentis {
             }
         }
         currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
+        
     }
 
     private static void checkSideCollision(int deltaX, int deltaY) {

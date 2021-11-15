@@ -2,7 +2,10 @@
  * @author Department of Data Science and Knowledge Engineering (DKE)
  * @version 2022.0
  */
-
+//import java.awt.event.KeyAdapter;
+//import java.awt.event.KeyEvent;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -13,7 +16,7 @@ import java.awt.geom.Rectangle2D;
  * Phase 1. You will learn more about GUIs in Period 2, in the Introduction to
  * Computer Science 2 course.
  */
-public class UI extends JPanel {
+public class UI extends JPanel{
 
     private static JFrame frame = new JFrame();
     private static int[][] state;
@@ -21,12 +24,15 @@ public class UI extends JPanel {
 
     static JPanel gridPanel = new JPanel();
     static JPanel scorePanel = new JPanel();
-    static JPanel nextPiecePanel = new JPanel();
-    static JLabel scoreLabel;
+    static JPanel highscoresPanel = new JPanel();
+    static JLabel scoreLabel = new JLabel("Score: 0");
+    static JLabel highScores = new JLabel("Highscores: ");
     static JLabel labelTitle;
     static JLabel trialsLabel;
     static Font font1;
     static Font font2;
+
+    //private static int score = 0;
 
     public static UI thisUI;
     private static boolean hasCreatedDisplay;
@@ -52,6 +58,12 @@ public class UI extends JPanel {
     }
 
     public void updateGrid(int[][] matrixToDisplay) {
+
+        //System.out.println(Pentis.score);
+        //score = Pentis.score;
+        scoreLabel.setText("Score: " + Integer.toString(Pentis.score));
+        
+        
 
         // int x = matrixToDisplay[0].length;
         // int y = matrixToDisplay.length;
@@ -123,15 +135,23 @@ public class UI extends JPanel {
         gridPanel.setLayout(new GridLayout(0, 1));
         gridPanel.add(thisUI);
 
-        nextPiecePanel.setBackground(Color.lightGray);
-        nextPiecePanel.setBounds(10+10+273, 10, 200,200);
+        highscoresPanel.setBackground(Color.lightGray);
+        highscoresPanel.setBounds(10+10+273, 10, 200,200);
 
-        scoreLabel = new JLabel("Score");
+        //ScoreListener scoreListener = new ScoreListener();
+        //Pentis.score.addActionListener(scoreListener);
+        //highScores = 
+
+        //scoreLabel = new JLabel("Score: 0");
+        //scoreLabel = new JLabel();
         //scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         scorePanel.setBackground(Color.lightGray    );
         //scorePanel.setLayout(new GridLayout(0, 1));
         scorePanel.setBounds(10+10+273,10+10+200,200,200);
+        //scoreLabel.setAlignmentY(SwingConstants.CENTER);
         scorePanel.add(scoreLabel);
+
+        highscoresPanel.add(highScores);
 
 
         //frame.setLayout(new GridLayout(0, 1));
@@ -150,7 +170,7 @@ public class UI extends JPanel {
         frame.setVisible(true);
 
         frame.add(gridPanel);
-        frame.add(nextPiecePanel);
+        frame.add(highscoresPanel);
         frame.add(scorePanel);
        
         hasCreatedDisplay = true;
@@ -183,6 +203,12 @@ public class UI extends JPanel {
                 localGraphics2D.fill(new Rectangle2D.Double(i * size + 1, j * size + 1, size - 1, size - 1));
             }
         }
+
+        // while (true) {
+        //     score = Pentis.score;
+
+        // }
+
     }
 
     /**
@@ -244,4 +270,9 @@ public class UI extends JPanel {
     private static void setupKeyListener(){
         frame.addKeyListener(new Input());
     }
+
+    
+
+    
 }
+

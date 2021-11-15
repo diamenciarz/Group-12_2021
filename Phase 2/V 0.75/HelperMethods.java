@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 public class HelperMethods {
 
+    public static boolean isRFull;
+
     public static int[][] getACopyOfThisMatrix(int[][] arrayToCopy) {
         int[][] returnArray = new int[arrayToCopy.length][arrayToCopy[0].length];
         for (int i = 0; i < returnArray.length; i++) {
@@ -181,40 +183,59 @@ public class HelperMethods {
     }
 
     public static int[][] deleteRows(int[][] input) {
-        int rowDeletedAmount =0;
         ArrayList<Integer> saveRowIndexes = new ArrayList<Integer>();
 
         for (int index = 0; index < input.length; index++) {
-            if (isRowFull(input, index) == false) {
+            if(isRowFull(input, index) == false){
                 saveRowIndexes.add(index);
-                rowDeletedAmount++;
-            }
+                
+
+           } else {
+               Pentis.score++;
+           }
         }
         int counter = 0;
         int[][] returnMatrix = new int[input.length][input[0].length];
-        for (int index = saveRowIndexes.size() - 1; index >= 0; index--) {
+        for (int index = saveRowIndexes.size()-1; index >= 0; index--) {
+            
 
             pasteRow(returnMatrix.length - counter - 1, returnMatrix, input, saveRowIndexes.get(index));
             counter++;
-        }
 
-        Pentis.score += rowDeletedAmount * rowDeletedAmount;
+            System.out.println(Pentis.score);
+        }
         return returnMatrix;
+        
     }
 
-    private static void pasteRow(int returnIndex, int[][] returnMatrix, int[][] inputMatrix, int inputIndex) {
+    public static void pasteRow(int returnIndex, int[][] returnMatrix, int[][] inputMatrix, int inputIndex) {
         for (int i = 0; i < inputMatrix[0].length; i++) {
+            
 
             returnMatrix[returnIndex][i] = inputMatrix[inputIndex][i];
         }
     }
 
-    private static boolean isRowFull(int[][] input, int index) {
+    public static boolean isRowFull(int[][] input, int index) {
         for (int i = 0; i < input[0].length; i++) {
-            if (input[index][i] == 0) {
+            if(input[index][i] == 0){
                 return false;
-            }
-        }
+            } 
+            
+        } 
         return true;
+    }
+
+    public static void printMatrix(int[][] inputMatrix){
+        for (int i = 0; i < inputMatrix.length; i++) {
+            for (int j = 0; j < inputMatrix[0].length; j++) {
+                System.out.print(inputMatrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void highScoreOrdered(ArrayList list) {
+
     }
 }
