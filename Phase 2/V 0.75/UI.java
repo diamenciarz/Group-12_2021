@@ -26,7 +26,12 @@ public class UI extends JPanel{
     static JPanel scorePanel = new JPanel();
     static JPanel highscoresPanel = new JPanel();
     static JLabel scoreLabel = new JLabel("Score: 0");
-    static JLabel highScores = new JLabel("Highscores: ");
+    static JLabel highScoresLabel = new JLabel("Highscores: ");
+    static JLabel rank1 = new JLabel("Rank 1: ");
+    static JLabel rank2 = new JLabel("Rank 2: ");
+    static JLabel rank3 = new JLabel("Rank 3: ");
+    static JLabel rank4 = new JLabel("Rank 4: ");
+    static JLabel rank5 = new JLabel("Rank 5: ");
     static JLabel labelTitle;
     static JLabel trialsLabel;
     static Font font1;
@@ -62,6 +67,17 @@ public class UI extends JPanel{
         //System.out.println(Pentis.score);
         //score = Pentis.score;
         scoreLabel.setText("Score: " + Integer.toString(Pentis.score));
+        //highScoresLabel.setText("High");
+        //highScoresLabel.setText(HelperMethods.highScoreOrdered(Pentis.highScores));
+        rank1.setText("Rank 1: " + Pentis.sortedHighscores[0]);
+        rank2.setText("Rank 2: " + Pentis.sortedHighscores[1]);
+        rank3.setText("Rank 3: " + Pentis.sortedHighscores[2]);
+        rank4.setText("Rank 4: " + Pentis.sortedHighscores[3]);
+        rank5.setText("Rank 5: " + Pentis.sortedHighscores[4]);
+
+
+
+        
         
         
 
@@ -148,10 +164,17 @@ public class UI extends JPanel{
         scorePanel.setBackground(Color.lightGray    );
         //scorePanel.setLayout(new GridLayout(0, 1));
         scorePanel.setBounds(10+10+273,10+10+200,200,200);
+        highscoresPanel.setLayout(new GridLayout(6,0));
         //scoreLabel.setAlignmentY(SwingConstants.CENTER);
         scorePanel.add(scoreLabel);
 
-        highscoresPanel.add(highScores);
+        highscoresPanel.add(highScoresLabel);
+        highscoresPanel.add(rank1);
+        highscoresPanel.add(rank2);
+        highscoresPanel.add(rank3);
+        highscoresPanel.add(rank4);
+        highscoresPanel.add(rank5);
+
 
 
         //frame.setLayout(new GridLayout(0, 1));

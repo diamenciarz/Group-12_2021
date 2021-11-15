@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.Timer;
 import java.lang.Thread;
 
@@ -9,7 +11,8 @@ public class Pentis {
     public static int yMapSize = 20;
     public static int score;
     public static boolean isRowFull = false;
-    public static ArrayList<Integer> highScores = new ArrayList<>();
+    public static ArrayList<Integer> highScores = new ArrayList<Integer>();
+    public static int[] sortedHighscores = new int[5];
 
     // Private variables
     private static int[][] currentShape;
@@ -30,6 +33,7 @@ public class Pentis {
     public static void main(String[] args) throws InterruptedException {
 
         startProgram();
+        //highScores.add(0);
     }
 
     // Startup methods
@@ -53,8 +57,9 @@ public class Pentis {
         System.out.println("reset map");
         setupEmptyMap();
         takeNextShapeFromQueue();
-        score = 0;
         highScores.add(score);
+        sortedHighscores = HelperMethods.highScoreOrdered(highScores);
+        score = 0;
     }
 
     private static void setupEmptyMap() {

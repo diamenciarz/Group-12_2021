@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class HelperMethods {
 
@@ -202,7 +205,6 @@ public class HelperMethods {
             pasteRow(returnMatrix.length - counter - 1, returnMatrix, input, saveRowIndexes.get(index));
             counter++;
 
-            System.out.println(Pentis.score);
         }
         return returnMatrix;
         
@@ -235,7 +237,37 @@ public class HelperMethods {
         }
     }
 
-    public static void highScoreOrdered(ArrayList list) {
+    public static int[] highScoreOrdered(ArrayList list) {
+        int[] sortedArray = new int[list.size()];
 
+        for (int i = 0; i < list.size() ; i++) {
+            sortedArray[i] = (int) list.get(i);
+        }
+
+        Arrays.sort(sortedArray);
+        System.out.println(Arrays.toString(sortedArray));
+
+        int[] returnArray = {0,0,0,0,0};
+
+        for (int i = 0 ; i < 5 ; i++) {
+            if (i < sortedArray.length) {
+                returnArray[i] = sortedArray[sortedArray.length-i-1];
+            }            
+        }
+
+        System.out.println(Arrays.toString(returnArray));
+            
+        return returnArray;
     }
+
+    // public static String returnSortedHighscores(int[] highscores) {
+
+    //     String str = "";
+    //     for (int i = 0 ; i < 5 ; i++) {
+    //         int score = highscores[highscores.length-i];
+    //         str += "Rank 1: " + score + "\n";
+            
+    //     }
+    //     return str;
+    // }
 }
