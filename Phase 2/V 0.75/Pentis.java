@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Timer;
@@ -71,8 +72,6 @@ public class Pentis {
 
         if (shapesQueue.size() < 12) {
             add12ShapesToQueue();
-
-            // after space bar pressed and piece reaches bottom
         }
         currentShape = shapesQueue.get(0);
         shapesQueue.remove(0);
@@ -80,8 +79,12 @@ public class Pentis {
         resetCurrentShapePosition();
 
         if (!doesNextShapeFitOnMap()) {
+
             ResetMap();
         }
+
+       
+
     }
 
     private static boolean doesNextShapeFitOnMap() {
@@ -158,7 +161,7 @@ public class Pentis {
             }
         }
         currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
-        
+
     }
 
     private static void checkSideCollision(int deltaX, int deltaY) {

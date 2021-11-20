@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+//import java.util.Collections;
+//import java.util.List;
 
 public class HelperMethods {
 
-    public static boolean isRFull;
+    //public static boolean isRFull;
 
     public static int[][] getACopyOfThisMatrix(int[][] arrayToCopy) {
         int[][] returnArray = new int[arrayToCopy.length][arrayToCopy[0].length];
@@ -182,6 +182,10 @@ public class HelperMethods {
             }
         }
 
+        
+
+
+        
         return mapStateArray;
     }
 
@@ -237,7 +241,8 @@ public class HelperMethods {
         }
     }
 
-    public static int[] highScoreOrdered(ArrayList list) {
+    // takes the highscores arraylist and orders it and saves it to a 5 length array to be displayed by UI
+    public static int[] highScoreOrdered(ArrayList<Integer> list) {
         int[] sortedArray = new int[list.size()];
 
         for (int i = 0; i < list.size() ; i++) {
