@@ -7,9 +7,9 @@ public class OpenRoofDetector {
         int [][] testMatrix = {{0,0,0,0,0},
                                 {0,1,1,1,1},
                                 {0,0,0,0,1},
-                                {1,1,1,0,1},
+                                {1,1,0,0,1},
                                 {1,0,0,0,1},
-                                {1,0,1,1,1},
+                                {1,1,1,1,1},
                                 {1,0,0,1,0},
                                 {1,0,0,1,0}
         };
@@ -143,7 +143,7 @@ public class OpenRoofDetector {
                                 if (col < currentMapMatrix[0].length-1 && currentMapMatrix[row][col+1] == 0 && noWayUp && noWayLeft) {
                                     noWayUp = false;
                                     col++;
-                                } else if (col == currentMapMatrix[0].length-1) {
+                                } else if (col == currentMapMatrix[0].length-1 || currentMapMatrix[row][col+1] !=0){
                                     noWayRight = true;
                                 }
                                     
