@@ -1,15 +1,15 @@
 import java.util.Arrays;
 
-public class OpenRoofDetector {
+public class EnclosedAreas {
 
     public static void main(String[] args) {
 
         int [][] testMatrix = {{0,0,0,0,0},
                                 {0,1,1,1,1},
-                                {0,0,0,0,1},
-                                {1,1,1,1,1},
-                                {1,0,0,0,1},
+                                {0,1,0,0,1},
                                 {1,1,0,1,1},
+                                {1,0,0,0,1},
+                                {1,1,1,1,1},
                                 {1,0,0,1,0},
                                 {1,0,0,1,0}
         };
@@ -123,7 +123,7 @@ public class OpenRoofDetector {
                                     stillSearching = false;
 
                                     // add up score
-                                    underRoofScore = scoreAdder(underRoofScore, valuesMatrix, x, y);
+                                    //underRoofScore = scoreAdder(underRoofScore, valuesMatrix, x, y);
                                     //System.out.println("Current score: " + Pentis.underRoofScore);
                                 }
 
@@ -156,11 +156,15 @@ public class OpenRoofDetector {
                                         } else {
                                             stillSearching = false;
                                             System.out.println(" This roof is enclosed");
+                                            // add up score
+                                            underRoofScore = scoreAdder(underRoofScore, valuesMatrix, x, y);
                                             
                                         }
                                     } else {
                                         stillSearching = false;
                                         System.out.println(" This roof is enclosed");
+                                        // add up score
+                                        underRoofScore = scoreAdder(underRoofScore, valuesMatrix, x, y);
                                     }
                                 }
                             }
