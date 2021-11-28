@@ -210,17 +210,17 @@ public class OpenEnclosedRoof {
     }
 
 
-    private static int scoreAdder(int underRoofScore, int[][] valuesMatrix, int x, int y) {
+    private static int scoreAdder(int theScore, int[][] valuesMatrix, int x, int y) {
         
         for (int row = x+1 ;  ; row++ ) {
             
-                underRoofScore += valuesMatrix[row][y];
+                theScore += valuesMatrix[row][y];
             
             if (valuesMatrix[row][y] == 1) {
                 break;
             }
         }
         
-        return underRoofScore;
+        return theScore;
     }
 }
