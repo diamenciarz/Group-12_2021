@@ -18,6 +18,11 @@ public class OpenRoofDetector {
         
     }
 
+    /**
+     * 
+     * @param currentMapMatrix
+     * @return score of the roofMethod
+     */
     public static int roofMethod(int[][] currentMapMatrix) {
 
         int underRoofScore = 0;
@@ -39,7 +44,7 @@ public class OpenRoofDetector {
         for (int i = currentMapMatrix.length-1 ; i >-1 ; i-- ) {
             for (int j = 0 ; j < currentMapMatrix[0].length ; j++) {
 
-                // if there is an empty spot (i.e. 0), then we start check that column, from that spot up
+                // if there is an empty spot (i.e. 0), then we start checking that column, from that spot up
                 // if we get to a non-zero spot, then we abort
                 if (currentMapMatrix[i][j] == 0) {
 
