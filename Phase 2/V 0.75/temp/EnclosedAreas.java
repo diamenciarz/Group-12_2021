@@ -1,15 +1,17 @@
+package temp;
+
 import java.util.Arrays;
 
-public class OpenRoofDetector {
+public class EnclosedAreas {
 
     public static void main(String[] args) {
 
         int [][] testMatrix = {{0,0,0,0,0},
                                 {0,1,1,1,1},
-                                {0,0,0,0,1},
-                                {1,1,1,1,1},
-                                {1,0,0,0,1},
+                                {0,1,0,0,1},
                                 {1,1,0,1,1},
+                                {1,0,0,0,1},
+                                {1,1,1,1,1},
                                 {1,0,0,1,0},
                                 {1,0,0,1,0}
         };
@@ -25,7 +27,7 @@ public class OpenRoofDetector {
      */
     public static int roofMethod(int[][] currentMapMatrix) {
 
-        int underRoofScore = 0;
+        int enclosedAreaScore = 0;
         boolean noWayUp = false;
         boolean noWayLeft = false;
         boolean noWayRight = false;
@@ -123,7 +125,7 @@ public class OpenRoofDetector {
                                     stillSearching = false;
 
                                     // add up score
-                                    underRoofScore = scoreAdder(underRoofScore, valuesMatrix, x, y);
+                                    //underRoofScore = scoreAdder(underRoofScore, valuesMatrix, x, y);
                                     //System.out.println("Current score: " + Pentis.underRoofScore);
                                 }
 
@@ -156,11 +158,15 @@ public class OpenRoofDetector {
                                         } else {
                                             stillSearching = false;
                                             System.out.println(" This roof is enclosed");
+                                            // add up score
+                                            enclosedAreaScore = scoreAdder(enclosedAreaScore, valuesMatrix, x, y);
                                             
                                         }
                                     } else {
                                         stillSearching = false;
                                         System.out.println(" This roof is enclosed");
+                                        // add up score
+                                        enclosedAreaScore = scoreAdder(enclosedAreaScore, valuesMatrix, x, y);
                                     }
                                 }
                             }
@@ -187,21 +193,21 @@ public class OpenRoofDetector {
                 }
             }
         }
-        return underRoofScore;
+        return enclosedAreaScore;
     }
 
 
-    private static int scoreAdder(int underRoofScore, int[][] valuesMatrix, int x, int y) {
+    private static int scoreAdder(int enclosedAreaScore, int[][] valuesMatrix, int x, int y) {
         
         for (int row = x+1 ;  ; row++ ) {
             
-                underRoofScore += valuesMatrix[row][y];
+                enclosedAreaScore += valuesMatrix[row][y];
             
             if (valuesMatrix[row][y] == 1) {
                 break;
             }
         }
         
-        return underRoofScore;
+        return enclosedAreaScore;
     }
 }
