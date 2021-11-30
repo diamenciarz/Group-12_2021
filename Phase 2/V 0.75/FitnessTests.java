@@ -1,34 +1,46 @@
-import java.util.Arrays;
+//import java.util.Arrays;
 
-public class OpenEnclosedRoof {
+public class FitnessTests {
 
     public static void main(String[] args) {
 
         int [][] testMatrix = {{0,0,0,0,0},
-                                {0,1,1,1,1},
-                                {0,0,0,0,1},
-                                {1,1,1,1,1},
-                                {1,0,0,0,1},
+                                {0,1,0,1,0},
+                                {0,1,0,1,0},
                                 {1,1,0,1,1},
+                                {1,0,0,0,1},
+                                {1,1,1,1,1},
                                 {1,0,0,1,0},
                                 {1,0,0,1,0}
         };
 
+        // work mode 0: open roof score
+        // work mode 1: enclosed area score
+        // work mode 2: irregulatrity score
+
         System.out.println("Open roof score: " + roofMethod(testMatrix, 0));
         
         System.out.println("Enclosed area score: " + roofMethod(testMatrix, 1));
+
+        System.out.println("Irregularity score: " + roofMethod(testMatrix, 2));
+
+        // tower height
+        System.out.println("Tower height: " + towerHeight(testMatrix));
         
     }
 
     /**
-     * 
+     * This method translates the gameboard to a "values matrix" where empty spaces are scored, 
+     * and added up to give us some fitness information.
      * @param currentMapMatrix
-     * @return score of the roofMethod
+     * @param workMode workMode 0: open roof score, workMode 1: enclosed area score, workMode 2: irregularity score
+     * @return score
      */
     public static int roofMethod(int[][] currentMapMatrix, int workMode) {
 
         int underRoofScore = 0;
         int enclosedAreaScore = 0;
+        int irregularityScore = 0;
         int finalScore = 0;
 
         boolean noWayUp = false;
@@ -79,10 +91,13 @@ public class OpenEnclosedRoof {
         }
 
         //print valuesMatrix
-        for(int[] i: valuesMatrix){ 
-            System.out.println(Arrays.toString(i));
+        // for(int[] i: valuesMatrix){ 
+        //     System.out.println(Arrays.toString(i));
             
-        }
+        // }
+
+        // irregularity score
+        irregularityScore = irregularity(towerHeight(valuesMatrix), valuesMatrix);
 
         // now check for roof
         // checking the valuesMatrix, if there is a 1, then go up
@@ -101,7 +116,7 @@ public class OpenEnclosedRoof {
 
                         // roof detector
                         if (valuesMatrix[x][y] == 0) {
-                            System.out.print("Roof at: " + x + " " + y);
+                            //System.out.print("Roof at: " + x + " " + y);
 
                             int row = x+1;
                             int col = y;
@@ -124,7 +139,7 @@ public class OpenEnclosedRoof {
                                     }
                                 } else if (row == 0) {
                                     noWayUp = true;
-                                    System.out.println(" This roof is open to the top");
+                                    //System.out.println(" This roof is open to the top");
                                     stillSearching = false;
 
                                     // add up score
@@ -160,7 +175,7 @@ public class OpenEnclosedRoof {
 
                                         } else {
                                             stillSearching = false;
-                                            System.out.println(" This roof is enclosed");
+                                            //System.out.println(" This roof is enclosed");
                                             // add up score
                                             enclosedAreaScore = scoreAdder(enclosedAreaScore, valuesMatrix, x, y);
                                             
@@ -168,7 +183,7 @@ public class OpenEnclosedRoof {
                                         }
                                     } else {
                                         stillSearching = false;
-                                        System.out.println(" This roof is enclosed");
+                                        //System.out.println(" This roof is enclosed");
                                         // add up score
                                         enclosedAreaScore = scoreAdder(enclosedAreaScore, valuesMatrix, x, y);
                                     }
@@ -198,18 +213,28 @@ public class OpenEnclosedRoof {
             }
         }
 
+        // different work modes to return the score needed
         if (workMode == 0) {
             finalScore = underRoofScore;
         } 
         if (workMode == 1) {
             finalScore = enclosedAreaScore;
         } 
+        if (workMode == 2) {
+            finalScore = irregularityScore;
+        } 
 
         return finalScore;
-        
     }
 
-
+    /**
+     * This method adds up scores for enclosed areas or areas under an open roof.
+     * @param theScore score from the values matrix is added up
+     * @param valuesMatrix this matrix represents the game board in terms of scores of empty areas
+     * @param x row coordinate
+     * @param y column coordinate
+     * @return score
+     */
     private static int scoreAdder(int theScore, int[][] valuesMatrix, int x, int y) {
         
         for (int row = x+1 ;  ; row++ ) {
@@ -222,5 +247,51 @@ public class OpenEnclosedRoof {
         }
         
         return theScore;
+    }
+
+    /**
+     * This method returns the height of the peak.
+     * @param matrix
+     * @return int of tower height
+     */
+    public static int towerHeight(int [][] matrix) {
+        int max = 0;
+            for(int i = 0 ; i < matrix.length ; i++) { //for each row
+                for(int j = 0; j < matrix[0].length ; j++) {   //for each column
+               
+                if(matrix[i][j] == 1) {
+                    int row = i;
+                    int height = matrix.length - row;  //all rows - the rows it went through to find shape
+                    if(height > max) {
+                    max = height;
+                    
+                    }
+                }
+            }
+        }
+        return max;
+    }
+
+    /**
+     * This method adds up the score of the top surface of the game and returns that score.
+     * @param towerHeight tower height from towerHeight method: the height of peak
+     * @param matrix values matrix
+     * @return int irregularity score
+     */
+    public static int irregularity(int towerHeight, int[][] matrix) {
+        int score = 0;
+        int towerRow = matrix.length - towerHeight+1;
+
+        for (int col = 0 ; col < matrix[0].length ; col++) {
+            for (int row = towerRow ; row < matrix.length ; row++) {
+                if (matrix[row][col] == 0) {
+                    break;
+                } else {
+                    score += matrix[row][col];
+                }
+            }
+        }
+
+        return score;
     }
 }
