@@ -41,7 +41,6 @@ public class UI extends JPanel{
 
     public static UI thisUI;
     private static boolean hasCreatedDisplay;
-    //private static boolean hasCreatedTrials;
 
     /**
      * Constructor for the GUI. Sets everything up
@@ -51,38 +50,22 @@ public class UI extends JPanel{
      * @param _size size of the GUI
      */
     public UI() {
-        // labelTitle = new JLabel("PENTOMINOES", SwingConstants.CENTER);
         font1 = new Font("Calbri", Font.BOLD, 12);
         font2 = new Font("Calibri", Font.BOLD, 30);
-        // labelTitle = new JLabel();
-        // trialsLabel = new JLabel();
         thisUI = this;
         hasCreatedDisplay = false;
-        //hasCreatedTrials = false;
-
     }
 
     public void updateGrid(int[][] matrixToDisplay) {
 
-        //System.out.println(Pentis.score);
-        //score = Pentis.score;
+        // scores
         scoreLabel.setText("Score: " + Integer.toString(Pentis.score));
-        //highScoresLabel.setText("High");
-        //highScoresLabel.setText(HelperMethods.highScoreOrdered(Pentis.highScores));
         rank1.setText("Rank 1: " + Pentis.sortedHighscores[0]);
         rank2.setText("Rank 2: " + Pentis.sortedHighscores[1]);
         rank3.setText("Rank 3: " + Pentis.sortedHighscores[2]);
         rank4.setText("Rank 4: " + Pentis.sortedHighscores[3]);
         rank5.setText("Rank 5: " + Pentis.sortedHighscores[4]);
 
-
-
-        
-        
-        
-
-        // int x = matrixToDisplay[0].length;
-        // int y = matrixToDisplay.length;
         int x = matrixToDisplay.length;
         int y = matrixToDisplay[0].length;
 
@@ -92,6 +75,7 @@ public class UI extends JPanel{
             CreateDisplay();
         }
         SetDisplay(matrixToDisplay, sizeOfEachSquare);
+
         // Tells the system a frame update is required
         thisUI.repaint();
     }
@@ -99,8 +83,6 @@ public class UI extends JPanel{
     private static void SetDisplay(int[][] _state, int _size) {
         int x = _state[0].length;
         int y = _state.length;
-        // int x = _state.length;
-        // int y = _state[0].length;
         size = _size;
 
         thisUI.setMaximumSize(new Dimension(x * size, y * size));
@@ -110,7 +92,6 @@ public class UI extends JPanel{
     }
 
     private static void OverrideStateWithMinusOnes(int x, int y) {
-        //state = new int[y][x];
         state = new int[x][y];
 
         for (int i = 0; i < state.length; i++) {
@@ -128,25 +109,8 @@ public class UI extends JPanel{
         }
     }
 
-    // private static void CreateTrials() {
-
-    //     trialsLabel = new JLabel("Number of trials: " + 0);
-    //     labelTitle = new JLabel("Pentominoes");
-    //     gridPanel.add(labelTitle);
-    //     gridPanel.add(trialsLabel);
-
-    //     trialsLabel.setFont(font1);
-    //     labelTitle.setFont(font2);
-    //     labelTitle.setForeground(Color.RED);
-    //     frame.pack();
-    //     frame.setVisible(true);
-
-    //     //hasCreatedTrials = true;
-    // }
-
     private static void CreateDisplay() {
 
-        //gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         gridPanel.setBounds(10, 10, 273,681);
         gridPanel.setLayout(new GridLayout(0, 1));
         gridPanel.add(thisUI);
@@ -154,18 +118,9 @@ public class UI extends JPanel{
         highscoresPanel.setBackground(Color.lightGray);
         highscoresPanel.setBounds(10+10+273, 10, 200,200);
 
-        //ScoreListener scoreListener = new ScoreListener();
-        //Pentis.score.addActionListener(scoreListener);
-        //highScores = 
-
-        //scoreLabel = new JLabel("Score: 0");
-        //scoreLabel = new JLabel();
-        //scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         scorePanel.setBackground(Color.lightGray    );
-        //scorePanel.setLayout(new GridLayout(0, 1));
         scorePanel.setBounds(10+10+273,10+10+200,200,200);
         highscoresPanel.setLayout(new GridLayout(6,0));
-        //scoreLabel.setAlignmentY(SwingConstants.CENTER);
         scorePanel.add(scoreLabel);
 
         highscoresPanel.add(highScoresLabel);
@@ -175,21 +130,14 @@ public class UI extends JPanel{
         highscoresPanel.add(rank4);
         highscoresPanel.add(rank5);
 
-
-
-        //frame.setLayout(new GridLayout(0, 1));
-        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.getContentPane().setBackground(new Color(249,207,221));
-        //frame.getContentPane().setBackground(Color.black);
 
         frame.setLocationRelativeTo(null);
         frame.setTitle("Pentominotris");
         frame.setLayout(null);
         frame.setSize(503,880);
-        //frame.pack();
         frame.setVisible(true);
 
         frame.add(gridPanel);
@@ -226,12 +174,6 @@ public class UI extends JPanel{
                 localGraphics2D.fill(new Rectangle2D.Double(i * size + 1, j * size + 1, size - 1, size - 1));
             }
         }
-
-        // while (true) {
-        //     score = Pentis.score;
-
-        // }
-
     }
 
     /**
@@ -293,8 +235,6 @@ public class UI extends JPanel{
     private static void setupKeyListener(){
         frame.addKeyListener(new Input());
     }
-
-    
 
     
 }
