@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 /**
  * This file contains:
@@ -38,6 +39,22 @@ public class geneticAlgorithms {
     }
 
 
+    /**
+     * Selection method
+     * @param i input population Individual[]
+     * @param amount how many individuals
+     * @return survived individuals
+     */
+    public static Individual[] selectPop(Individual[] i, int amount){
+        
+        Individual[] survivors = new Individual[amount];
+        HeapSort.sort(i);
+        for (int j = 0; j < amount; j++) {
+            survivors[j] = i[j];
+        }
+        return survivors;
+    }
+
 
 
     /**
@@ -61,39 +78,53 @@ public class geneticAlgorithms {
      * @param selectedPopulation the selected individuals as input
      * @return crossed over individuals as Individual[]
      */
-    public static Individual[] crossover(Individual[] selectedPopulation){
+    public static Individual[] crossover(Individual[] selectedPopulation, int popSize){
         
         Random random = new Random();
     
-        Individual[] crossedoverPop= new Individual[GAtest.populationSize];
+        Individual[] crossedoverPop= new Individual[popSize];
     
-        for(int i = 0 ; i < GAtest.populationSize ; i++){
-    
-            int Parent1=random.nextInt(selectedPopulation.length);
-            int Parent2=random.nextInt(selectedPopulation.length);
-    
-            while(Parent1==Parent2){
-                Parent2=random.nextInt(selectedPopulation.length);
-            }
-    
-            Individual child= selectedPopulation[Parent1];
-            Individual child2= selectedPopulation[Parent2];
-           
-            int genome=random.nextInt(3);
-    
-            for(int j=0; j<5;j++ ){
-    
-                if(j>genome){
-    
-                    child.weights[j]=child2.weights[j];
-      
-                }
-            } 
+            for(int i = 0 ; i < popSize ; i++){
         
-            crossedoverPop[i]=child;
-    
-        }
-        return crossedoverPop;
+                int p1Selection = random.nextInt(selectedPopulation.length);
+                int p2Selection = random.nextInt(selectedPopulation.length);
+                while(p1Selection == p2Selection){
+                    p2Selection = random.nextInt(selectedPopulation.length);
+                }
+        
+                Individual p1 = selectedPopulation[p1Selection];
+                Individual p2 = selectedPopulation[p2Selection];
+
+                System.out.println("p1: " + p1Selection);
+                System.out.println("p2: " + p2Selection);
+            
+                int genome = random.nextInt(p1.weights.length); //0,1,2,3,4
+                System.out.println(genome);
+        
+                // copy from parent 1
+                Individual child = p1;
+                //System.out.println("child: " + Arrays.toString(child.weights));
+
+                // parent 1 material to offspring
+                // for (int j = 0 ; j < genome ; i++) {
+                //     child.weights[j] = p1.weights.length ;
+                // }
+
+                // parent 2 material to offspring
+                for (int j = genome ; j < p2.weights.length ; j++) { // 10<11
+                    child.weights[j] = p2.weights[j];
+                }
+
+                // for(int j = 0; j < 5 ; j++){
+                //     if(j>=genome){
+        
+                //         child.weights[j]=child2.weights[j];
+                //     }
+                // } 
+                crossedoverPop[i] = child;
+        
+            }
+            return crossedoverPop;
     
         }
 
