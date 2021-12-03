@@ -42,7 +42,7 @@ public class UI extends JPanel{
 
     private boolean hasCreatedDisplay;
 
-    private long displayDelay;
+    private long displayDelay = 300;
     //private boolean hasCreatedTrials;
 
     /**

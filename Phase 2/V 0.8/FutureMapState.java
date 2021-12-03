@@ -5,6 +5,8 @@ public class FutureMapState {
     public int rotateTimes;
     private double[] weights;
 
+    private boolean doDebugMessages = false;
+
     public double getMoveError(int[][] newMapState) {
         mapState = newMapState;
         countMoveError();
@@ -30,10 +32,21 @@ public class FutureMapState {
 
         double[] separateScores = new double[4];
 
-        separateScores[0] = FitnessTests.towerHeight(mapState);
-        separateScores[1] = FitnessTests.roofMethod(mapState, 0);
-        separateScores[2] = FitnessTests.roofMethod(mapState, 1);
-        separateScores[3] = FitnessTests.roofMethod(mapState, 2);
+        int[][] mapStateCopy = HelperMethods.getACopyOfThisMatrix(mapState);
+        int[][] mapStateAfterRowsAreDeleted = HelperMethods.deleteRows(mapStateCopy);
+        
+        EnclosedAreasD d = new EnclosedAreasD();
+        separateScores[0] = FitnessTests.towerHeight(mapStateAfterRowsAreDeleted);
+        separateScores[1] = d.countRoofs(mapStateAfterRowsAreDeleted);
+        separateScores[2] = d.countEnclosedAreas(mapStateAfterRowsAreDeleted);
+        separateScores[3] = HelperMethods.getDeletedRows(mapState);
+        if (doDebugMessages) {
+            HelperMethods.printMatrixContentsInChatUsingLetters(mapState);
+            System.out.println("tower height: " + separateScores[0]);
+            System.out.println("roofs: " + separateScores[1]);
+            System.out.println("enclosed areas: " + separateScores[2]);
+            System.out.println("deleted rows: " + separateScores[3]);
+        }
         return separateScores;
     }
 

@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 public class HelperMethods {
 
+    private static boolean doDebugMessages = false;
     public static void main(String[] args) {
         // int[][] shape = { { 1, 1 }, { 1, 1 } };
         // int[][] mapArray = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 2, 0 }, { 0, 2,
@@ -77,9 +78,7 @@ public class HelperMethods {
                     returnArrayList.add(fMState);
                 }
             }
-            System.out.println("generated all");
         }
-        System.out.println("generated all");
         return getWithoutRepeatedElements(returnArrayList);
     }
 
@@ -409,8 +408,36 @@ public class HelperMethods {
             pasteRow(returnMatrix.length - counter - 1, returnMatrix, input, saveRowIndexes.get(index));
             counter++;
         }
-        BotPentis.score += rowDeletedAmount * rowDeletedAmount * 10;
+        BotPentis.score += rowDeletedAmount;
+        if (doDebugMessages) {
+            System.out.println("Score increased by: " + rowDeletedAmount);
+        }
         return returnMatrix;
+    }
+    /**
+     * 
+     * @param input
+     * @return returns the number of rows deleted
+     */
+    public static int getDeletedRows(int[][] input) {
+        int rowDeletedAmount = 0;
+        ArrayList<Integer> saveRowIndexes = new ArrayList<Integer>();
+
+        for (int index = 0; index < input.length; index++) {
+            if (isRowFull(input, index) == false) {
+                saveRowIndexes.add(index);
+            } else {
+                rowDeletedAmount++;
+            }
+        }
+        int counter = 0;
+        int[][] returnMatrix = new int[input.length][input[0].length];
+        for (int index = saveRowIndexes.size() - 1; index >= 0; index--) {
+
+            pasteRow(returnMatrix.length - counter - 1, returnMatrix, input, saveRowIndexes.get(index));
+            counter++;
+        }
+        return rowDeletedAmount;
     }
 
     private static void pasteRow(int returnIndex, int[][] returnMatrix, int[][] inputMatrix, int inputIndex) {

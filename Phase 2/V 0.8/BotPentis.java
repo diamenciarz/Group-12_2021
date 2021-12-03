@@ -21,7 +21,7 @@ public class BotPentis {
     final static int displayDelay = 100;
     private static int gamesLeft = Integer.MAX_VALUE;
     private static boolean doDebugMessages = true;
-    private static boolean displaySteps = false;
+    private static boolean displaySteps = true;
 
     // Bot
     public static BotListener botListener = new BotListener();
@@ -257,7 +257,7 @@ public class BotPentis {
     }
 
     private static void placeShapeOnMap(int[][] shape, int xPosition, int yPosition) {
-        score++;
+        // score++;
         currentMapMatrix = HelperMethods.placeShapeOnMatrix(currentMapMatrix, shape, xPosition, yPosition);
     }
 

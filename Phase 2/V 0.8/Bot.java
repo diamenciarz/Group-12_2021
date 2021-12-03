@@ -33,7 +33,6 @@ public class Bot {
         }
         weights = readWeights();
         if (doDebugMessages) {
-            HelperMethods.printArrayContentsInChat(weights);
         }
     }
 
@@ -68,7 +67,6 @@ public class Bot {
 
     private static FutureMapState getBestMove(int[][] shape, int[][] mapArray) {
         ArrayList<FutureMapState> possibleMoves = HelperMethods.generatePossibleMovesList(shape, mapArray, weights);
-        HelperMethods.printArrayListUsingLetters(possibleMoves);
 
         int bestMoveIndex = getBestMoveIndex(possibleMoves);
         return possibleMoves.get(bestMoveIndex);
