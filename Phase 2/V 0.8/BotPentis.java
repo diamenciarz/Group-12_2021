@@ -4,7 +4,7 @@ public class BotPentis {
 
     static UI ui = new UI();
     public static int xMapSize = 5;
-    public static int yMapSize = 20;
+    public static int yMapSize = 12;
 
     // Private variables
     private static int[][] currentShape;
@@ -17,11 +17,12 @@ public class BotPentis {
     private static ArrayList<int[][]> shapesQueue = new ArrayList<>();
 
     // Timer variables
-    final static int startDelay = 1000;
-    final static int displayDelay = 100;
+    final static int START_DELAY = 1000;
+    final static long DISPLAY_DELAY = 100;
     private static int gamesLeft = Integer.MAX_VALUE;
     private static boolean doDebugMessages = true;
-    private static boolean displaySteps = false;
+    private static boolean displaySteps = true;
+
 
     // Bot
     public static BotListener botListener = new BotListener();
@@ -30,7 +31,8 @@ public class BotPentis {
      * 
      * @return score from the game
      */
-    public static double playGames(int amount) {
+    public static double playGames(int amount, boolean setDisplaySteps) {
+        displaySteps = setDisplaySteps;
         gamesLeft = amount;
         startBotGame();
         while (gamesLeft > 0) {
@@ -62,7 +64,8 @@ public class BotPentis {
 
     private static void resetScore() {
         if (doDebugMessages) {
-            System.out.println("Score this game: " + score);
+            // System.out.println("Score this game: " + score);
+            System.out.println(score + ",");
         }
         AutomaticPlayer.totalScore += score;
         score = 0;
@@ -261,6 +264,7 @@ public class BotPentis {
 
     private static void displayMap() {
         if (displaySteps) {
+            waitTime(DISPLAY_DELAY);
             ui.updateGrid(currentMapMatrix, score);
         }
     }
@@ -272,5 +276,11 @@ public class BotPentis {
 
     private static int[][] GetEmptyMap() {
         return HelperMethods.getEmptyMatrix(xMapSize, yMapSize);
+    }
+    private static void waitTime(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (Exception e) {
+        }
     }
 }

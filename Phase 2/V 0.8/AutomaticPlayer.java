@@ -6,7 +6,7 @@ public class AutomaticPlayer {
     private static int gameAmount = 100;
 
     public static void main(String[] args) {
-        double[] newWeights = {10,30,3,-3000,0};
+        double[] newWeights = { 100, 30, 30, -3000, 0 };
         playGames(newWeights, gameAmount);
     }
 
@@ -20,7 +20,7 @@ public class AutomaticPlayer {
         Bot.setWeights(weights);
 
         System.out.println("Game playing");
-        BotPentis.playGames(gameAmount);
+        BotPentis.playGames(gameAmount, false);
         try {
             countAverageScore();
             printScore();
