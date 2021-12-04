@@ -21,7 +21,7 @@ public class BotPentis {
     final static int displayDelay = 100;
     private static int gamesLeft = Integer.MAX_VALUE;
     private static boolean doDebugMessages = true;
-    private static boolean displaySteps = true;
+    private static boolean displaySteps = false;
 
     // Bot
     public static BotListener botListener = new BotListener();
@@ -138,18 +138,16 @@ public class BotPentis {
             dropShapeOnMap();
         }
         displayMap();
-        // displayShapeOnMap(currentShape, currentShapeXPosition,
-        // currentShapeYPosition);
         currentMapMatrix = HelperMethods.botDeleteRows(currentMapMatrix);
     }
 
     private static void dropShapeOnMap() {
         int yPositions = currentMapMatrix.length - currentShape.length;
         for (int i = 0; i < yPositions; i++) {
-            tryMoveCurrentShape(0, 1);
             if (HelperMethods.areTwoFiguresOverlapping(getCurrentShapePlacedOnGrid(), currentMapMatrix)) {
                 return;
             }
+            tryMoveCurrentShape(0, 1);
         }
     }
 
@@ -263,7 +261,7 @@ public class BotPentis {
 
     private static void displayMap() {
         if (displaySteps) {
-            ui.updateGrid(currentMapMatrix);
+            ui.updateGrid(currentMapMatrix, score);
         }
     }
 

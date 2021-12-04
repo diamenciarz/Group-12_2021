@@ -368,7 +368,7 @@ public class HelperMethods {
     // endregion
 
     // region Delete Rows
-    public static int[][] deleteRows(int[][] input) {
+    public static int[][] deleteRows(int[][] input, boolean modifyScore) {
         int rowDeletedAmount = 0;
         ArrayList<Integer> saveRowIndexes = new ArrayList<Integer>();
 
@@ -386,7 +386,9 @@ public class HelperMethods {
             pasteRow(returnMatrix.length - counter - 1, returnMatrix, input, saveRowIndexes.get(index));
             counter++;
         }
-        Pentis.score += rowDeletedAmount;
+        if (modifyScore) {
+            Pentis.score += rowDeletedAmount;
+        }
         return returnMatrix;
     }
 

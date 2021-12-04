@@ -32,7 +32,7 @@ public class Pentis {
     public static void main(String[] args) throws InterruptedException {
 
         startProgram();
-        //highScores.add(0);
+        // highScores.add(0);
     }
 
     // Startup methods
@@ -42,10 +42,9 @@ public class Pentis {
 
         int[][] shapePlacedOnGrid = HelperMethods.placeShapeOnMatrix(GetEmptyMap(), currentShape, currentShapeXPosition,
                 currentShapeYPosition);
-        ui.updateGrid(shapePlacedOnGrid);
+        ui.updateGrid(shapePlacedOnGrid, score);
         // Enter Loop
         setupStartingVariables = true;
-
 
         // Timer start
         doSlowTimer();
@@ -72,15 +71,13 @@ public class Pentis {
         }
         currentShape = shapesQueue.get(0);
         shapesQueue.remove(0);
-        
+
         resetCurrentShapePosition();
 
         if (!doesNextShapeFitOnMap()) {
 
             ResetMap();
         }
-
-       
 
     }
 
@@ -157,7 +154,7 @@ public class Pentis {
                 checkBottomCollision(deltaY);
             }
         }
-        currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix);
+        currentMapMatrix = HelperMethods.deleteRows(currentMapMatrix, true);
 
     }
 
@@ -249,7 +246,7 @@ public class Pentis {
 
     private static void displayShapeOnMap(int[][] shape, int xPosition, int yPosition) {
         int[][] displayMatrix = HelperMethods.placeShapeOnMatrix(currentMapMatrix, shape, xPosition, yPosition);
-        ui.updateGrid(displayMatrix);
+        ui.updateGrid(displayMatrix, score);
     }
 
     private static void resetCurrentShapePosition() {
@@ -265,11 +262,13 @@ public class Pentis {
         spaceTime.start();
         normalTime.stop();
     }
+
     public static void doSlowTimer() {
         spaceTime.stop();
         normalTime.start();
     }
-    public static void resetTimer(){
+
+    public static void resetTimer() {
         normalTime.restart();
     }
 }

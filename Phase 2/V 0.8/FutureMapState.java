@@ -33,7 +33,7 @@ public class FutureMapState {
         double[] separateScores = new double[4];
 
         int[][] mapStateCopy = HelperMethods.getACopyOfThisMatrix(mapState);
-        int[][] mapStateAfterRowsAreDeleted = HelperMethods.deleteRows(mapStateCopy);
+        int[][] mapStateAfterRowsAreDeleted = HelperMethods.deleteRows(mapStateCopy, false);
         
         EnclosedAreasD d = new EnclosedAreasD();
         separateScores[0] = FitnessTests.towerHeight(mapStateAfterRowsAreDeleted);
