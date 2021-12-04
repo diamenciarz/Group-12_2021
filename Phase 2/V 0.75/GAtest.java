@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 public class GAtest {
 
+<<<<<<< HEAD
     // populations size
     static int populationSize = 10;
     static double mutationRate = 0.2;
@@ -11,6 +12,16 @@ public class GAtest {
     public static void main(String[] args) {
 
         // empty poop array
+=======
+    // Changeable variables
+    static int populationSize = 10;
+    static double mutationRate = 0.2;
+    static int selectionAmount = 5;
+
+    public static void main(String[] args) {
+
+        // empty pop array
+>>>>>>> d158b094497fd2b9a6a8ebd45edec8b27ff7387d
         Individual[] population = new Individual[populationSize];
 
         System.out.println("..............................................................");
@@ -20,8 +31,18 @@ public class GAtest {
         population = geneticAlgorithms.initialisePopulation(populationSize);
         printPopulation(population);
 
+<<<<<<< HEAD
         // CROSSOVER
         geneticAlgorithms.crossover(population);
+=======
+        // SELECTION
+        population = geneticAlgorithms.selectPop(population, selectionAmount);
+        System.out.println("\nSelection");
+        printPopulation(population);
+
+        // CROSSOVER
+        population = geneticAlgorithms.crossover(population, populationSize);
+>>>>>>> d158b094497fd2b9a6a8ebd45edec8b27ff7387d
         System.out.println("\nCrossover");
         printPopulation(population);
 
@@ -30,7 +51,10 @@ public class GAtest {
         geneticAlgorithms.mutation(population, mutationRate);
         printPopulation(population);
 
+<<<<<<< HEAD
         
+=======
+>>>>>>> d158b094497fd2b9a6a8ebd45edec8b27ff7387d
     }
 
     /**
