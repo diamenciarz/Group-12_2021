@@ -151,7 +151,6 @@ public class UI extends JPanel{
         try {
             pentisLogo = ImageIO.read(getClass().getResource("pentisGameLogo.png"));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         pentisLogo = pentisLogo.getScaledInstance(200, 200, java.awt.Image.SCALE_SMOOTH);
@@ -312,11 +311,4 @@ public class UI extends JPanel{
         frame.addKeyListener(new Input());
     }
 
-    private void waitTime(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (Exception e) {
-        }
-    }
-    
 }

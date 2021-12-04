@@ -20,7 +20,7 @@ public class BotPentis {
     final static int START_DELAY = 1000;
     final static long DISPLAY_DELAY = 100;
     private static int gamesLeft = Integer.MAX_VALUE;
-    private static boolean doDebugMessages = true;
+    private static boolean doDebugMessages = false;
     private static boolean displaySteps = true;
 
 

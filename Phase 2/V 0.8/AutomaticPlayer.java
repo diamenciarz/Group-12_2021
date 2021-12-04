@@ -3,10 +3,10 @@ public class AutomaticPlayer {
     public static double totalScore;
     private static double averageScore;
 
-    private static int gameAmount = 100;
+    private static int gameAmount = 1000;
 
     public static void main(String[] args) {
-        double[] newWeights = { 100, 30, 30, -3000, 0 };
+        double[] newWeights = { 100, 10, 30, -100, 30, -50, -100 };
         playGames(newWeights, gameAmount);
     }
 

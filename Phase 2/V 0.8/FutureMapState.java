@@ -30,22 +30,31 @@ public class FutureMapState {
 
     private double[] getErrorArray() {
 
-        double[] separateScores = new double[4];
+        double[] separateScores = new double[7];
 
         int[][] mapStateCopy = HelperMethods.getACopyOfThisMatrix(mapState);
-        int[][] mapStateAfterRowsAreDeleted = HelperMethods.deleteRows(mapStateCopy, false);
-        
+        int[][] mapStateWithDeletedRows = HelperMethods.deleteRows(mapStateCopy, false);
+
         EnclosedAreasD d = new EnclosedAreasD();
-        separateScores[0] = FitnessTests.towerHeight(mapStateAfterRowsAreDeleted);
-        separateScores[1] = d.countRoofs(mapStateAfterRowsAreDeleted);
-        separateScores[2] = d.countEnclosedAreas(mapStateAfterRowsAreDeleted);
+        // I'm using two different map states as input on purpose
+        // Some methods benefit from seeing the map state before rows were deleted
+        // While other benefit from seeing the final map state
+        separateScores[0] = FitnessTests.towerHeight(mapStateWithDeletedRows);
+        separateScores[1] = d.countRoofs(mapStateWithDeletedRows);
+        separateScores[2] = d.countEnclosedAreas(mapStateWithDeletedRows);
         separateScores[3] = HelperMethods.getDeletedRows(mapState);
+        separateScores[4] = d.countBlocksNextToWalls(mapStateWithDeletedRows);
+        separateScores[5] = d.countConnectedBlocks(mapState);
+        separateScores[6] = d.countConnectionsBetweenBlocks(mapState);
         if (doDebugMessages) {
             HelperMethods.printMatrixContentsInChatUsingLetters(mapState);
             System.out.println("tower height: " + separateScores[0]);
             System.out.println("roofs: " + separateScores[1]);
             System.out.println("enclosed areas: " + separateScores[2]);
             System.out.println("deleted rows: " + separateScores[3]);
+            System.out.println("blocks next to walls: " + separateScores[4]);
+            System.out.println("connected blocks: " + separateScores[5]);
+            System.out.println("block connections: " + separateScores[6]);
         }
         return separateScores;
     }

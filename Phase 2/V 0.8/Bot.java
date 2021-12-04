@@ -11,7 +11,7 @@ public class Bot {
     static Random random = new Random();
 
     // Numerical variables
-    static double[] weights = new double[5];
+    static double[] weights = new double[8];
     static boolean doDebugMessages = false;
     private static boolean useFile = false;
 

@@ -1,19 +1,20 @@
 public class EnclosedAreasD {
 
     private boolean doDebugMessages = false;
+
     public static void main(String[] args) {
         EnclosedAreasD e = new EnclosedAreasD();
         int[][] map = {
                 { 0, 0, 0, 0, 0 },
-                { 0, 2, 2, 0, 0 },
+                { 0, 2, 0, 0, 0 },
                 { 0, 2, 2, 0, 0 },
                 { 0, 0, 2, 0, 0 },
                 { 2, 0, 2, 0, 0 },
         };
-        System.out.println(e.countRoofs(map));
-        // System.out.println(e.checkFloorDepth(map, 1, 3));
-        // System.out.println(e.checkRoofHeight(map, 1, 3));
+        System.out.println(e.countConnectionsBetweenBlocks(map));
     }
+
+    // region Recursive methods
 
     public int countEnclosedAreas(int[][] mapMatrix) {
         int[][] temporaryHelperArray = HelperMethods.getACopyOfThisMatrix(mapMatrix);
@@ -67,6 +68,8 @@ public class EnclosedAreasD {
         return countNewTiles;
     }
 
+    // region Helper methods
+
     private boolean checkIfCanGo(int[][] inputArray, int xPosition, int yPosition) {
         if (isOutOfBounds(inputArray, xPosition, yPosition)) {
             return false;
@@ -91,6 +94,7 @@ public class EnclosedAreasD {
             return true;
         return false;
     }
+
     private boolean isTouchingItself(int[][] inputArray, int xPosition, int yPosition) {
         boolean tileEmpty = inputArray[yPosition][xPosition] == 12;
         if (tileEmpty)
@@ -168,7 +172,8 @@ public class EnclosedAreasD {
     }
 
     private int checkRoofHeight(int[][] mapState, int xPosition, int yPosition) {
-        if (!(isOutOfBounds(mapState, xPosition, yPosition - 1) || isTouchingItself(mapState, xPosition, yPosition - 1))) {
+        if (!(isOutOfBounds(mapState, xPosition, yPosition - 1)
+                || isTouchingItself(mapState, xPosition, yPosition - 1))) {
             if (checkIfTileEmpty(mapState, xPosition, yPosition - 1)) {
                 int returnedValue = checkRoofHeight(mapState, xPosition, yPosition - 1);
                 if (returnedValue == 0) {
@@ -187,7 +192,8 @@ public class EnclosedAreasD {
     }
 
     private int checkFloorDepth(int[][] mapState, int xPosition, int yPosition) {
-        if (!(isOutOfBounds(mapState, xPosition, yPosition + 1)|| isTouchingItself(mapState, xPosition, yPosition + 1))) {
+        if (!(isOutOfBounds(mapState, xPosition, yPosition + 1)
+                || isTouchingItself(mapState, xPosition, yPosition + 1))) {
             if (checkIfTileEmpty(mapState, xPosition, yPosition + 1)) {
                 int returnedValue = checkFloorDepth(mapState, xPosition, yPosition + 1);
                 if (returnedValue == 0) {
@@ -204,4 +210,107 @@ public class EnclosedAreasD {
             return 1;
         }
     }
+
+    // endregion
+
+    // endregion
+
+    // region Check if connected
+    public int countBlocksNextToWalls(int[][] mapMatrix) {
+        int mapHeight = mapMatrix.length;
+        int mapLength = mapMatrix[0].length;
+        int points = 0;
+        for (int i = 0; i < mapHeight; i++) {
+            if (mapMatrix[i][0] != 0) {
+                points++;
+            }
+        }
+        for (int i = 0; i < mapHeight; i++) {
+            if (mapMatrix[i][mapLength - 1] != 0) {
+                points++;
+            }
+        }
+        return points;
+    }
+
+    public int countConnectedBlocks(int[][] mapMatrix) {
+        int mapHeight = mapMatrix.length;
+        int mapLength = mapMatrix[0].length;
+        int points = 0;
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapLength; x++) {
+                if (isConnected(mapMatrix, x, y)) {
+                    points++;
+                }
+            }
+        }
+        return points;
+    }
+
+    private boolean isConnected(int[][] inputArray, int xPosition, int yPosition) {
+        // Check right
+        if (checkIfIsTouching(inputArray, xPosition + 1, yPosition)) {
+            return true;
+        }
+        // Check left
+        if (checkIfIsTouching(inputArray, xPosition - 1, yPosition)) {
+            return true;
+        }
+        // Check top
+        if (checkIfIsTouching(inputArray, xPosition, yPosition + 1)) {
+            return true;
+        }
+        // Check bottom
+        if (checkIfIsTouching(inputArray, xPosition, yPosition - 1)) {
+            return true;
+        }
+        return false;
+    }
+    // endregion
+
+    // region Count connections
+    public int countConnectionsBetweenBlocks(int[][] mapMatrix) {
+        int mapHeight = mapMatrix.length;
+        int mapLength = mapMatrix[0].length;
+        int points = 0;
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapLength; x++) {
+                points += checkConnections(mapMatrix, x, y);
+            }
+        }
+        return points;
+    }
+
+    private int checkConnections(int[][] inputArray, int xPosition, int yPosition) {
+        int connections = 0;
+        // Check right
+        if (checkIfIsTouching(inputArray, xPosition + 1, yPosition)) {
+            connections++;
+        }
+        // Check left
+        if (checkIfIsTouching(inputArray, xPosition - 1, yPosition)) {
+            connections++;
+        }
+        // Check top
+        if (checkIfIsTouching(inputArray, xPosition, yPosition + 1)) {
+            connections++;
+        }
+        // Check bottom
+        if (checkIfIsTouching(inputArray, xPosition, yPosition - 1)) {
+            connections++;
+        }
+        return connections;
+    }
+
+    // endregion
+
+    // region Helper methods
+    private boolean checkIfIsTouching(int[][] inputArray, int xPosition, int yPosition) {
+        if (isOutOfBounds(inputArray, xPosition, yPosition)) {
+            return false;
+        }
+        return !checkIfTileEmpty(inputArray, xPosition, yPosition);
+    }
+    // endregion
+
 }
