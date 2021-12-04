@@ -6,9 +6,11 @@
 //import java.awt.event.KeyEvent;
 //import java.awt.event.ActionEvent;
 //import java.awt.event.ActionListener;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 /**
  * This class takes care of all the graphics to display a certain state.
@@ -132,25 +134,41 @@ public class UI extends JPanel{
 
     private void CreateDisplay() {
 
-        //gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        gridPanel.setBounds(10, 10, 273,681);
-        gridPanel.setLayout(new GridLayout(0, 1));
+        Image pentisLogo = null;
+        try {
+            pentisLogo = ImageIO.read(getClass().getResource("pentisGameLogo.png"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        pentisLogo = pentisLogo.getScaledInstance(200, 200, java.awt.Image.SCALE_SMOOTH);
+        ImageIcon pentisIcon = new ImageIcon(pentisLogo);
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(pentisIcon);
+        //imageLabel.setHorizontalAlignment(800);
+
+        JPanel logoPanel = new JPanel();
+        logoPanel.setBounds(281+10+10, 10+200+10+200+10, 200, 200);
+        logoPanel.setBackground(new Color(249,207,221));
+        logoPanel.add(imageLabel);
+
+
+        // gridPanel location and size
+        gridPanel.setBounds(10, 10, 281,673);
+        //gridPanel.setLayout(new GridLayout(0, 1));
+        gridPanel.setLayout(new BorderLayout());
         gridPanel.add(this);
 
         highscoresPanel.add(invisHighscoresPanel);
         highscoresPanel.setBackground(Color.lightGray);
-        highscoresPanel.setBounds(10+10+273, 10, 200,200);
 
-        //ScoreListener scoreListener = new ScoreListener();
-        //Pentis.score.addActionListener(scoreListener);
-        //highScores = 
+        // highscoresPanel location and size
+        highscoresPanel.setBounds(10+10+281, 10, 200,200);
 
-        //scoreLabel = new JLabel("Score: 0");
-        //scoreLabel = new JLabel();
-        //scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
         scorePanel.setBackground(Color.lightGray    );
-        //scorePanel.setLayout(new GridLayout(0, 1));
-        scorePanel.setBounds(10+10+273,10+10+200,200,200);
+        // scorePanel location and size
+        scorePanel.setBounds(10+10+281,10+10+200,200,200);
         invisHighscoresPanel.setLayout(new GridLayout(6,0));
         invisHighscoresPanel.setBackground(Color.lightGray);
         invisHighscoresPanel.setBounds(10+10+273 + 10, 10 + 10, 180,180);
@@ -164,26 +182,20 @@ public class UI extends JPanel{
         invisHighscoresPanel.add(rank4);
         invisHighscoresPanel.add(rank5);
 
-
-
-        //frame.setLayout(new GridLayout(0, 1));
-        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         frame.getContentPane().setBackground(new Color(249,207,221));
-        //frame.getContentPane().setBackground(Color.black);
 
         frame.setLocationRelativeTo(null);
-        frame.setTitle("Pentominotris");
+        frame.setTitle("Pentis");
         frame.setLayout(null);
-        frame.setSize(503,880);
-        //frame.pack();
+        frame.pack();
+        frame.setSize(10+10+10+281+200,720);
         frame.setVisible(true);
 
         frame.add(gridPanel);
         frame.add(highscoresPanel);
         frame.add(scorePanel);
+        frame.add(logoPanel);
        
         hasCreatedDisplay = true;
         setupKeyListener();
@@ -261,16 +273,20 @@ public class UI extends JPanel{
     }
 
     /**
-     * This function should be called to update the displayed state (makes a copy)
      * 
-     * @param _state information about the new state of the GUI
+     * @param x matrix rows
+     * @param y matrix columns
+     * @return square size
      */
     private int CountSquareSize(int x, int y) {
         int xScreenSize = 1920 - 400;
         int yScreenSize = 1080 - 400;
 
-        int squareLength = yScreenSize / x;
-        int squareHeight = xScreenSize / y;
+        int squareLength = yScreenSize / x; 
+        int squareHeight = xScreenSize / y; 
+
+        // System.out.println(squareHeight);
+        // System.out.println(squareLength);
 
         if (squareHeight > squareLength) {
             return squareLength;
