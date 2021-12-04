@@ -17,7 +17,6 @@ public class FitnessTests {
         // work mode 0: open roof score
         // work mode 1: enclosed area score
         // work mode 2: irregulatrity score
-
         System.out.println("Open roof score: " + roofMethod(testMatrix, 0));
         
         System.out.println("Enclosed area score: " + roofMethod(testMatrix, 1));
