@@ -8,6 +8,8 @@
 //import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -28,13 +30,13 @@ public class UI extends JPanel{
     JPanel scorePanel = new JPanel();
     JPanel highscoresPanel = new JPanel();
     JPanel invisHighscoresPanel = new JPanel();
-    JLabel scoreLabel = new JLabel("Score: 0");
-    JLabel highScoresLabel = new JLabel("Highscores: ");
-    JLabel rank1 = new JLabel("Rank 1: ");
-    JLabel rank2 = new JLabel("Rank 2: ");
-    JLabel rank3 = new JLabel("Rank 3: ");
-    JLabel rank4 = new JLabel("Rank 4: ");
-    JLabel rank5 = new JLabel("Rank 5: ");
+    JLabel scoreLabel = new JLabel("SCORE: 0");
+    JLabel highScoresLabel = new JLabel("HIGHSCORES: ");
+    JLabel rank1 = new JLabel("RANK 1: ");
+    JLabel rank2 = new JLabel("RANK 2: ");
+    JLabel rank3 = new JLabel("RANK 3: ");
+    JLabel rank4 = new JLabel("RANK 4: ");
+    JLabel rank5 = new JLabel("RANK 5: ");
     JLabel labelTitle;
     JLabel trialsLabel;
     Font font1;
@@ -68,14 +70,16 @@ public class UI extends JPanel{
     public void updateGrid(int[][] matrixToDisplay) {
 
         //score = Pentis.score;
-        scoreLabel.setText("Score: " + Integer.toString(Pentis.score));
+        scoreLabel.setText("SCORE: " + Integer.toString(Pentis.score));
         //highScoresLabel.setText("High");
         //highScoresLabel.setText(HelperMethods.highScoreOrdered(Pentis.highScores));
-        rank1.setText("Rank 1: " + Pentis.sortedHighscores[0]);
-        rank2.setText("Rank 2: " + Pentis.sortedHighscores[1]);
-        rank3.setText("Rank 3: " + Pentis.sortedHighscores[2]);
-        rank4.setText("Rank 4: " + Pentis.sortedHighscores[3]);
-        rank5.setText("Rank 5: " + Pentis.sortedHighscores[4]);
+        rank1.setText("RANK 1: " + Pentis.sortedHighscores[0]);
+        rank2.setText("RANK 2: " + Pentis.sortedHighscores[1]);
+        rank3.setText("RANK 3: " + Pentis.sortedHighscores[2]);
+        rank4.setText("RANK 4: " + Pentis.sortedHighscores[3]);
+        rank5.setText("RANK 5: " + Pentis.sortedHighscores[4]);
+
+        
 
 
 
@@ -134,6 +138,22 @@ public class UI extends JPanel{
 
     private void CreateDisplay() {
 
+        Font myFont = new Font("Calibri", Font.BOLD, 23);
+
+        scoreLabel.setForeground(new Color(110,203,219));
+        highScoresLabel.setForeground(new Color(110,203,219));
+        rank1.setForeground(new Color(238,63,88));
+        rank2.setForeground(new Color(246,131,37));
+        rank3.setForeground(new Color(248,182,25));
+        rank4.setForeground(new Color(60,177,74));
+        rank5.setForeground(new Color(10,183,237));
+
+        scoreLabel.setFont(myFont);
+        highScoresLabel.setFont(myFont);
+
+
+        Color panelColor = new Color(15,22,33);
+
         Image pentisLogo = null;
         try {
             pentisLogo = ImageIO.read(getClass().getResource("pentisGameLogo.png"));
@@ -149,7 +169,7 @@ public class UI extends JPanel{
 
         JPanel logoPanel = new JPanel();
         logoPanel.setBounds(281+10+10, 10+200+10+200+10, 200, 200);
-        logoPanel.setBackground(new Color(249,207,221));
+        logoPanel.setBackground(new Color(44,50,128));
         logoPanel.add(imageLabel);
 
 
@@ -160,17 +180,17 @@ public class UI extends JPanel{
         gridPanel.add(this);
 
         highscoresPanel.add(invisHighscoresPanel);
-        highscoresPanel.setBackground(Color.lightGray);
+        highscoresPanel.setBackground(panelColor);
 
         // highscoresPanel location and size
         highscoresPanel.setBounds(10+10+281, 10, 200,200);
 
         
-        scorePanel.setBackground(Color.lightGray    );
+        scorePanel.setBackground(panelColor);
         // scorePanel location and size
         scorePanel.setBounds(10+10+281,10+10+200,200,200);
         invisHighscoresPanel.setLayout(new GridLayout(6,0));
-        invisHighscoresPanel.setBackground(Color.lightGray);
+        invisHighscoresPanel.setBackground(panelColor);
         invisHighscoresPanel.setBounds(10+10+273 + 10, 10 + 10, 180,180);
         //scoreLabel.setAlignmentY(SwingConstants.CENTER);
         scorePanel.add(scoreLabel);
@@ -183,7 +203,7 @@ public class UI extends JPanel{
         invisHighscoresPanel.add(rank5);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setBackground(new Color(249,207,221));
+        frame.getContentPane().setBackground(new Color(44,50,128));
 
         frame.setLocationRelativeTo(null);
         frame.setTitle("Pentis");
@@ -212,7 +232,7 @@ public class UI extends JPanel{
         localGraphics2D.fill(getVisibleRect());
 
         // draw lines
-        localGraphics2D.setColor(new Color(230,230,200));
+        localGraphics2D.setColor(new Color(0,0,0));
         for (int i = 0; i <= state.length; i++) {
             localGraphics2D.drawLine(i * size, 0, i * size, state[0].length * size);
         }
@@ -244,31 +264,31 @@ public class UI extends JPanel{
      */
     private Color GetColorOfID(int i) {
         if (i == 1) {
-            return Color.BLUE;
+            return new Color(0,102,204); // blue
         } else if (i == 2) {
-            return Color.ORANGE;
+            return new Color(245,136,34); // orange
         } else if (i == 3) {
-            return Color.CYAN;
+            return new Color(23,189,235); // cyan
         } else if (i == 4) {
-            return Color.GREEN;
+            return new Color(94,186,71); // green
         } else if (i == 5) {
-            return Color.MAGENTA;
+            return new Color(238,62,88); // magenta
         } else if (i == 6) {
-            return Color.PINK;
+            return new Color(255,102,102); // pinky
         } else if (i == 7) {
-            return Color.RED;
+            return new Color(204,0,0); // reddy
         } else if (i == 8) {
-            return Color.YELLOW;
+            return new Color(255,199,34); // yellow
         } else if (i == 9) {
-            return new Color(0, 0, 0);
+            return new Color(167,62,151); // purple
         } else if (i == 10) {
-            return new Color(0, 0, 100);
+            return new Color(102, 102, 255);
         } else if (i == 11) {
-            return new Color(100, 0, 0);
+            return new Color(178, 255, 102);
         } else if (i == 12) {
-            return new Color(0, 100, 0);
+            return new Color(255, 51, 255);
         } else {
-            return Color.WHITE;
+            return new Color(15,22,33);
         }
     }
 
