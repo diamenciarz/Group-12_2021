@@ -42,7 +42,7 @@ public class GeneticAlgorithms {
             //population[i].setFitness(random.nextInt(20));
 
             // Setting fitness
-            population[i].setFitness(AutomaticPlayer.playGames(population[i].weights, AutomaticPlayer.gameAmount));
+            population[i].setFitness(AutomaticPlayer.playGames(population[i].weights, 1));
             
 		}
 
@@ -140,9 +140,9 @@ public class GeneticAlgorithms {
         
         Individual[] mutatedpopulation = newPopulation;
 
-        for (int i = 0; i < GAtest.populationSize; i++){
+        for (int i = 0; i < newPopulation.length; i++){
 
-            for( int j=0; j<mutatedpopulation[0].weights.length; j++){
+            for( int j = 0 ; j < mutatedpopulation[0].weights.length ; j++){
                 //double mutationrate=0.5;
 			    //double[] tempWeights = new double[5];
 

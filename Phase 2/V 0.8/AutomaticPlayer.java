@@ -5,9 +5,43 @@ public class AutomaticPlayer {
 
     static int gameAmount = 1000;
 
+     // GA variables
+     static int populationSize = 10;
+     static double mutationRate = 0.2;
+     static int selectionAmount = 2;
+
     public static void main(String[] args) {
         double[] newWeights = { 100, 10, 30, -100, 30, -50, -100 };
-        playGames(newWeights, gameAmount);
+
+        System.out.println("..............................................................");
+
+        // INITIALISE
+        Individual[] population = new Individual[populationSize];
+        population = GeneticAlgorithms.initialisePopulation(population.length);
+
+       
+        
+        for (int i = 0 ; i < population.length ; i++) {
+
+             // SELECTION
+            population = GeneticAlgorithms.selectPop(population, selectionAmount);
+
+            // CROSSOVER
+            population = GeneticAlgorithms.crossover(population, populationSize);
+
+            // MUTATION
+            population = GeneticAlgorithms.mutation(population, mutationRate);
+            
+            // PLAY GAMES
+
+            for (int j = 0 ; j < population[0].weights.length ; j++) {
+                playGames(population[i].weights, gameAmount);
+            }
+            
+        }
+
+        //playGames(newWeights, gameAmount);
+        
     }
 
     /**
