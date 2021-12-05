@@ -6,7 +6,7 @@ import java.util.Random;
  * 3. a method to crossover selected Individuals
  * 4. a method to mutated the crossed-over Individuals
  */
-public class geneticAlgorithms {
+public class GeneticAlgorithms {
 
     /**
      * Initialise population
@@ -92,11 +92,11 @@ public class geneticAlgorithms {
                 Individual p1 = selectedPopulation[p1Selection];
                 Individual p2 = selectedPopulation[p2Selection];
 
-                System.out.println("p1: " + p1Selection);
-                System.out.println("p2: " + p2Selection);
+                //System.out.println("p1: " + p1Selection);
+                //System.out.println("p2: " + p2Selection);
             
                 int genome = random.nextInt(p1.weights.length); //0,1,2,3,4
-                System.out.println(genome);
+                //System.out.println(genome);
         
                 // copy from parent 1
                 Individual child = p1;

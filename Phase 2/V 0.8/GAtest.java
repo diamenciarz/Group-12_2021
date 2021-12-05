@@ -16,24 +16,24 @@ public class GAtest {
         System.out.println("..............................................................");
 
         // INITIALISE
-        System.out.println("\nInital population");
-        population = geneticAlgorithms.initialisePopulation(populationSize);
-        printPopulation(population);
+        population = GeneticAlgorithms.initialisePopulation(populationSize);
+        //System.out.println("\nInital population");
+        //printPopulation(population);
 
         // SELECTION
-        population = geneticAlgorithms.selectPop(population, selectionAmount);
-        System.out.println("\nSelection");
-        printPopulation(population);
+        population = GeneticAlgorithms.selectPop(population, selectionAmount);
+        //System.out.println("\nSelection");
+        //printPopulation(population);
 
         // CROSSOVER
-        population = geneticAlgorithms.crossover(population, populationSize);
-        System.out.println("\nCrossover");
-        printPopulation(population);
+        population = GeneticAlgorithms.crossover(population, populationSize);
+        //System.out.println("\nCrossover");
+        //printPopulation(population);
 
         // MUTATION
-        System.out.println("\nMutation");
-        geneticAlgorithms.mutation(population, mutationRate);
-        printPopulation(population);
+        population = GeneticAlgorithms.mutation(population, mutationRate);
+        //System.out.println("\nMutation");
+        //printPopulation(population);
 
     }
 
