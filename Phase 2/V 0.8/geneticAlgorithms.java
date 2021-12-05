@@ -13,6 +13,10 @@ public class geneticAlgorithms {
      * @return population as Individual[]
      */
     static Individual[] initialisePopulation(int populationSize) {
+
+        // number of weights
+        int numberOfWeights = 7;
+
         // population of individuals
         Individual[] population = new Individual[populationSize];
 
@@ -22,7 +26,7 @@ public class geneticAlgorithms {
 
         // Initialising the population with random double values (+- maximum double value)
 		for (int i = 0; i < populationSize; i++) {
-			double[] weights = new double[7];
+			double[] weights = new double[numberOfWeights];
 			for (int j = 0; j < weights.length; j++) {
                 if (random.nextBoolean()) {
                     weights[j] = random.nextDouble()*maximumDouble; //random double positive
@@ -33,9 +37,11 @@ public class geneticAlgorithms {
 			population[i] = new Individual(weights);
             
             // temporary random fitness
-            //setFitness(population[i]);
+            //population[i].setFitness(random.nextInt(20));
 
-            AutomaticPlayer.playGames(population[i].weights, AutomaticPlayer.gameAmount);
+            // Setting fitness
+            population[i].setFitness(AutomaticPlayer.playGames(population[i].weights, AutomaticPlayer.gameAmount));
+            
 		}
 
         return population;
@@ -60,19 +66,7 @@ public class geneticAlgorithms {
 
 
 
-    /**
-     * Temporary method to give each individual a random fitness score
-     * @param Individual
-     */
-    public static void setFitness(Individual Individual) {
-        Random random = new Random();
-
-        int randomScore = random.nextInt(20);
-        // double averageScore = stansMethod (Individual.weights, int games)
-
-        Individual.setFitness(randomScore);
-    
-    } 
+  
 
 
 
