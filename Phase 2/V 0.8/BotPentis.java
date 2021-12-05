@@ -42,7 +42,7 @@ public class BotPentis {
             }
             makeMoves();
         }
-        System.out.println("Game stopped");
+        //System.out.println("Game stopped");
         return score;
     }
 

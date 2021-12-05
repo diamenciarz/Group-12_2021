@@ -14,6 +14,8 @@ public class GeneticAlgorithms {
      */
     static Individual[] initialisePopulation(int populationSize) {
 
+        System.out.println("Population size: " + populationSize);
+
         // number of weights
         int numberOfWeights = 7;
 

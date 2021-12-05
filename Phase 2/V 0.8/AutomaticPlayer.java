@@ -19,7 +19,7 @@ public class AutomaticPlayer {
     public static double playGames(double[] weights, int gameAmount) {
         Bot.setWeights(weights);
 
-        System.out.println("Game playing");
+        //System.out.println("Game playing");
         BotPentis.playGames(gameAmount, false);
         try {
             countAverageScore();

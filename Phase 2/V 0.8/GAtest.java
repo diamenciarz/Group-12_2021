@@ -4,7 +4,7 @@ import java.util.Arrays;
 public class GAtest {
 
     // Changeable variables
-    static int populationSize = 10;
+    static int populationSize = 20;
     static double mutationRate = 0.2;
     static int selectionAmount = 5;
 
