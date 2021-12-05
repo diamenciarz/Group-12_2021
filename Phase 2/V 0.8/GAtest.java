@@ -3,14 +3,14 @@ import java.util.Arrays;
 
 public class GAtest {
 
-    // populations size
+    // Changeable variables
     static int populationSize = 10;
     static double mutationRate = 0.2;
-    
+    static int selectionAmount = 5;
 
     public static void main(String[] args) {
 
-        // empty poop array
+        // empty pop array
         Individual[] population = new Individual[populationSize];
 
         System.out.println("..............................................................");
@@ -20,8 +20,13 @@ public class GAtest {
         population = geneticAlgorithms.initialisePopulation(populationSize);
         printPopulation(population);
 
+        // SELECTION
+        population = geneticAlgorithms.selectPop(population, selectionAmount);
+        System.out.println("\nSelection");
+        printPopulation(population);
+
         // CROSSOVER
-        geneticAlgorithms.crossover(population);
+        population = geneticAlgorithms.crossover(population, populationSize);
         System.out.println("\nCrossover");
         printPopulation(population);
 
@@ -30,7 +35,6 @@ public class GAtest {
         geneticAlgorithms.mutation(population, mutationRate);
         printPopulation(population);
 
-        
     }
 
     /**
