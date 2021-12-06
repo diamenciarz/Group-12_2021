@@ -8,17 +8,17 @@ import java.util.Arrays;
 public class GABotTrainer {
 
     // Changeable variables
-    static int populationSize = 20;
+    static int populationSize = 10;
     static double mutationRate = 0.2;
     static int selectionAmount = 5;
-    private static int runs = 50;
+    private static int runs = 15;
     static double mutationRange = 30;
 
     public static void main(String[] args) throws IOException {
 
 
         // text file
-        FileWriter writer = new FileWriter("fittest2.txt");
+        FileWriter writer = new FileWriter("fittest.txt");
 		PrintWriter out = new PrintWriter(writer);
 
         // Arralist
@@ -29,17 +29,6 @@ public class GABotTrainer {
 
         System.out.println("..............................................................");
 
-        // INITIALISE
-        population = GAHelperMethods.initialisePopulation(populationSize);
-        //population = GAHelperMethods.crossover(population, populationSize);
-        // population = GAHelperMethods.mutation(population, mutationRate, mutationRange);
-        // for (int ind = 0 ; ind < population.length ; ind++) {
-        //     population[ind].setFitness(AutomaticPlayer.playGames(population[ind].weights, AutomaticPlayer.gameAmount));
-        // }
-
-        //System.out.println("\nInital population");
-        //printPopulation(population);
-
         for (int i = 0 ; i < runs ; i++) {
 
             // WHAT DOES MY POP LOOK LIKE
@@ -47,32 +36,35 @@ public class GABotTrainer {
             // printPopulation(population);
 
             if (i == 0 ) {
+                
+                // INITIALISE
+                population = GAHelperMethods.initialisePopulation(populationSize);
                 population = GAHelperMethods.mutation(population, mutationRate, mutationRange);
                 for (int ind = 0 ; ind < population.length ; ind++) {
                     population[ind].setFitness(AutomaticPlayer.playGames(population[ind].weights, AutomaticPlayer.gameAmount));
                 }
-                 // Sorting pop
+                // Sorting pop
                 HeapSort.sort(population);
             } else {
 
                 // SELECTION
-            Individual[] theSelected = new Individual[selectionAmount];
-            theSelected = GAHelperMethods.selectPop(population, selectionAmount);
-            System.out.println("\nSelection");
-            printPopulation(theSelected);
+                Individual[] theSelected = new Individual[selectionAmount];
+                theSelected = GAHelperMethods.selectPop(population, selectionAmount);
+                System.out.println("\nSelection");
+                printPopulation(theSelected);
 
-            // CROSSOVER
-            population = GAHelperMethods.crossover(theSelected, populationSize);
-            System.out.println("\nCrossover");
-            printPopulation(population);
+                // CROSSOVER
+                population = GAHelperMethods.crossover(theSelected, populationSize);
+                System.out.println("\nCrossover");
+                printPopulation(population);
 
-             // MUTATION
-             population = GAHelperMethods.mutation(population, mutationRate, mutationRange);
-             System.out.println("\nMutation");
-             printPopulation(population);
+                // MUTATION
+                population = GAHelperMethods.mutation(population, mutationRate, mutationRange);
+                System.out.println("\nMutation");
+                printPopulation(population);
 
-            for (int ind = 0 ; ind < population.length ; ind++) {
-                population[ind].setFitness(AutomaticPlayer.playGames(population[ind].weights, AutomaticPlayer.gameAmount));
+                for (int ind = 0 ; ind < population.length ; ind++) {
+                    population[ind].setFitness(AutomaticPlayer.playGames(population[ind].weights, AutomaticPlayer.gameAmount));
             }
 
             // Sorting pop

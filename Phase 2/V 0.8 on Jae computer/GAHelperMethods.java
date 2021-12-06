@@ -30,7 +30,7 @@ public class GAHelperMethods {
         // Initialising the population with initial weights
 		for (int i = 0; i < populationSize; i++) {
 			//double[] weights = new double[Bot.weights.length];
-            double[] newWeights = { 100, 10, 30, -100, 30, -50, -100 };
+            double[] newWeights = { 84.10121375849604, 86.8366044121229, 20.267241278251184, -125.82869475777727, -87.02514848624804, -21.456272600441245, -133.80621677127533 };
 
 			// for (int j = 0; j < weights.length; j++) {
             //     if (random.nextBoolean()) {
