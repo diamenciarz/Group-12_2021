@@ -8,10 +8,10 @@ import java.util.Arrays;
 public class GABotTrainer {
 
     // Changeable variables
-    static int populationSize = 100;
+    static int populationSize = 20;
     static double mutationRate = 0.2;
-    static int selectionAmount = 10;
-    private static int runs = 20;
+    static int selectionAmount = 5;
+    private static int runs = 50;
     static double mutationRange = 30;
 
     public static void main(String[] args) throws IOException {
@@ -79,6 +79,8 @@ public class GABotTrainer {
             HeapSort.sort(population);
 
             }
+
+            fittestList.add(population[0]);
 
             out.println("Fittest individual of gen " + i);
             out.println(Arrays.toString(population[0].getWeights()) + "\t" + population[0].getFitness());
