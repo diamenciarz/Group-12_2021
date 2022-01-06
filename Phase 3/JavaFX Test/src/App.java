@@ -77,12 +77,12 @@ public class App extends Application {
         root.getChildren().add(camera);
         
         // Box array
-        Box[][][] boxArray = new Box[matrix.length][matrix[0].length][matrix[1].length];
+        Box[][][] boxArray = new Box[matrix.length][matrix[0].length][matrix[0][0].length];
 
         // Add elements to 3D box array according to the 3D integer array
         for (int row = 0; row < matrix.length; row++) {
             for (int col = 0 ; col < matrix[0].length; col++) {
-                for (int dep = 0 ; dep < matrix[1].length; dep++) {
+                for (int dep = 0 ; dep < matrix[0][0].length; dep++) {
 
                     boxArray[row][col][dep] = new Box(1, 1, 1);
                     boxArray[row][col][dep].setMaterial(GetColorOfID(matrix[row][col][dep]));
@@ -97,7 +97,7 @@ public class App extends Application {
         // Add Boxes from the Box array to the scene
         for (int row = 0; row < boxArray.length; row++) {
             for (int col = 0 ; col < boxArray[0].length; col++) {
-                for (int dep = 0 ; dep < boxArray[1].length; dep++) {
+                for (int dep = 0 ; dep < boxArray[0][0].length; dep++) {
 
                     root.getChildren().add(boxArray[row][col][dep]);
 
