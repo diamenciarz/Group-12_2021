@@ -187,8 +187,13 @@ public class App extends Application {
             material.setSpecularColor(Color.rgb(0, 255, 0, 0.5));
             material.setDiffuseColor(Color.rgb(0, 255, 0, 0.5));
             return material;
-        } else {
+        } else if (i == 0) {
             return new PhongMaterial(Color.TRANSPARENT); 
+            // material.setSpecularColor(Color.rgb(0, 255, 0, 0.5));
+            // material.setDiffuseColor(Color.rgb(0, 255, 0, 0.5));
+            // return material;
+        } else {
+            return new PhongMaterial(Color.BLACK); 
         }
          
     }
