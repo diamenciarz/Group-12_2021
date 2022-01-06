@@ -38,34 +38,11 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        Box boxA = new Box(1, 1, 2);
-        boxA.setMaterial(new PhongMaterial(Color.RED));
-        Box boxB = new Box(1, 1.5, 2);
-        boxB.setMaterial(new PhongMaterial(Color.BLUE));
-        Box boxC = new Box(1.5, 1.5, 1.5);
-        boxC.setMaterial(new PhongMaterial(Color.GREEN));
-
-        boxA.setTranslateX(1/2);
-        boxA.setTranslateY(1/2);
-        boxA.setTranslateZ(2/2);
-
-        boxB.setTranslateX(1/2);
-        boxB.setTranslateY(1.5/2);
-        boxB.setTranslateZ(2/2);
-
-        boxC.setTranslateX(1.5/2);
-        boxC.setTranslateY(1.5/2);
-        boxC.setTranslateZ(1.5/2);
-        
-        boxA.setTranslateZ(-2);
-        boxA.setTranslateX(0);
-
-        // boxB.setTranslateX(1);
-        // boxB.setTranslateY(0);
-        // boxB.setTranslateZ(-2);
-        
-        boxC.setTranslateZ(0);
-        boxC.setTranslateX(-1.25);
+        // Test 3D array
+        int[][][] matrix = {
+            {{0,1},{3,2}},
+            {{3,1},{0,1}}
+        };
 
         Translate pivot = new Translate();
         Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
@@ -78,7 +55,7 @@ public class App extends Application {
                 // camera angle
                 new Rotate(-20, Rotate.X_AXIS),
                 // camera position
-                new Translate(0, 0, -20)
+                new Translate(0, 0, -50)
         );
 
         // Rotate camera
@@ -88,7 +65,7 @@ public class App extends Application {
                         new KeyValue(yRotate.angleProperty(), 0)
                 ),
                 new KeyFrame(
-                        Duration.seconds(15), 
+                        Duration.seconds(10), 
                         new KeyValue(yRotate.angleProperty(), 360)
                 )
         );
@@ -98,10 +75,35 @@ public class App extends Application {
         // Add to scene
         Group root = new Group();       
         root.getChildren().add(camera);
-        root.getChildren().add(boxA);
-        root.getChildren().add(boxB);
-        root.getChildren().add(boxC);
-        //root.getChildren().add(sphere);
+        
+        // Box array
+        Box[][][] boxArray = new Box[matrix.length][matrix[0].length][matrix[1].length];
+
+        // Add elements to 3D box array according to the 3D integer array
+        for (int row = 0; row < matrix.length; row++) {
+            for (int col = 0 ; col < matrix[0].length; col++) {
+                for (int dep = 0 ; dep < matrix[1].length; dep++) {
+
+                    boxArray[row][col][dep] = new Box(1, 1, 1);
+                    boxArray[row][col][dep].setMaterial(GetColorOfID(matrix[row][col][dep]));
+                    boxArray[row][col][dep].setTranslateY(row);
+                    boxArray[row][col][dep].setTranslateX(col);
+                    boxArray[row][col][dep].setTranslateZ(dep);
+                    
+                }
+            }
+        }
+
+        // Add Boxes from the Box array to the scene
+        for (int row = 0; row < boxArray.length; row++) {
+            for (int col = 0 ; col < boxArray[0].length; col++) {
+                for (int dep = 0 ; dep < boxArray[1].length; dep++) {
+
+                    root.getChildren().add(boxArray[row][col][dep]);
+
+                }
+            }
+        }
 
         // set the pivot for the camera position animation base upon mouse clicks on objects
         // root.getChildren().stream()
@@ -121,34 +123,33 @@ public class App extends Application {
                 true,
                 SceneAntialiasing.BALANCED
         );
-        subScene.setFill(Color.ALICEBLUE);
+        subScene.setFill(Color.LIGHTGRAY);
         subScene.setCamera(camera);
         Group group = new Group();
         group.getChildren().add(subScene);
         
-        
-
+        // Keyboard controls. Not needed.
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 
             switch (event.getCode()) {
-                case Q:
-                    boxA.translateYProperty().set(boxA.getTranslateY() - 0.1);
-                    break;
-                case E:
-                    boxA.translateYProperty().set(boxA.getTranslateY() + 0.1);
-                    break;
-                case A:
-                    boxA.translateXProperty().set(boxA.getTranslateX() - 0.1);
-                    break;
-                case D:
-                    boxA.translateXProperty().set(boxA.getTranslateX() + 0.1);
-                    break;
-                case W:
-                    boxA.translateZProperty().set(boxA.getTranslateZ() + 0.1);
-                    break;
-                case S:
-                    boxA.translateZProperty().set(boxA.getTranslateZ() - 0.1);
-                    break;
+                // case Q:
+                //     boxA.translateYProperty().set(boxA.getTranslateY() - 0.1);
+                //     break;
+                // case E:
+                //     boxA.translateYProperty().set(boxA.getTranslateY() + 0.1);
+                //     break;
+                // case A:
+                //     boxA.translateXProperty().set(boxA.getTranslateX() - 0.1);
+                //     break;
+                // case D:
+                //     boxA.translateXProperty().set(boxA.getTranslateX() + 0.1);
+                //     break;
+                // case W:
+                //     boxA.translateZProperty().set(boxA.getTranslateZ() + 0.1);
+                //     break;
+                // case S:
+                //     boxA.translateZProperty().set(boxA.getTranslateZ() - 0.1);
+                //     break;
                     
                    
             }
@@ -161,6 +162,38 @@ public class App extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
+    /**
+     * Setting colour of Box
+     * @param i colour code
+     * @return setMaterial
+     */
+    private PhongMaterial GetColorOfID(int i) {
+
+        PhongMaterial material = new PhongMaterial();
+
+        if (i == 1) {
+            // return new PhongMaterial(Color.RED);
+            material.setSpecularColor(Color.rgb(255, 0, 0, 0.5));
+            material.setDiffuseColor(Color.rgb(255, 0, 0, 0.5));
+            return material;
+        } else if (i == 2) {
+            //return new PhongMaterial(Color.BLUE); 
+            material.setSpecularColor(Color.rgb(0, 0, 255, 0.5));
+            material.setDiffuseColor(Color.rgb(0, 0, 255, 0.5));
+            return material;
+        } else if (i == 3) {
+            //return new PhongMaterial(Color.GREEN); 
+            material.setSpecularColor(Color.rgb(0, 255, 0, 0.5));
+            material.setDiffuseColor(Color.rgb(0, 255, 0, 0.5));
+            return material;
+        } else {
+            return new PhongMaterial(Color.TRANSPARENT); 
+        }
+         
+    }
+
+   
 
     public static void main(String[] args) {
         launch(args);
