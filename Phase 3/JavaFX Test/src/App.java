@@ -1,51 +1,143 @@
-import java.io.IOException;
-import java.util.HexFormat;
-import javafx.animation.Timeline;
-import javafx.application.Application;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point3D;
-import javafx.scene.Camera;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
-import javafx.scene.shape.Box;
-import javafx.stage.Stage;
-import javafx.animation.*;
-import javafx.application.Application;
 import javafx.scene.*;
-import javafx.scene.paint.*;
+import javafx.animation.*;
 import javafx.scene.shape.*;
 import javafx.scene.transform.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class App extends Application {
+
+    static ArrayList<Group> parcelList = new ArrayList<Group>();
+
+    //Duration currenDuration = new Duration(0);
+
+    static Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
+
+    static double currentAngle = 0;
+
+    static Group viewRoot = new Group(); 
+
+    // TEST PARCELS
+
+    int [][][] cube = {
+        {{1}}
+    };
+
+    int[][][] parcelA1 = {
+        {{1,1,1,1},{1,1,1,1}},
+        {{1,1,1,1},{1,1,1,1}}
+    };
+
+    int[][][] parcelB1 = {
+        {{2,2,2,2},{2,2,2,2},{2,2,2,2}},
+        {{2,2,2,2},{2,2,2,2},{2,2,2,2}}
+    }; 
+
+    int[][][] parcelC1 = {
+        {{3,3,3},{3,3,3},{3,3,3}},
+        {{3,3,3},{3,3,3},{3,3,3}},
+        {{3,3,3},{3,3,3},{3,3,3}}
+    };
+
+    int[][][] parcelL1 = {
+        {{1},{0}},
+        {{1},{0}},
+        {{1},{0}},
+        {{1},{1}}
+    };
+
+    int[][][] parcelL23 = {
+        {{0,1} },
+        {{0,1} },
+        {{0,1} },
+        {{1,1} }
+
+    };
+
+    int[][][] parcelL2 =  {
+        {{0}, {1}},
+        {{0}, {1}},
+        {{0}, {1}}, 
+        {{1}, {1}}
+    };
+
+    int[][][] parcelL3 =  {
+        {{1}, {1}},
+        {{0}, {1}},
+        {{0}, {1}}, 
+        {{0}, {1}}
+    };
+
+    int[][][] parcelL14 =  {
+        {{0, 1},
+        {0, 1},
+        {0, 1}, 
+        {1, 1}}
+    };
+
+    int[][][] parcelL12 =  {
+        {{0, 0, 0, 1}},
+        {{1, 1, 1, 1}},  
+    };
+
+    int[][][] parcelL17 =  {
+        {{1, 1, 1, 1},
+         {0, 0, 0, 1}}
+    };
+
+    int[][][] parcelT1 = {
+        {{2},{2},{2}},
+        {{0},{2},{0}},
+        {{0},{2},{0}},
+    };
+
+    int[][][] parcelP1 = {
+        {{3},{3}},
+        {{3},{3}},
+        {{3},{0}}
+    };
 
     @Override
     public void start(Stage stage) throws Exception {
 
-        // Test 3D array
-        int[][][] matrix = {
-            {{0,1},{3,2}},
-            {{3,1},{0,1}}
-        };
+        parcelList.add(generateGraphic(parcelL1,0,0,0));
+        parcelList.add(generateGraphic(parcelL1,0,0,1));
+        parcelList.add(generateGraphic(parcelL1,0,0,2));
+        parcelList.add(generateGraphic(parcelT1,0,0,3));
+        parcelList.add(generateGraphic(parcelP1,0,0,4));
 
+        parcelList.remove(parcelList.size()-1);
+                    
+        displayGraphic(parcelList);
+
+        // CAMERA
         Translate pivot = new Translate();
-        Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
 
         // Camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -55,10 +147,20 @@ public class App extends Application {
                 // camera angle
                 new Rotate(-20, Rotate.X_AXIS),
                 // camera position
-                new Translate(0, 0, -50)
+                new Translate(0, 0, -30)
         );
 
-        // Rotate camera
+        //final DoubleProperty angleY = new SimpleDoubleProperty(0);
+
+        Slider zoomSlider = new Slider();
+        zoomSlider.setMin(-30);
+        zoomSlider.setMax(-100);
+        zoomSlider.setPrefHeight(200d);
+        zoomSlider.setOrientation(Orientation.VERTICAL);
+        zoomSlider.setTranslateZ(-20);
+        zoomSlider.setStyle("-fx-based: black");
+
+        // Live rotate camera
         Timeline timeline = new Timeline(
                 new KeyFrame(
                         Duration.seconds(0), 
@@ -66,140 +168,362 @@ public class App extends Application {
                 ),
                 new KeyFrame(
                         Duration.seconds(10), 
-                        new KeyValue(yRotate.angleProperty(), 360)
+                        new KeyValue(yRotate.angleProperty(),  - 360)
                 )
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        // Add to scene
-        Group root = new Group();       
-        root.getChildren().add(camera);
-        
-        // Box array
-        Box[][][] boxArray = new Box[matrix.length][matrix[0].length][matrix[0][0].length];
-
-        // Add elements to 3D box array according to the 3D integer array
-        for (int row = 0; row < matrix.length; row++) {
-            for (int col = 0 ; col < matrix[0].length; col++) {
-                for (int dep = 0 ; dep < matrix[0][0].length; dep++) {
-
-                    boxArray[row][col][dep] = new Box(1, 1, 1);
-                    boxArray[row][col][dep].setMaterial(GetColorOfID(matrix[row][col][dep]));
-                    boxArray[row][col][dep].setTranslateY(row);
-                    boxArray[row][col][dep].setTranslateX(col);
-                    boxArray[row][col][dep].setTranslateZ(dep);
-                    
-                }
-            }
-        }
-
-        // Add Boxes from the Box array to the scene
-        for (int row = 0; row < boxArray.length; row++) {
-            for (int col = 0 ; col < boxArray[0].length; col++) {
-                for (int dep = 0 ; dep < boxArray[0][0].length; dep++) {
-
-                    root.getChildren().add(boxArray[row][col][dep]);
-
-                }
-            }
-        }
-
-        // set the pivot for the camera position animation base upon mouse clicks on objects
-        // root.getChildren().stream()
-        //         .filter(node -> !(node instanceof Camera))
-        //         .forEach(node ->
-        //                 node.setOnMouseClicked(event -> {
-        //                     pivot.setX(node.getTranslateX());
-        //                     pivot.setY(node.getTranslateY());
-        //                     pivot.setZ(node.getTranslateZ());
-        //                 })
-        //         );
+        viewRoot.getChildren().add(camera);
 
         // Subscene
-        SubScene subScene = new SubScene(
-                root,
-                800,800,
+        SubScene viewScene = new SubScene(
+                viewRoot,
+                1000,800,
                 true,
                 SceneAntialiasing.BALANCED
         );
-        subScene.setFill(Color.LIGHTGRAY);
-        subScene.setCamera(camera);
-        Group group = new Group();
-        group.getChildren().add(subScene);
+
+        HBox box = new HBox();
+
+        VBox controlPane = new VBox(10);
+
+        Label labelParcelA = new Label("Parcel A");
+        Label labelParcelB = new Label("Parcel B");
+        Label labelParcelC = new Label("Parcel C");
+
+        Label labelParcelL = new Label("Parcel L");
+        Label labelParcelT = new Label("Parcel T");
+        Label labelParcelP = new Label("Parcel P");
+
+        TextField tfParcelA = new TextField();
+        TextField tfParcelB = new TextField();
+        TextField tfParcelC = new TextField();
+        TextField tfParcelL = new TextField();
+        TextField tfParcelT = new TextField();
+        TextField tfParcelP = new TextField();
+
+        Button button = new Button("Find solution");
+        Button button1 = new Button("Find Solution");
         
-        // Keyboard controls. Not needed.
-        stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+        controlPane.getChildren().add(labelParcelA);
+        controlPane.getChildren().add(tfParcelA);
+        controlPane.getChildren().add(labelParcelB);
+        controlPane.getChildren().add(tfParcelB);
+        controlPane.getChildren().add(labelParcelC);
+        controlPane.getChildren().add(tfParcelC);
+        controlPane.getChildren().add(button);
+        controlPane.getChildren().add(labelParcelL);
+        controlPane.getChildren().add(tfParcelL);
+        controlPane.getChildren().add(labelParcelT);
+        controlPane.getChildren().add(tfParcelT);
+        controlPane.getChildren().add(labelParcelP);
+        controlPane.getChildren().add(tfParcelP);
+        controlPane.getChildren().add(button1);
+        controlPane.getChildren().add(zoomSlider);
 
-            switch (event.getCode()) {
-                // case Q:
-                //     boxA.translateYProperty().set(boxA.getTranslateY() - 0.1);
-                //     break;
-                // case E:
-                //     boxA.translateYProperty().set(boxA.getTranslateY() + 0.1);
-                //     break;
-                // case A:
-                //     boxA.translateXProperty().set(boxA.getTranslateX() - 0.1);
-                //     break;
-                // case D:
-                //     boxA.translateXProperty().set(boxA.getTranslateX() + 0.1);
-                //     break;
-                // case W:
-                //     boxA.translateZProperty().set(boxA.getTranslateZ() + 0.1);
-                //     break;
-                // case S:
-                //     boxA.translateZProperty().set(boxA.getTranslateZ() - 0.1);
-                //     break;
-                    
-                   
-            }
+        viewScene.setFill(Color.LIGHTGRAY);
+        viewScene.setCamera(camera);
 
-        });
-
+        box.getChildren().add(viewScene);
+        box.getChildren().add(controlPane);
+        
         // Set stage
         stage.setResizable(false);
-        Scene scene = new Scene(group);
+        stage.setTitle("Cargo simulator - Group 12"); 
+        Scene scene = new Scene(box);
         stage.setScene(scene);
         stage.show();
+        
+        button.setOnAction(
+            new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent arg0) {
+
+                    System.out.println("A: " + tfParcelA.getText());
+                    System.out.println("B: " + tfParcelB.getText());
+                    System.out.println("C: " + tfParcelC.getText());
+                }
+                
+            }
+        );
+
+        button1.setOnAction(
+            new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent arg0) {
+                    
+                    System.out.println("L: " + tfParcelL.getText());
+                    System.out.println("T: " + tfParcelT.getText());
+                    System.out.println("P: " + tfParcelP.getText());
+                }
+                
+            }
+        );
     }
 
     /**
-     * Setting colour of Box
-     * @param i colour code
-     * @return setMaterial
+     * Genrate graphic
+     * @param parcel
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    private Group generateGraphic(int[][][] parcel, int x, int y, int z) {
+
+        double lineThickness = 0.03;
+        PhongMaterial lineColour = new PhongMaterial(Color.DARKGRAY);
+
+        // Rotate line parallel to z-axis
+        Rotate xRot = new Rotate(90, Rotate.X_AXIS);
+        Transform xTrans = new Rotate();
+        xTrans = xTrans.createConcatenation(xRot);
+
+        // Rotate line paralle to x-axis
+        Rotate zRot = new Rotate(90, Rotate.Z_AXIS);
+        Transform zTrans = new Rotate();
+        zTrans = zTrans.createConcatenation(zRot);
+
+        // get parcel
+        //int[][][] parcel = parcelSelect(parcelID);
+     
+        // Box array
+        Box[][][] boxArray = new Box[parcel.length][parcel[0].length][parcel[0][0].length];
+
+        // Add elements to 3D box array according to the 3D integer array
+        for (int row = 0; row < parcel.length; row++) {
+            for (int col = 0 ; col < parcel[0].length; col++) {
+                for (int dep = 0 ; dep < parcel[0][0].length; dep++) {
+
+                    boxArray[row][col][dep] = new Box(1, 1, 1);
+                    boxArray[row][col][dep].setMaterial(GetColorOfID(parcel[row][col][dep]));
+                    boxArray[row][col][dep].setTranslateY(row+y);
+                    boxArray[row][col][dep].setTranslateX(col+x);
+                    boxArray[row][col][dep].setTranslateZ(dep+z);
+                }
+            }
+        }
+
+        // Draw borders (dynamic)
+        int[][][] parcelCopy = new int[parcel.length+2][parcel[0].length+2][parcel[0][0].length+2];
+
+        for (int yPos = 0; yPos < parcel.length; yPos++) {
+            for (int xPos = 0 ; xPos < parcel[0].length; xPos++) {
+                for (int zPos = 0 ; zPos < parcel[0][0].length; zPos++) {
+
+                    parcelCopy[yPos+1][xPos+1][zPos+1] = parcel[yPos][xPos][zPos];
+
+                }
+            }
+        }
+
+        List<Cylinder> lines = new ArrayList<Cylinder>();
+
+        int lineIndex = 0;
+
+        for (int yPos = 0; yPos < parcelCopy.length; yPos++) {
+            for (int xPos = 0 ; xPos < parcelCopy[0].length; xPos++) {
+                for (int zPos = 0 ; zPos < parcelCopy[0][0].length; zPos++) {
+
+                    if (parcelCopy[yPos][xPos][zPos] != 0) {
+
+                        // Y left front
+                        if (parcelCopy[yPos][xPos][zPos-1] == 0 && parcelCopy[yPos][xPos-1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos - 1);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos - 1);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos - 1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // Y left back
+                        if (parcelCopy[yPos][xPos-1][zPos] == 0 && parcelCopy[yPos][xPos][zPos+1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos - 1);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos - 1);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos - 1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Y right front
+                        if (parcelCopy[yPos][xPos+1][zPos] == 0 && parcelCopy[yPos][xPos][zPos-1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Y right back
+                        if (parcelCopy[yPos][xPos][zPos+1] == 0 && parcelCopy[yPos][xPos+1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Z upper left
+                        if (parcelCopy[yPos-1][xPos][zPos] == 0 && parcelCopy[yPos][xPos-1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Z upper right
+                        if (parcelCopy[yPos-1][xPos][zPos] == 0 && parcelCopy[yPos][xPos+1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Z lower left
+                        if (parcelCopy[yPos+1][xPos][zPos] == 0 && parcelCopy[yPos][xPos-1][zPos] == 0) {
+
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(+0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // Z lower right
+                        if (parcelCopy[yPos+1][xPos][zPos] == 0 && parcelCopy[yPos][xPos+1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X upper front
+                        if (parcelCopy[yPos-1][xPos][zPos] == 0 && parcelCopy[yPos][xPos][zPos-1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X upper back
+                        if (parcelCopy[yPos-1][xPos][zPos] == 0 && parcelCopy[yPos][xPos][zPos+1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X lower front
+                        if (parcelCopy[yPos+1][xPos][zPos] == 0 && parcelCopy[yPos][xPos][zPos-1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X lower back
+                        if (parcelCopy[yPos+1][xPos][zPos] == 0 && parcelCopy[yPos][xPos][zPos+1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1);
+                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                    }
+                }
+            }
+        }
+
+        Group parcelAndBorders = new Group();
+        //combinedParcelLines.getChildren().add((Node) lines);
+        //combinedParcelLines.getChildren().add(boxArray);
+
+        for (int row = 0; row < boxArray.length; row++) {
+            for (int col = 0 ; col < boxArray[0].length; col++) {
+                for (int dep = 0 ; dep < boxArray[0][0].length; dep++) {
+   
+                    parcelAndBorders.getChildren().add(boxArray[row][col][dep]);
+                }
+            }
+        }
+   
+        // add lines to scene
+        for (int n = 0; n < lines.size(); n++) {
+            parcelAndBorders.getChildren().add(lines.get(n));
+            
+        }
+
+        return parcelAndBorders;
+    }
+
+    /**
+     * Display graphic from parcelList
+     * @param parcelList Arraylist<Group>
+     */
+    private void displayGraphic(ArrayList<Group> parcelList) {
+
+        for (int i = 0 ; i < parcelList.size() ; i ++) {
+            viewRoot.getChildren().add(parcelList.get(i));
+            
+        }
+    }
+
+
+    /**
+     * Colouring the blocks
+     * @param i
+     * @return
      */
     private PhongMaterial GetColorOfID(int i) {
-
-        PhongMaterial material = new PhongMaterial();
-
         if (i == 1) {
-            // return new PhongMaterial(Color.RED);
-            material.setSpecularColor(Color.rgb(255, 0, 0, 0.5));
-            material.setDiffuseColor(Color.rgb(255, 0, 0, 0.5));
-            return material;
+            return new PhongMaterial(Color.RED); 
         } else if (i == 2) {
-            //return new PhongMaterial(Color.BLUE); 
-            material.setSpecularColor(Color.rgb(0, 0, 255, 0.5));
-            material.setDiffuseColor(Color.rgb(0, 0, 255, 0.5));
-            return material;
+            return new PhongMaterial(Color.BLUE); 
         } else if (i == 3) {
-            //return new PhongMaterial(Color.GREEN); 
-            material.setSpecularColor(Color.rgb(0, 255, 0, 0.5));
-            material.setDiffuseColor(Color.rgb(0, 255, 0, 0.5));
-            return material;
-        } else if (i == 0) {
-            return new PhongMaterial(Color.TRANSPARENT); 
-            // material.setSpecularColor(Color.rgb(0, 255, 0, 0.5));
-            // material.setDiffuseColor(Color.rgb(0, 255, 0, 0.5));
-            // return material;
+            return new PhongMaterial(Color.GREEN); 
         } else {
-            return new PhongMaterial(Color.BLACK); 
+            return new PhongMaterial(Color.TRANSPARENT); 
         }
          
     }
-
-   
-
+    
     public static void main(String[] args) {
         launch(args);
     }
