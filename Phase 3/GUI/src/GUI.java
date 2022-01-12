@@ -1,49 +1,46 @@
 import javafx.scene.*;
-import javafx.animation.*;
 import javafx.scene.shape.*;
 import javafx.scene.transform.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
-public class App extends Application {
+public class GUI extends Application {
 
-    static ArrayList<Group> parcelList = new ArrayList<Group>();
+    private static ArrayList<Group> parcelList = new ArrayList<Group>();
 
-    //Duration currenDuration = new Duration(0);
+    private static Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
 
-    static Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
+    private static double currentAngle = 0;
 
-    static double currentAngle = 0;
+    private static Group viewRoot = new Group(); 
 
-    static Group viewRoot = new Group(); 
+    private static int containerX = 0;
+    private static int containerY = 0;
+    private static int containerZ = 0;
 
-    // TEST PARCELS
+    private double xAnchor, yAnchor;
+    private double xAngleAnchor = 0;
+    private double yAngleAnchor = 0;
+    private final DoubleProperty xAngle = new SimpleDoubleProperty(0);
+    private final DoubleProperty yAngle = new SimpleDoubleProperty(0);
+
+    // region TEST PARCELS
 
     int [][][] cube = {
         {{1}}
@@ -123,34 +120,38 @@ public class App extends Application {
         {{3},{0}}
     };
 
+    // endregion
+
     @Override
     public void start(Stage stage) throws Exception {
 
+        // region This is where the methods run. 
         parcelList.add(generateGraphic(parcelL1,0,0,0));
         parcelList.add(generateGraphic(parcelL1,0,0,1));
         parcelList.add(generateGraphic(parcelL1,0,0,2));
-        parcelList.add(generateGraphic(parcelT1,0,0,3));
-        parcelList.add(generateGraphic(parcelP1,0,0,4));
+        parcelList.add(generateGraphic(parcelT1,0,-1,2));
+        parcelList.add(generateGraphic(parcelP1,-1,-2,0));
 
-        parcelList.remove(parcelList.size()-1);
+        // Remove last parcel
+        //parcelList.remove(parcelList.size()-1);
                     
         displayGraphic(parcelList);
 
+        // endregion
+
         // CAMERA
         Translate pivot = new Translate();
-
-        // Camera
-        PerspectiveCamera camera = new PerspectiveCamera(true);
+        Camera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll (
                 pivot,
                 yRotate,
                 // camera angle
                 new Rotate(-20, Rotate.X_AXIS),
+                //new Rotate(-20, Rotate.Y_AXIS),
+                //new Rotate(-7, Rotate.Z_AXIS),
                 // camera position
                 new Translate(0, 0, -30)
         );
-
-        //final DoubleProperty angleY = new SimpleDoubleProperty(0);
 
         Slider zoomSlider = new Slider();
         zoomSlider.setMin(-30);
@@ -159,22 +160,6 @@ public class App extends Application {
         zoomSlider.setOrientation(Orientation.VERTICAL);
         zoomSlider.setTranslateZ(-20);
         zoomSlider.setStyle("-fx-based: black");
-
-        // Live rotate camera
-        Timeline timeline = new Timeline(
-                new KeyFrame(
-                        Duration.seconds(0), 
-                        new KeyValue(yRotate.angleProperty(), 0)
-                ),
-                new KeyFrame(
-                        Duration.seconds(10), 
-                        new KeyValue(yRotate.angleProperty(),  - 360)
-                )
-        );
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-
-        viewRoot.getChildren().add(camera);
 
         // Subscene
         SubScene viewScene = new SubScene(
@@ -187,6 +172,7 @@ public class App extends Application {
         HBox box = new HBox();
 
         VBox controlPane = new VBox(10);
+        HBox cargoSizeBox = new HBox();
 
         Label labelParcelA = new Label("Parcel A");
         Label labelParcelB = new Label("Parcel B");
@@ -196,6 +182,8 @@ public class App extends Application {
         Label labelParcelT = new Label("Parcel T");
         Label labelParcelP = new Label("Parcel P");
 
+        Label xyzLabel = new Label("Container size: x, y z");
+
         TextField tfParcelA = new TextField();
         TextField tfParcelB = new TextField();
         TextField tfParcelC = new TextField();
@@ -203,43 +191,68 @@ public class App extends Application {
         TextField tfParcelT = new TextField();
         TextField tfParcelP = new TextField();
 
-        Button button = new Button("Find solution");
-        Button button1 = new Button("Find Solution");
-        
+        TextField containerX = new TextField();
+        TextField containerY = new TextField();
+        TextField containerZ = new TextField();
+
+        tfParcelA.setPrefWidth(120);
+        tfParcelB.setPrefWidth(120);
+        tfParcelC.setPrefWidth(120);
+        tfParcelL.setPrefWidth(120);
+        tfParcelT.setPrefWidth(120);
+        tfParcelP.setPrefWidth(120);
+
+        containerX.setPrefWidth(40);
+        containerY.setPrefWidth(40);
+        containerZ.setPrefWidth(40);
+
+        cargoSizeBox.getChildren().add(containerX);
+        cargoSizeBox.getChildren().add(containerY);
+        cargoSizeBox.getChildren().add(containerZ);
+
+        Button abcButton = new Button("Find solution");
+        Button ltpButton = new Button("Find Solution");
+        Button clearButton = new Button("Clear all");
+
+
+        controlPane.getChildren().add(xyzLabel);
+        controlPane.getChildren().add(cargoSizeBox);
         controlPane.getChildren().add(labelParcelA);
         controlPane.getChildren().add(tfParcelA);
         controlPane.getChildren().add(labelParcelB);
         controlPane.getChildren().add(tfParcelB);
         controlPane.getChildren().add(labelParcelC);
         controlPane.getChildren().add(tfParcelC);
-        controlPane.getChildren().add(button);
+        controlPane.getChildren().add(abcButton);
         controlPane.getChildren().add(labelParcelL);
         controlPane.getChildren().add(tfParcelL);
         controlPane.getChildren().add(labelParcelT);
         controlPane.getChildren().add(tfParcelT);
         controlPane.getChildren().add(labelParcelP);
         controlPane.getChildren().add(tfParcelP);
-        controlPane.getChildren().add(button1);
-        controlPane.getChildren().add(zoomSlider);
+        controlPane.getChildren().add(ltpButton);
+        controlPane.getChildren().add(clearButton);
+        //controlPane.getChildren().add(zoomSlider);
 
         viewScene.setFill(Color.LIGHTGRAY);
         viewScene.setCamera(camera);
 
         box.getChildren().add(viewScene);
         box.getChildren().add(controlPane);
-        
-        // Set stage
-        stage.setResizable(false);
-        stage.setTitle("Cargo simulator - Group 12"); 
-        Scene scene = new Scene(box);
-        stage.setScene(scene);
-        stage.show();
-        
-        button.setOnAction(
+
+        mouseController(viewRoot, viewScene, stage, camera);
+
+        // region Button Controllers
+
+        abcButton.setOnAction(
             new EventHandler<ActionEvent>() {
 
                 @Override
                 public void handle(ActionEvent arg0) {
+
+                    GUI.containerX = Integer.parseInt(containerX.getText());
+                    GUI.containerY = Integer.parseInt(containerY.getText());
+                    GUI.containerZ = Integer.parseInt(containerZ.getText());
 
                     System.out.println("A: " + tfParcelA.getText());
                     System.out.println("B: " + tfParcelB.getText());
@@ -249,28 +262,118 @@ public class App extends Application {
             }
         );
 
-        button1.setOnAction(
+        ltpButton.setOnAction(
             new EventHandler<ActionEvent>() {
 
                 @Override
                 public void handle(ActionEvent arg0) {
+
+                    GUI.containerX = Integer.parseInt(containerX.getText());
+                    GUI.containerY = Integer.parseInt(containerY.getText());
+                    GUI.containerZ = Integer.parseInt(containerZ.getText());
                     
                     System.out.println("L: " + tfParcelL.getText());
                     System.out.println("T: " + tfParcelT.getText());
                     System.out.println("P: " + tfParcelP.getText());
                 }
-                
             }
         );
+
+        clearButton.setOnAction( 
+            new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent arg0) {
+                    viewRoot.getChildren().clear();
+                    //parcelList.clear();
+                }
+            }
+        );
+
+        // endregion
+        
+        // Set stage
+        stage.setResizable(false);
+        stage.setTitle("Cargo simulator - Group 12"); 
+        Scene scene = new Scene(box);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    /**
+     * Mouse controller
+     * @param viewRoot
+     * @param scene
+     * @param stage
+     * @param camera
+     */
+    private void mouseController(Group viewRoot, SubScene scene, Stage stage, Camera camera) {
+
+        Rotate xRotation;
+        Rotate yRotation;
+
+        viewRoot.getTransforms().addAll(
+            xRotation = new Rotate(0, Rotate.X_AXIS),
+            yRotation = new Rotate(0, Rotate.Y_AXIS)
+        );
+
+        xRotation.angleProperty().bind(xAngle);
+        yRotation.angleProperty().bind(yAngle);
+
+        scene.setOnMousePressed(event -> {
+            xAnchor = event.getSceneX();
+            yAnchor = event.getSceneY();
+            xAngleAnchor = xAngle.get();
+            yAngleAnchor = yAngle.get();
+        });
+
+        scene.setOnMouseDragged(event -> {
+            xAngle.set(xAngleAnchor - (yAnchor - event.getSceneY()));
+            yAngle.set(yAngleAnchor + (xAnchor - event.getSceneX()));
+        });
+
+        stage.addEventHandler(ScrollEvent.SCROLL, event -> {
+
+            //camera.translateZProperty().set(arg0);
+
+
+            double movement = event.getDeltaY();
+            // viewRoot.translateZProperty().set(viewRoot.getTranslateZ() + movement);
+
+            // Adjust the zoom factor as per your requirement
+            double zoomFactor = 1.05;
+            double deltaY = event.getDeltaY();
+            if (deltaY < 0){
+                zoomFactor = 2.0 - zoomFactor;
+            }
+            viewRoot.setScaleX(viewRoot.getScaleX() * zoomFactor);
+            viewRoot.setScaleY(viewRoot.getScaleY() * zoomFactor);
+            viewRoot.setScaleZ(viewRoot.getScaleZ() * zoomFactor);
+
+            // double zoomFactor = 1.05;
+            // double delta = event.getDeltaY();
+            // if (delta < 0){
+            //     zoomFactor = 2.0 - zoomFactor;
+            // }
+            //camera.setScaleZ(viewRoot.getScaleZ() * zoomFactor);
+            
+            
+            //camera.translateZProperty().set(camera.getTranslateZ() + movement);
+            
+            //viewRoot.setScaleY(viewRoot.getScaleY() * zoomFactor);
+        
+        });
+
     }
 
     /**
      * Genrate graphic
-     * @param parcel
-     * @param x
-     * @param y
-     * @param z
-     * @return
+     * @param parcel 3D parcel array
+     * @param x coordinate
+     * @param y coordinate
+     * @param z coordinate
+     * @return Group object containing the 3D cubes and edge lines
      */
     private Group generateGraphic(int[][][] parcel, int x, int y, int z) {
 
@@ -472,8 +575,6 @@ public class App extends Application {
         }
 
         Group parcelAndBorders = new Group();
-        //combinedParcelLines.getChildren().add((Node) lines);
-        //combinedParcelLines.getChildren().add(boxArray);
 
         for (int row = 0; row < boxArray.length; row++) {
             for (int col = 0 ; col < boxArray[0].length; col++) {
@@ -495,7 +596,7 @@ public class App extends Application {
 
     /**
      * Display graphic from parcelList
-     * @param parcelList Arraylist<Group>
+     * @param parcelList Arraylist<Group> an array list of graphic elements as Group
      */
     private void displayGraphic(ArrayList<Group> parcelList) {
 
