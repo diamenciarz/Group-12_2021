@@ -125,7 +125,11 @@ public class GUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        // region This is where the methods run. 
+        // region This is where the methods run.
+        //parcelList.add(generateGraphic(ParcelHolder., x, y, z));
+
+    
+        
         parcelList.add(generateGraphic(parcelL1,0,0,0));
         parcelList.add(generateGraphic(parcelL1,0,0,1));
         parcelList.add(generateGraphic(parcelL1,0,0,2));
@@ -403,9 +407,9 @@ public class GUI extends Application {
 
                     boxArray[row][col][dep] = new Box(1, 1, 1);
                     boxArray[row][col][dep].setMaterial(GetColorOfID(parcel[row][col][dep]));
-                    boxArray[row][col][dep].setTranslateY(row+y);
-                    boxArray[row][col][dep].setTranslateX(col+x);
-                    boxArray[row][col][dep].setTranslateZ(dep+z);
+                    boxArray[row][col][dep].setTranslateY(row+y - containerY/2);
+                    boxArray[row][col][dep].setTranslateX(col+x - containerX/2);
+                    boxArray[row][col][dep].setTranslateZ(dep+z - containerZ/2);
                 }
             }
         }
@@ -436,9 +440,9 @@ public class GUI extends Application {
                         // Y left front
                         if (parcelCopy[yPos][xPos][zPos-1] == 0 && parcelCopy[yPos][xPos-1][zPos] == 0) {
                             lines.add(new Cylinder(lineThickness, 1));
-                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos - 1);
-                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos - 1);
-                            lines.get(lineIndex).setTranslateY(0 + y + yPos - 1);
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos - 1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos - 1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos - 1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -446,9 +450,9 @@ public class GUI extends Application {
                         // Y left back
                         if (parcelCopy[yPos][xPos-1][zPos] == 0 && parcelCopy[yPos][xPos][zPos+1] == 0) {
                             lines.add(new Cylinder(lineThickness, 1));
-                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos - 1);
-                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos - 1);
-                            lines.get(lineIndex).setTranslateY(0 + y + yPos - 1);
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos - 1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos - 1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos - 1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -456,9 +460,9 @@ public class GUI extends Application {
                         // Y right front
                         if (parcelCopy[yPos][xPos+1][zPos] == 0 && parcelCopy[yPos][xPos][zPos-1] == 0) {
                             lines.add(new Cylinder(lineThickness, 1));
-                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(0 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -466,9 +470,9 @@ public class GUI extends Application {
                         // Y right back
                         if (parcelCopy[yPos][xPos][zPos+1] == 0 && parcelCopy[yPos][xPos+1][zPos] == 0) {
                             lines.add(new Cylinder(lineThickness, 1));
-                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(0 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -478,9 +482,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(xTrans);
-                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -490,9 +494,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(xTrans);
-                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -503,9 +507,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(xTrans);
-                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(+0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(-0.5 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(+0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -515,9 +519,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(xTrans);
-                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0.5 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -527,9 +531,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(zTrans);
-                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -539,9 +543,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(zTrans);
-                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -551,9 +555,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(zTrans);
-                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
@@ -563,9 +567,9 @@ public class GUI extends Application {
                             lines.add(new Cylinder(lineThickness, 1));
                             lines.get(lineIndex).getTransforms().clear();
                             lines.get(lineIndex).getTransforms().addAll(zTrans);
-                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1);
-                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1);
-                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1);
+                            lines.get(lineIndex).setTranslateX(0 + x + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + z + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0.5 + y + yPos -1 - containerY/2);
                             lines.get(lineIndex).setMaterial(lineColour);
                             lineIndex++;
                         }
