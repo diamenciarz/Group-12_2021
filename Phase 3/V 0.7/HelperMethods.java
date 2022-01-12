@@ -1,0 +1,732 @@
+import java.util.ArrayList;
+
+public class HelperMethods {
+
+    // region Recursive methods
+    /**
+     *
+     * @param x   column
+     * @param y   row
+     * @param z   layer
+     * @param map
+     * @return
+     */
+    public static int getHoleSize(Position pos, int[][][] map) {
+        if (checkIfTileEmpty(map, pos)) {
+            return recursiveHoleSizeCounter(pos, 0, HelperMethods.copy(map));
+        } else {
+            return 0;
+        }
+    }
+
+    // Recursive empty space counter // Leave total = 0, when calling this method
+    private static int recursiveHoleSizeCounter(Position pos, int total, int[][][] matrix) {
+        // Initialization variables
+        int foundEmpty = 1;
+        // Modify map array and check break condition
+        matrix[pos.z][pos.y][pos.x] = 1; // Mark its own tile as already checked
+        // check right
+        if (checkIfTileEmpty(matrix, new Position(pos, 1, 0, 0))) {
+            foundEmpty += recursiveHoleSizeCounter(new Position(pos, 1, 0, 0), foundEmpty + total, matrix);
+        }
+        // check down
+        if (checkIfTileEmpty(matrix, new Position(pos, 0, 1, 0))) {
+            foundEmpty += recursiveHoleSizeCounter(new Position(pos, 0, 1, 0), foundEmpty + total, matrix);
+        }
+        // check left
+        if (checkIfTileEmpty(matrix, new Position(pos, -1, 0, 0))) {
+            foundEmpty += recursiveHoleSizeCounter(new Position(pos, -1, 0, 0), foundEmpty + total, matrix);
+        }
+        // check up
+        if (checkIfTileEmpty(matrix, new Position(pos, 0, -1, 0))) {
+            foundEmpty += recursiveHoleSizeCounter(new Position(pos, 0, -1, 0), foundEmpty + total, matrix);
+        }
+        // check forward
+        if (checkIfTileEmpty(matrix, new Position(pos, 0, 0, 1))) {
+            foundEmpty += recursiveHoleSizeCounter(new Position(pos, 0, 0, 1), foundEmpty + total, matrix);
+        }
+        // check back
+        if (checkIfTileEmpty(matrix, new Position(pos, 0, 0, -1))) {
+            foundEmpty += recursiveHoleSizeCounter(new Position(pos, 0, 0, -1), foundEmpty + total, matrix);
+        }
+        return foundEmpty;
+    }
+
+    /**
+     *
+     * @param arr
+     * @param x   column
+     * @param y   row
+     * @param z   layer
+     * @return false, if the position is outside the matrix or that position is
+     *         filled with a non-zero
+     */
+    public static boolean checkIfTileEmpty(int[][][] arr, Position pos) {
+        if (isOutOfBounds(arr, pos)) {
+            return false;
+        }
+        boolean tileEmpty = arr[pos.z][pos.y][pos.x] == 0;
+        if (tileEmpty)
+            return true;
+        else
+            return false;
+    }
+
+    // endregion
+
+    // region Heap sort
+    public static void sort(ArrayList<Parcel> i) {
+        int N = i.size();
+
+        for (int k = N / 2; k > 0; k--)
+            downheap(i, k, N);
+
+        do {
+            Parcel T = i.get(0);
+            i.set(0, i.get(N - 1));
+            i.set(N - 1, T);
+
+            N = N - 1;
+            downheap(i, 1, N);
+        } while (N > 1);
+    }
+
+    private static void downheap(ArrayList<Parcel> i, int k, int N) {
+        Parcel T = i.get(k - 1);
+
+        while (k <= N / 2) {
+            int j = k + k;
+            if ((j < N) && (i.get(j - 1).value > i.get(j).value))
+                j++;
+
+            if (T.value <= i.get(j - 1).value)
+                break;
+            else {
+                i.set(k - 1, i.get(j - 1));
+                k = j;
+            }
+        }
+        i.set(k - 1, T);
+    }
+
+    // endregion
+
+    // region Copy
+    public static ParcelPlacement[] copy(ParcelPlacement[] input) {
+        ParcelPlacement[] returnArray = new ParcelPlacement[input.length];
+        for (int i = 0; i < input.length; i++) {
+            returnArray[i] = input[i];
+        }
+        return returnArray;
+    }
+
+    public static ArrayList<ParcelPlacement> copy(ArrayList<ParcelPlacement> input) {
+        ArrayList<ParcelPlacement> returnList = new ArrayList<ParcelPlacement>();
+        for (ParcelPlacement placement : input) {
+            returnList.add(placement.copy());
+        }
+        return returnList;
+    }
+
+    public static Parcel[] copy(Parcel[] input) {
+        Parcel[] returnArray = new Parcel[input.length];
+        for (int i = 0; i < input.length; i++) {
+            returnArray[i] = input[i];
+        }
+        return returnArray;
+    }
+
+    public static ArrayList<Parcel> copyP(ArrayList<Parcel> input) {
+        ArrayList<Parcel> returnList = new ArrayList<Parcel>();
+        for (Parcel parcel : input) {
+            returnList.add(parcel.copy());
+        }
+        return returnList;
+    }
+
+    public static int[][][] copy(int[][][] input) {
+        int[][][] copy = new int[input.length][input[0].length][input[0][0].length];
+
+        for (int i = 0; i < copy.length; i++) {
+            for (int j = 0; j < copy[i].length; j++) {
+                for (int k = 0; k < copy[i][j].length; k++) {
+                    copy[i][j][k] = input[i][j][k];
+                }
+            }
+        }
+        return copy;
+    }
+
+    public static int[][] copy(int[][] input) {
+        int[][] copy = new int[input.length][input[0].length];
+
+        for (int i = 0; i < copy.length; i++) {
+            for (int j = 0; j < copy[i].length; j++) {
+                copy[i][j] = input[i][j];
+            }
+        }
+        return copy;
+    }
+
+    public static int[] copy(int[] input) {
+        int[] copy = new int[input.length];
+
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = input[i];
+        }
+        return copy;
+    }
+
+    // endregion
+
+    // region Print
+    public static void print(int[] input) {
+        for (int tile : input) {
+            System.out.print(tile);
+        }
+        System.out.println();
+    }
+
+    public static void print(int[][] input) {
+        for (int[] row : input) {
+            print(row);
+        }
+    }
+
+    public static void print(int[][][] input) {
+        System.out.println("Printing:");
+        for (int i = 0; i < input.length; i++) {
+            System.out.println("Layer: " + i);
+            print(input[i]);
+        }
+        System.out.println();
+    }
+
+    public static void printI(ArrayList<int[][][]> input) {
+        System.out.println("Count: " + input.size());
+        for (int i = 0; i < input.size(); i++) {
+            print(input.get(i));
+        }
+        System.out.println();
+    }
+
+    public static void printP(ArrayList<Parcel> input) {
+        for (int i = 0; i < input.size(); i++) {
+            input.get(i).print();
+        }
+        System.out.println();
+    }
+
+    public static void printB(ArrayList<Block> input) {
+        for (int i = 0; i < input.size(); i++) {
+            input.get(i).print();
+        }
+        System.out.println();
+    }
+    // endregion
+
+    // region Volume
+    public static float getEmptySpacesCount(int[][][] input) {
+        float counter = 0;
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length; j++) {
+                for (int k = 0; k < input[i][j].length; k++) {
+
+                    if (input[i][j][k] == 0) {
+                        counter++;
+                    }
+                }
+            }
+        }
+        return counter;
+    }
+
+    public static float getNonemptySpacesCount(int[][][] input) {
+        float counter = 0;
+        for (int z = 0; z < input.length; z++) {
+            for (int y = 0; y < input[z].length; y++) {
+                for (int x = 0; x < input[z][y].length; x++) {
+
+                    if (input[z][y][x] != 0) {
+                        counter++;
+                    }
+                }
+            }
+        }
+        return counter;
+    }
+
+    // region Largest empty space
+    public static EmptySpace findLargestEmptySpace(int[][][] cargo) {
+        EmptySpace emptySpace = new EmptySpace(0, 0, 0);
+        for (int z = 0; z < cargo.length; z++) {
+            for (int y = 0; y < cargo[0].length; y++) {
+                for (int x = 0; x < cargo[0][0].length; x++) {
+                    if (cargo[z][y][x] == 0) {
+                        int[] dimensions = findLargestCuboidStartingAt(cargo, x, y, z);
+                        int volume = dimensions[0] * dimensions[1] * dimensions[2];
+                        if (volume > emptySpace.volume) {
+                            emptySpace.volume = volume;
+                            emptySpace.dimensions = dimensions;
+                            emptySpace.xPos = x;
+                            emptySpace.yPos = y;
+                            emptySpace.zPos = z;
+                        }
+                    }
+                    int biggestAchievableVolume = (cargo.length - z) * (cargo[0].length - y)
+                            * (cargo[0][0].length - x);
+                    if (biggestAchievableVolume <= emptySpace.volume) {
+                        break;
+                    }
+                }
+                int biggestAchievableVolume = (cargo.length - z) * (cargo[0].length - y)
+                        * cargo[0][0].length;
+                if (biggestAchievableVolume <= emptySpace.volume) {
+                    break;
+                }
+            }
+            int biggestAchievableVolume = (cargo.length - z) * cargo[0].length * cargo[0][0].length;
+            if (biggestAchievableVolume <= emptySpace.volume) {
+                break;
+            }
+        }
+        return emptySpace; // The biggest shape found
+    }
+
+    private static int[] findLargestCuboidStartingAt(int[][][] cargo, int x, int y, int z) {
+        CuboidData data = new CuboidData();
+        data.cargo = cargo;
+        data.x = x;
+        data.y = y;
+        data.z = z;
+        data.maxWidth = cargo[0][0].length - x;
+        data.maxHeight = cargo[0].length - y;
+        data.currentDepth = 1;
+        return findLargestCuboidRecursively(data);
+    }
+
+    private static int[] findLargestCuboidRecursively(CuboidData data) {
+        int[] largestDimensions = new int[3];
+        int largestVolume = 0;
+        int height = 1;
+        for (int i = data.y; i < data.cargo.length && height <= data.maxHeight; i++) {
+            boolean hitAnObstacle = !HelperMethods.checkIfTileEmpty(data.cargo, new Position(data.x, i, data.z));
+            if (hitAnObstacle) {
+
+                return largestDimensions;
+            }
+            System.out.println("X: " + data.x + "Y:" + i + " z: " + data.z);
+            int width = goRight(data.cargo[data.z], data.x, i);
+            if (width < data.maxWidth) {
+                data.maxWidth = width;
+            }
+            // The depth is always one higher than the z coordinate
+            // Counts the current volume
+            int[] cuboidDimensions = new int[3];
+            int cuboidVolume = height * data.maxWidth * data.currentDepth;
+            cuboidDimensions[0] = data.maxWidth;
+            cuboidDimensions[1] = height;
+            cuboidDimensions[2] = data.currentDepth;
+            // Looks for possible volumes deeper into the cargo shape
+
+            CuboidData newData = data.copy();
+            newData.z = data.z + 1;
+            newData.maxHeight = height;
+            newData.currentDepth = data.currentDepth + 1;
+
+            int[] deeperDimensions = findLargestCuboidRecursively(newData);
+            int deeperVolume = deeperDimensions[0] * deeperDimensions[1] * deeperDimensions[2];
+            if (cuboidVolume < deeperVolume) {
+                cuboidVolume = deeperVolume;
+                cuboidDimensions = deeperDimensions;
+            }
+            if (largestVolume < cuboidVolume) {
+                largestVolume = cuboidVolume;
+                largestDimensions = cuboidDimensions;
+            }
+            height++;
+        }
+        return largestDimensions;
+    }
+
+    public static int goRight(int[][] array, int x, int y) {
+        int zeroCounter = 0;
+        for (int i = x; i < array[0].length; i++) {
+            if (array[y][i] == 0) {
+                zeroCounter++;
+            } else {
+                return zeroCounter;
+            }
+        }
+        return zeroCounter;
+    }
+    // endregion
+
+    // region Expand volume
+    /**
+     * 
+     * @param pos1 top left front corner of the first volume
+     * @param pos2 bottom right back corner of the first volume
+     * @param pos3 top left front corner of the second volume
+     * @param pos4 bottom right back corner of the second volume
+     * @return a volume big enough to contain all of those points at once
+     */
+    public static int[][][] getExpandedVolume(Position pos1, Position pos2, Position pos3, Position pos4) {
+        int lowestX = lowerValue(pos1.x, pos3.x);
+        int lowestY = lowerValue(pos1.y, pos3.y);
+        int lowestZ = lowerValue(pos1.z, pos3.z);
+
+        int highestX = higherValue(pos2.x, pos4.x);
+        int highestY = higherValue(pos2.y, pos4.y);
+        int highestZ = higherValue(pos2.z, pos4.z);
+
+        return new int[highestZ - lowestZ + 1][highestY - lowestY + 1][highestX - lowestX + 1];
+    }
+
+    public static int higherValue(int a, int b) {
+        if (a > b) {
+            return a;
+        } else {
+            return b;
+        }
+    }
+
+    public static int lowerValue(int a, int b) {
+        if (a > b) {
+            return b;
+        } else {
+            return a;
+        }
+    }
+    // endregion
+    // endregion
+
+    // region Array properties
+    public static boolean zerosOnlyAtTheFront(int[] arr) {
+        boolean onlyAtTheFront = true;
+        boolean frontEnded = false;
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(arr[i]);
+            if (!frontEnded && arr[i] != 0) {
+                frontEnded = true;
+            } else {
+                if (frontEnded && arr[i] == 0) {
+                    onlyAtTheFront = false;
+                }
+            }
+        }
+        return onlyAtTheFront;
+    }
+
+    public static boolean arrayListContains(ArrayList<int[][][]> input, int[][][] shape) {
+        for (int[][][] s : input) {
+            if (HelperMethods.areEqual(s, shape)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean areEqual(int[][][] a, int[][][] b) {
+        int depth = a.length;
+        int height = a[0].length;
+        int width = a[0][0].length;
+        for (int z = 0; z < depth; z++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (isOutOfBounds(b, new Position(x, y, z))) {
+                        return false;
+                    }
+                    if (a[z][y][x] != b[z][y][x]) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean areEqual(int[] a, int[] b) {
+        if (a.length != b.length) {
+            return false;
+        }
+        for (int x = 0; x < b.length; x++) {
+            if (a[x] != b[x]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @param arr
+     * @param x   column
+     * @param y   row
+     * @param z   layer
+     * @return true, if the position is outside the matrix or that position is
+     *         filled with a zero
+     */
+    public static boolean isEmpty(int[][][] arr, Position pos) {
+        if (isOutOfBounds(arr, pos)) {
+            return true;
+        }
+        boolean tileEmpty = arr[pos.z][pos.y][pos.x] == 0;
+        if (tileEmpty)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isOutOfBounds(int[][][] arr, Position pos) {
+        boolean zOutOfBounds = pos.z < 0 || pos.z >= arr.length;
+        if (zOutOfBounds)
+            return true;
+        boolean yOutOfBounds = pos.y < 0 || pos.y >= arr[pos.z].length;
+        if (yOutOfBounds)
+            return true;
+        boolean xOutOfBounds = pos.x < 0 || pos.x >= arr[pos.z][pos.y].length;
+        if (xOutOfBounds)
+            return true;
+        return false;
+    }
+    // endregion
+
+    // region Casting
+    public static Block turnParcelIntoBlock(Parcel parcel) {
+        ArrayList<ParcelPlacement> placements = new ArrayList<ParcelPlacement>();
+        Position pos = new Position(0, 0, 0);
+        placements.add(new ParcelPlacement(parcel, pos));
+        return new Block(parcel.getShape(), parcel.value, placements);
+    }
+    // endregion
+
+    // region Rotation
+    // region Parcel
+    public static Parcel createParcelRotation(Parcel parcel, int x, int y, int z) {
+        Parcel returnParcel = parcel.copy();
+        for (int i = 0; i < (x % 4); i++) {
+            returnParcel.setShape(rotateAroundX(returnParcel.getShape()));
+        }
+        for (int i = 0; i < (y % 4); i++) {
+            returnParcel.setShape(rotateAroundY(returnParcel.getShape()));
+        }
+        for (int i = 0; i < (z % 4); i++) {
+            returnParcel.setShape(rotateAroundZ(returnParcel.getShape()));
+        }
+        return returnParcel;
+    }
+
+    public static ParcelPlacement createParcelPlacementRotation(ParcelPlacement placement, int x, int y, int z) {
+        ParcelPlacement returnPlacement = placement.copy();
+        for (int i = 0; i < (x % 4); i++) {
+            returnPlacement.parcel.setShape(rotateAroundX(returnPlacement.parcel.getShape()));
+            returnPlacement.pos = rotateOriginAroundX(returnPlacement.pos, returnPlacement.parcel.dimensions);
+        }
+        for (int i = 0; i < (y % 4); i++) {
+            returnPlacement.parcel.setShape(rotateAroundY(returnPlacement.parcel.getShape()));
+            returnPlacement.pos = rotateOriginAroundY(returnPlacement.pos, returnPlacement.parcel.dimensions);
+        }
+        for (int i = 0; i < (z % 4); i++) {
+            returnPlacement.parcel.setShape(rotateAroundZ(returnPlacement.parcel.getShape()));
+            returnPlacement.pos = rotateOriginAroundZ(returnPlacement.pos, returnPlacement.parcel.dimensions);
+        }
+        return returnPlacement;
+    }
+
+    private static Position rotateOriginAroundX(Position pos, int[] dimensions) {
+        int width = dimensions[0];
+
+        Position returnPosition = new Position(width - (pos.y + 1), pos.x, pos.z);
+        return returnPosition;
+    }
+
+    private static Position rotateOriginAroundY(Position pos, int[] dimensions) {
+        int depth = dimensions[2];
+
+        Position returnPosition = new Position(pos.x, pos.y, depth - (pos.z + 1));
+        return returnPosition;
+    }
+
+    private static Position rotateOriginAroundZ(Position pos, int[] dimensions) {
+        int height = dimensions[1];
+
+        Position returnPosition = new Position(height - (pos.y + 1), pos.x, pos.z);
+        return returnPosition;
+    }
+    // endregion
+
+    // region Shape
+    /**
+     * Rotates the shape 90 degrees clockwise around each axis the specified number
+     * of times.
+     * 
+     * @param shape
+     * @param x
+     * @param y
+     * @param z
+     * @return The rotated shape as a new 3D matrix
+     */
+    public static ArrayList<Parcel> generateParcelRotations(Parcel parcel) {
+        ArrayList<int[][][]> shapeRotationList = generateRotations(parcel.getShape());
+        ArrayList<Parcel> parcelList = new ArrayList<>();
+        for (int[][][] shapeRotation : shapeRotationList) {
+            Parcel newParcel = parcel.copy();
+            newParcel.setShape(shapeRotation);
+            parcelList.add(newParcel);
+        }
+        return parcelList;
+    }
+
+    public static ArrayList<int[][][]> generateRotations(int[][][] shape) {
+        ArrayList<int[][][]> returnArrayList = new ArrayList<int[][][]>();
+        int[][][] temporaryArray = HelperMethods.copy(shape);
+
+        // rotate 2 times around Y axis
+        for (int i = 0; i < 2; i++) {
+            // rotate 4 times around X axis
+            rotate4TimesAroundX(returnArrayList, temporaryArray);
+            temporaryArray = rotateAroundY(temporaryArray);
+            temporaryArray = rotateAroundY(temporaryArray);
+        }
+        temporaryArray = rotateAroundY(temporaryArray);
+        // rotate 2 times around Y axis
+        for (int i = 0; i < 2; i++) {
+            // rotate 4 times around Z axis
+            rotate4TimesAroundZ(returnArrayList, temporaryArray);
+            temporaryArray = rotateAroundY(temporaryArray);
+            temporaryArray = rotateAroundY(temporaryArray);
+        }
+        temporaryArray = rotateAroundX(temporaryArray);
+        rotate4TimesAroundY(returnArrayList, temporaryArray);
+        temporaryArray = rotateAroundX(temporaryArray);
+        temporaryArray = rotateAroundX(temporaryArray);
+        rotate4TimesAroundY(returnArrayList, temporaryArray);
+        return deleteRepetitions(returnArrayList);
+    }
+
+    private static ArrayList<int[][][]> deleteRepetitions(ArrayList<int[][][]> shapeList) {
+        ArrayList<int[][][]> returnArrayList = new ArrayList<int[][][]>();
+        for (int[][][] shape : shapeList) {
+            if (!HelperMethods.arrayListContains(returnArrayList, shape)) {
+                returnArrayList.add(shape);
+            }
+        }
+        return returnArrayList;
+    }
+
+    private static void rotate4TimesAroundX(ArrayList<int[][][]> arrayList, int[][][] shape) {
+        for (int j = 0; j < 4; j++) {
+            arrayList.add(shape);
+            shape = rotateAroundX(shape);
+        }
+    }
+
+    private static void rotate4TimesAroundY(ArrayList<int[][][]> arrayList, int[][][] shape) {
+        for (int j = 0; j < 4; j++) {
+            arrayList.add(shape);
+            shape = rotateAroundY(shape);
+        }
+    }
+
+    private static void rotate4TimesAroundZ(ArrayList<int[][][]> arrayList, int[][][] shape) {
+        for (int j = 0; j < 4; j++) {
+            arrayList.add(shape);
+            shape = rotateAroundZ(shape);
+        }
+    }
+
+    public static int[][][] createShapeRotation(int[][][] shape, int x, int y, int z) {
+        int[][][] returnArray = HelperMethods.copy(shape);
+        for (int i = 0; i < (x % 4); i++) {
+            returnArray = rotateAroundX(returnArray);
+        }
+        for (int i = 0; i < (y % 4); i++) {
+            returnArray = rotateAroundY(returnArray);
+        }
+        for (int i = 0; i < (z % 4); i++) {
+            returnArray = rotateAroundZ(returnArray);
+        }
+        return returnArray;
+    }
+
+    private static int[][][] rotateAroundX(int[][][] shape) {
+        int depth = shape.length;
+        int height = shape[0].length;
+        int width = shape[0][0].length;
+        int[][][] newshape = new int[height][depth][width];
+
+        for (int z = 0; z < depth; z++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    newshape[y][depth - (z + 1)][x] = shape[z][y][x];
+                }
+            }
+        }
+        return newshape;
+    }
+
+    private static int[][][] rotateAroundY(int[][][] shape) {
+        int depth = shape.length;
+        int height = shape[0].length;
+        int width = shape[0][0].length;
+        int[][][] newshape = new int[width][height][depth];
+
+        for (int z = 0; z < depth; z++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    newshape[x][y][depth - (z + 1)] = shape[z][y][x];
+                }
+            }
+        }
+        return newshape;
+    }
+
+    private static int[][][] rotateAroundZ(int[][][] shape) {
+        int depth = shape.length;
+        int height = shape[0].length;
+        int width = shape[0][0].length;
+        int[][][] newshape = new int[depth][width][height];
+
+        for (int z = 0; z < depth; z++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    newshape[z][x][height - (y + 1)] = shape[z][y][x];
+                }
+            }
+        }
+        return newshape;
+    }
+    // endregion
+    // endregion
+
+    // region Find best fit
+    // Gonna get it
+    public static Block getBestBlock(int[] emptyVolumeDimensions, ArrayList<Block> allBlocks) {
+        return BlockHolder.blockList.get(0);
+    }
+    // endregion
+}
+
+class CuboidData {
+    public int[][][] cargo;
+    public int x;
+    public int y;
+    public int z;
+
+    public int maxWidth;
+    public int maxHeight;
+    public int currentDepth;
+
+    public CuboidData copy() {
+        CuboidData copy = new CuboidData();
+        copy.cargo = cargo;
+        copy.x = x;
+        copy.y = y;
+        copy.z = z;
+        copy.maxWidth = maxWidth;
+        copy.maxHeight = maxHeight;
+        copy.currentDepth = currentDepth;
+        return copy;
+    }
+}
