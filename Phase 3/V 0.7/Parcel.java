@@ -1,0 +1,101 @@
+/**
+ * All the data representing a parcel with its own rotation
+ */
+public class Parcel {
+    /**
+     * A 3D array containing the exact build of the parcel
+     */
+    private int[][][] shape;
+    /**
+     * Three consecutive numbers X,Y,Z (columns, rows, layers) (eg. 33,8,5)
+     */
+    public int[] dimensions;
+    public float value; // The value of the parcel
+    /**
+     * The block ID (for differentiating rotations of the same parcel)
+     */
+    public int index;
+    /**
+     * The value to volume ratio of the parcel
+     */
+    public float valueRatio;
+    private float volume;
+
+    public Parcel(int[][][] shape, float value, int index) {
+        this.index = index;
+        this.shape = shape;
+        this.value = value;
+        int[] newDimensions = { shape[0][0].length, shape[0].length, shape.length };
+        this.dimensions = newDimensions;
+
+        volume = HelperMethods.getNonemptySpacesCount(shape);
+        this.valueRatio = value / volume;
+    }
+
+    // region Mutator methods
+    /**
+     * Rotates this parcel's shape
+     * 
+     * @param xRot
+     * @param yRot
+     * @param zRot
+     */
+    public void rotateParcel(int xRot, int yRot, int zRot) {
+        setShape(HelperMethods.createShapeRotation(shape, xRot, yRot, zRot));
+    }
+
+    public void setShape(int[][][] newShape) {
+        shape = newShape;
+        updateDimensions();
+    }
+
+    public void updateDimensions() {
+        int[] newDimensions = { shape[0][0].length, shape[0].length, shape.length };
+        this.dimensions = newDimensions;
+    }
+    // endregion
+
+    // region Accessor methods
+    public void print() {
+        System.out.println("Printing parcel: ");
+        System.out.println("Value: " + value);
+        System.out.println("Volume: " + volume);
+        System.out.println("Value ratio: " + valueRatio);
+        System.out.print("Dimensions: ");
+        printDimensions(dimensions);
+        HelperMethods.print(shape);
+    }
+
+    private void printDimensions(int[] input) {
+        System.out.print(input[0] + "x");
+        System.out.print(input[1] + "x");
+        System.out.print(input[2]);
+        System.out.println();
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    /**
+     * 
+     * @param xAxis
+     * @param yAxis
+     * @param zAxis
+     * @return a new parcel that is a rotated version of this one
+     */
+    public Parcel createRotation(int xAxis, int yAxis, int zAxis) {
+        Parcel returnParcel = this.copy();
+        returnParcel = HelperMethods.createParcelRotation(returnParcel, xAxis, yAxis, zAxis);
+        return returnParcel;
+    }
+
+    public Parcel copy() {
+        return new Parcel(HelperMethods.copy(shape), value, index);
+    }
+
+    public int[][][] getShape(){
+        return shape;
+    }
+    // endregion
+}
