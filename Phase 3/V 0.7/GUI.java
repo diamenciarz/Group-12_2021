@@ -40,102 +40,46 @@ public class GUI extends Application {
     private final DoubleProperty xAngle = new SimpleDoubleProperty(0);
     private final DoubleProperty yAngle = new SimpleDoubleProperty(0);
 
-    // region TEST PARCELS
-
-    int [][][] cube = {
-        {{1}}
-    };
-
-    int[][][] parcelA1 = {
-        {{1,1,1,1},{1,1,1,1}},
-        {{1,1,1,1},{1,1,1,1}}
-    };
-
-    int[][][] parcelB1 = {
-        {{2,2,2,2},{2,2,2,2},{2,2,2,2}},
-        {{2,2,2,2},{2,2,2,2},{2,2,2,2}}
-    }; 
-
-    int[][][] parcelC1 = {
-        {{3,3,3},{3,3,3},{3,3,3}},
-        {{3,3,3},{3,3,3},{3,3,3}},
-        {{3,3,3},{3,3,3},{3,3,3}}
-    };
-
-    int[][][] parcelL1 = {
-        {{1},{0}},
-        {{1},{0}},
-        {{1},{0}},
-        {{1},{1}}
-    };
-
-    int[][][] parcelL23 = {
-        {{0,1} },
-        {{0,1} },
-        {{0,1} },
-        {{1,1} }
-
-    };
-
-    int[][][] parcelL2 =  {
-        {{0}, {1}},
-        {{0}, {1}},
-        {{0}, {1}}, 
-        {{1}, {1}}
-    };
-
-    int[][][] parcelL3 =  {
-        {{1}, {1}},
-        {{0}, {1}},
-        {{0}, {1}}, 
-        {{0}, {1}}
-    };
-
-    int[][][] parcelL14 =  {
-        {{0, 1},
-        {0, 1},
-        {0, 1}, 
-        {1, 1}}
-    };
-
-    int[][][] parcelL12 =  {
-        {{0, 0, 0, 1}},
-        {{1, 1, 1, 1}},  
-    };
-
-    int[][][] parcelL17 =  {
-        {{1, 1, 1, 1},
-         {0, 0, 0, 1}}
-    };
-
-    int[][][] parcelT1 = {
-        {{2},{2},{2}},
-        {{0},{2},{0}},
-        {{0},{2},{0}},
-    };
-
-    int[][][] parcelP1 = {
-        {{3},{3}},
-        {{3},{3}},
-        {{3},{0}}
-    };
-
-    // endregion
-
     @Override
     public void start(Stage stage) throws Exception {
 
         // region This is where the methods run.
-        //parcelList.add(generateGraphic(ParcelHolder., x, y, z));
+      
+        parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 0).getShape(), 0, 0, -1));
+        parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(2, 0, 2).getShape(), 0, 0, 2));
+        parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,0,0));
+        //parcelList.add(generateGraphic(parcelP1,-1,-2,0));
 
-    
+        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 0).getShape(), 0, 0, 0));
+        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 2).getShape(), -2, 0, 0));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Lparcel.createRotation(0, 0, 0).getShape(),0,0,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Lparcel.createRotation(0, 0, 2).getShape(),-1,0,0));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,0,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 2).getShape(), 1,0,1));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,1,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 2).getShape(), 1,1,1));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,2,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 2).getShape(), 1,2,1));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,3,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 2).getShape(), 1,3,1));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,4,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 2).getShape(), 1,4,1));
+
         
-        parcelList.add(generateGraphic(parcelL1,0,0,0));
-        parcelList.add(generateGraphic(parcelL1,0,0,1));
-        parcelList.add(generateGraphic(parcelL1,0,0,2));
-        parcelList.add(generateGraphic(parcelT1,0,-1,2));
-        parcelList.add(generateGraphic(parcelP1,-1,-2,0));
 
+
+        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 3, 0).getShape(), 1, 3, 0));
+
+        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 1, 0).getShape(), 1, 0, 0));
+
+
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 1, 0).getShape(), 1,1,0));
         // Remove last parcel
         //parcelList.remove(parcelList.size()-1);
                     
@@ -631,5 +575,6 @@ public class GUI extends Application {
     
     public static void main(String[] args) {
         launch(args);
+        
     }
 }
