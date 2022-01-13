@@ -3,6 +3,9 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.transaction.xa.Xid;
+
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -23,6 +26,7 @@ import javafx.scene.layout.VBox;
 public class GUI extends Application {
 
     private static ArrayList<Group> parcelList = new ArrayList<Group>();
+    private static List<Cylinder> containerLines = new ArrayList<Cylinder>();
 
     private static Rotate yRotation = new Rotate(0, Rotate.Y_AXIS);
 
@@ -30,9 +34,9 @@ public class GUI extends Application {
 
     private static Group viewRoot = new Group(); 
 
-    private static int containerX = 0;
-    private static int containerY = 0;
-    private static int containerZ = 0;
+    private static int containerX = 33;
+    private static int containerY = 8;
+    private static int containerZ = 8;
 
     private double xAnchor, yAnchor;
     private double xAngleAnchor = 0;
@@ -44,10 +48,11 @@ public class GUI extends Application {
     public void start(Stage stage) throws Exception {
 
         // region This is where the methods run.
+        
       
-        parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 0).getShape(), 0, 0, -1));
-        parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(2, 0, 2).getShape(), 0, 0, 2));
-        parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,0,0));
+        //addToParcelList();
+        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(2, 0, 2).getShape(), 0, 0, 2));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,0,0));
 
         // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 0).getShape(), 0, 0, 0));
         // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 2).getShape(), -2, 0, 0));
@@ -73,20 +78,35 @@ public class GUI extends Application {
         
 
 
-        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 3, 0).getShape(), 1, 3, 0));
+        parcelList.add(generateGraphic(ParcelHolder.Pparcel().createRotation(0, 0, 0).getShape(), 0, 0, 0));
+        parcelList.add(generateGraphic(ParcelHolder.Pparcel().createRotation(0, 0, 0).getShape(), 0, 1, 0));
+        parcelList.add(generateGraphic(ParcelHolder.Pparcel().createRotation(0, 0, 0).getShape(), 0, 2, 0));
 
-        // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 1, 0).getShape(), 1, 0, 0));
+        // parcelList.add(generateGraphic(ParcelHolder.Pparcel().createRotation(0, 1, 0).getShape(), 1, 0, 0));
 
 
-        // parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 1, 0).getShape(), 1,1,0));
+        // parcelList.add(generateGraphic(ParcelHolder.Tparcel().createRotation(0, 1, 0).getShape(), 1,1,0));
         // Remove last parcel
         //parcelList.remove(parcelList.size()-1);
+
+        //generateContainerBorder(containerX, containerY, containerZ);
                     
-        displayGraphic(parcelList);
+        displayGraphic();
 
         // endregion
 
         // CAMERA
+
+        int zoomFactor = containerZ > (containerX > containerY ? containerX : containerY) ? containerZ : ((containerX > containerY) ? containerX : containerY);;
+        // if (containerY > containerX) {
+        //     zoomFactor = containerY;
+        // } 
+        // if (containerZ > containerX) {
+        //     zoomFactor = containerZ;
+        // }
+
+        System.out.println(zoomFactor);
+
         Translate cameraPivot = new Translate();
         Camera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll (
@@ -97,7 +117,7 @@ public class GUI extends Application {
                 //new Rotate(-20, Rotate.Y_AXIS),
                 //new Rotate(-7, Rotate.Z_AXIS),
                 // camera position
-                new Translate(0, 0, -30)
+                new Translate(0, 0, -30 -zoomFactor)
         );
 
         Slider zoomSlider = new Slider();
@@ -248,6 +268,10 @@ public class GUI extends Application {
 
     }
 
+    public static void addToParcelList(int[][][] shape, int x, int y, int z) {
+        parcelList.add(generateGraphic(shape, x, y, z));
+    }
+
     /**
      * Mouse controller
      * @param viewRoot
@@ -322,7 +346,7 @@ public class GUI extends Application {
      * @param z coordinate
      * @return Group object containing the 3D cubes and edge lines
      */
-    private Group generateGraphic(int[][][] parcel, int x, int y, int z) {
+    public static Group generateGraphic(int[][][] parcel, int x, int y, int z) {
 
         double lineThickness = 0.03;
         PhongMaterial lineColour = new PhongMaterial(Color.DARKGRAY);
@@ -541,16 +565,361 @@ public class GUI extends Application {
         return parcelAndBorders;
     }
 
+    private static void generateContainerBorder() {
+
+         // Rotate line parallel to z-axis
+         Rotate xRot = new Rotate(90, Rotate.X_AXIS);
+         Transform xTrans = new Rotate();
+         xTrans = xTrans.createConcatenation(xRot);
+ 
+         // Rotate line paralle to x-axis
+         Rotate zRot = new Rotate(90, Rotate.Z_AXIS);
+         Transform zTrans = new Rotate();
+         zTrans = zTrans.createConcatenation(zRot);
+
+        int[][][] containerSpace = new int[containerY+2][containerX+2][containerZ+2];
+        List<Cylinder> lines = new ArrayList<Cylinder>();
+        double lineThickness = 0.06;
+        PhongMaterial lineColour = new PhongMaterial(Color.GOLDENROD);
+        PhongMaterial floorLineColour = new PhongMaterial(Color.SILVER);
+        
+        int lineIndex = 0;
+        for (int y = 1 ; y <= containerY ; y++) {
+            for (int x = 1 ; x <= containerX ; x++) {
+                for (int z = 1 ; z <= containerZ ; z++) {
+                    
+                    containerSpace[y][x][z] = 1;
+                    
+                }
+            }
+        }
+
+        for (int yPos = 1 ; yPos < containerSpace.length ; yPos++) {
+            for (int xPos = 1 ; xPos < containerSpace[0].length ; xPos++) {
+                for (int zPos = 1 ; zPos < containerSpace[0][0].length ; zPos++) {
+                    
+                    if (containerSpace[yPos][xPos][zPos] != 0) {
+
+                        // Y left front
+                        if (containerSpace[yPos][xPos][zPos-1] == 0 && containerSpace[yPos][xPos-1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(-0.5 +  xPos  -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 +  zPos - 1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0 +  yPos - 1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // Y left back
+                        if (containerSpace[yPos][xPos-1][zPos] == 0 && containerSpace[yPos][xPos][zPos+1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(-0.5  + xPos - 1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5  + zPos - 1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0  + yPos - 1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Y right front
+                        if (containerSpace[yPos][xPos+1][zPos] == 0 && containerSpace[yPos][xPos][zPos-1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(0.5  + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5  + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0  + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Y right back
+                        if (containerSpace[yPos][xPos][zPos+1] == 0 && containerSpace[yPos][xPos+1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).setTranslateX(0.5 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Z upper left
+                        if (containerSpace[yPos-1][xPos][zPos] == 0 && containerSpace[yPos][xPos-1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(-0.5 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Z upper right
+                        if (containerSpace[yPos-1][xPos][zPos] == 0 && containerSpace[yPos][xPos+1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(0.5 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                        
+                        // Z lower left
+                        if (containerSpace[yPos+1][xPos][zPos] == 0 && containerSpace[yPos][xPos-1][zPos] == 0) {
+
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(-0.5 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(+0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // Z lower right
+                        if (containerSpace[yPos+1][xPos][zPos] == 0 && containerSpace[yPos][xPos+1][zPos] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(xTrans);
+                            lines.get(lineIndex).setTranslateX(0.5 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X upper front
+                        if (containerSpace[yPos-1][xPos][zPos] == 0 && containerSpace[yPos][xPos][zPos-1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X upper back
+                        if (containerSpace[yPos-1][xPos][zPos] == 0 && containerSpace[yPos][xPos][zPos+1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(-0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X lower front
+                        if (containerSpace[yPos+1][xPos][zPos] == 0 && containerSpace[yPos][xPos][zPos-1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(-0.5 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+
+                        // X lower back
+                        if (containerSpace[yPos+1][xPos][zPos] == 0 && containerSpace[yPos][xPos][zPos+1] == 0) {
+                            lines.add(new Cylinder(lineThickness, 1));
+                            lines.get(lineIndex).getTransforms().clear();
+                            lines.get(lineIndex).getTransforms().addAll(zTrans);
+                            lines.get(lineIndex).setTranslateX(0 + xPos -1 - containerX/2);
+                            lines.get(lineIndex).setTranslateZ(0.5 + zPos -1 - containerZ/2);
+                            lines.get(lineIndex).setTranslateY(0.5 + yPos -1 - containerY/2);
+                            lines.get(lineIndex).setMaterial(lineColour);
+                            lineIndex++;
+                        }
+                    }
+                    
+                }
+            }
+        }
+                    
+        // Y left front
+        // Cylinder yLeftFront = new Cylinder(lineThickness, containerY);
+        // yLeftFront.setMaterial(lineColour);
+        // yLeftFront.setTranslateX(-0.5 - containerX/2);
+        // yLeftFront.setTranslateZ(-0.5 - containerZ/2);
+        
+
+        // // Y left back
+        // Cylinder yLeftBack = new Cylinder(lineThickness, containerY);
+        // yLeftBack.setTranslateX(-0.5 - containerX/2);
+        // yLeftBack.setTranslateZ(0.5 + containerZ/2);
+        
+        // yLeftBack.setMaterial(lineColour);
+
+        // // Y right front
+        // Cylinder yRightFront = new Cylinder(lineThickness, containerY);
+        // yRightFront.setTranslateX(-0.5  + containerX/2);
+        // yRightFront.setTranslateZ(-0.5 - containerZ/2);
+        // yRightFront.setMaterial(lineColour);
+
+        // // Y right back
+        // Cylinder yRightBack = new Cylinder(lineThickness, containerY);
+        // yRightBack.setTranslateX(-0.5  + containerX/2);
+        // yRightBack.setTranslateZ(0.5  + containerZ/2);
+        // yRightBack.setMaterial(lineColour);
+
+        // // Z upper left
+        // Cylinder zUpperLeft = new Cylinder(lineThickness, containerZ);
+        // zUpperLeft.getTransforms().clear();
+        // zUpperLeft.getTransforms().addAll(xTrans);
+        // zUpperLeft.setTranslateX(-0.5 - containerX/2);
+        // zUpperLeft.setTranslateZ(0  );
+        // zUpperLeft.setTranslateY(-0.5 - containerY/2);
+        // zUpperLeft.setMaterial(lineColour);
+
+        // // Z lower left
+        // Cylinder zLowerLeft = new Cylinder(lineThickness, containerZ);
+        // zLowerLeft.getTransforms().clear();
+        // zLowerLeft.getTransforms().addAll(xTrans);
+        // zLowerLeft.setTranslateX(-0.5 - containerX/2);
+        // zLowerLeft.setTranslateZ(0 );
+        
+        // zLowerLeft.setMaterial(floorLineColour);
+
+        // // Z upper right
+        // Cylinder zUpperRight = new Cylinder(lineThickness, containerZ);
+        // zUpperRight.getTransforms().clear();
+        // zUpperRight.getTransforms().addAll(xTrans);
+        // zUpperRight.setTranslateX(-0.5 + containerX/2);
+        // zUpperRight.setTranslateZ(0  );
+        // zUpperRight.setTranslateY(-0.5 - containerY/2);
+        // zUpperRight.setMaterial(lineColour);
+
+        // // Z lower right
+        // Cylinder zLowerRight = new Cylinder(lineThickness, containerZ);
+        // zLowerRight.getTransforms().clear();
+        // zLowerRight.getTransforms().addAll(xTrans);
+        // zLowerRight.setTranslateX(-0.5 + containerX/2);
+        // zLowerRight.setTranslateZ(0  );
+        
+        // zLowerRight.setMaterial(floorLineColour);
+
+        // // X upper front
+        // Cylinder xUpperFront = new Cylinder(lineThickness, containerX);
+        // xUpperFront.getTransforms().clear();
+        // xUpperFront.getTransforms().addAll(zTrans);
+        // xUpperFront.setTranslateX(-0.5 );
+        // xUpperFront.setTranslateZ(-0.5  - containerZ/2);
+        // xUpperFront.setTranslateY(-0.5  - containerY/2);
+        // xUpperFront.setMaterial(lineColour);
+
+        // // X upper back
+        // Cylinder xUpperBack = new Cylinder(lineThickness, containerX);
+        // xUpperBack.getTransforms().clear();
+        // xUpperBack.getTransforms().addAll(zTrans);
+        // xUpperBack.setTranslateX(-0.5 );
+        // xUpperBack.setTranslateZ(0.5  + containerZ/2);
+        // xUpperBack.setTranslateY(-0.5  - containerY/2);
+        // xUpperBack.setMaterial(lineColour);
+
+        // // X lower front
+        // Cylinder xLowerFront = new Cylinder(lineThickness, containerX);
+        // xLowerFront.getTransforms().clear();
+        // xLowerFront.getTransforms().addAll(zTrans);
+        // xLowerFront.setTranslateX(-0.5 );
+        // xLowerFront.setTranslateZ(-0.5  - containerZ/2);
+        
+        // xLowerFront.setMaterial(floorLineColour);
+
+        // // X lower front
+        // Cylinder xLowerBack = new Cylinder(lineThickness, containerX);
+        // xLowerBack.getTransforms().clear();
+        // xLowerBack.getTransforms().addAll(zTrans);
+        // xLowerBack.setTranslateX(-0.5 );
+        // xLowerBack.setTranslateZ(0.5  + containerZ/2);
+        
+        // xLowerBack.setMaterial(floorLineColour);
+
+        // if (containerY%2==0) {
+        //     yLeftFront.setTranslateY(-0.5);
+        //     yLeftBack.setTranslateY(-0.5);
+        //     yRightFront.setTranslateY(-0.5 );
+        //     yRightBack.setTranslateY(-0.5  );
+
+        //     xLowerFront.setTranslateY(-0.5 + containerY/2);
+        //     xLowerBack.setTranslateY(-0.5  + containerY/2);
+
+        //     zLowerRight.setTranslateY(-0.5 + containerY/2);
+        //     zLowerLeft.setTranslateY(-0.5 + containerY/2);
+        // } else {
+        //     xLowerFront.setTranslateY(0.5  + containerY/2);
+        //     xLowerBack.setTranslateY(0.5  + containerY/2);
+        //     xLowerFront.setTranslateX(0.5  + containerY/2);
+        //     xLowerBack.setTranslateX(0.5  + containerY/2);
+
+        //     zLowerRight.setTranslateY(0.5 + containerY/2);
+        //     zLowerLeft.setTranslateY(0.5 + containerY/2);
+        // }
+
+        for (int i = 0 ; i < lines.size() ; i++) {
+            viewRoot.getChildren().add(lines.get(i));
+        }
+
+        // viewRoot.getChildren().add(yLeftFront);
+        // viewRoot.getChildren().add(yLeftBack);
+        // viewRoot.getChildren().add(yRightFront);
+        // viewRoot.getChildren().add(yRightBack);
+        // viewRoot.getChildren().add(zUpperLeft);
+        // viewRoot.getChildren().add(zLowerLeft);
+        // viewRoot.getChildren().add(zUpperRight);
+        // viewRoot.getChildren().add(zLowerRight);
+        // viewRoot.getChildren().add(xUpperFront);
+        // viewRoot.getChildren().add(xLowerFront);
+        // viewRoot.getChildren().add(xUpperBack);
+        // viewRoot.getChildren().add(xLowerBack);
+
+
+
+
+                        // .add(new Cylinder(lineThickness, containerY));
+                        // lines.get(lineIndex).setTranslateX(-0.5);
+                        // lines.get(lineIndex).setTranslateZ(-0.5);
+                        // lines.get(lineIndex).setTranslateY(0);
+                        // lines.get(lineIndex).setMaterial(lineColour);
+                        //lineIndex++;
+                        
+                    //}
+
+        //         }
+        //     }
+        // }
+
+
+
+        
+
+        //viewRoot.getChildren().
+
+    }
+
     /**
      * Display graphic from parcelList
      * @param parcelList Arraylist<Group> an array list of graphic elements as Group
      */
-    private void displayGraphic(ArrayList<Group> parcelList) {
+    public void displayGraphic() {
+
+        generateContainerBorder();
 
         for (int i = 0 ; i < parcelList.size() ; i ++) {
             viewRoot.getChildren().add(parcelList.get(i));
             
         }
+
+
+
+        // for (int i = 0 ; i < containerLines.size() ; i++) {
+        //     viewRoot.getChildren().add(containerLines.get(i));
+        // }
     }
 
 
@@ -559,7 +928,7 @@ public class GUI extends Application {
      * @param i
      * @return
      */
-    private PhongMaterial GetColorOfID(int i) {
+    private static PhongMaterial GetColorOfID(int i) {
         if (i == 1) {
             return new PhongMaterial(Color.RED); 
         } else if (i == 2) {
