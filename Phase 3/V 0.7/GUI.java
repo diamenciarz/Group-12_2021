@@ -24,7 +24,7 @@ public class GUI extends Application {
 
     private static ArrayList<Group> parcelList = new ArrayList<Group>();
 
-    private static Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
+    private static Rotate yRotation = new Rotate(0, Rotate.Y_AXIS);
 
     private static double currentAngle = 0;
 
@@ -48,7 +48,6 @@ public class GUI extends Application {
         parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 0).getShape(), 0, 0, -1));
         parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(2, 0, 2).getShape(), 0, 0, 2));
         parcelList.add(generateGraphic(ParcelHolder.Tparcel.createRotation(0, 0, 0).getShape(), 0,0,0));
-        //parcelList.add(generateGraphic(parcelP1,-1,-2,0));
 
         // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 0).getShape(), 0, 0, 0));
         // parcelList.add(generateGraphic(ParcelHolder.Pparcel.createRotation(0, 0, 2).getShape(), -2, 0, 0));
@@ -88,11 +87,11 @@ public class GUI extends Application {
         // endregion
 
         // CAMERA
-        Translate pivot = new Translate();
+        Translate cameraPivot = new Translate();
         Camera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll (
-                pivot,
-                yRotate,
+                cameraPivot,
+                yRotation,
                 // camera angle
                 new Rotate(-20, Rotate.X_AXIS),
                 //new Rotate(-20, Rotate.Y_AXIS),
