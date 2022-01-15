@@ -391,9 +391,9 @@ public class GUI extends Application {
      * @param z coordinate
      * @return Group object containing the 3D cubes and edge lines
      */
-    public static Group generateGraphic(int[][][] parcel2, int x, int y, int z) {
+    public static Group generateGraphic(int[][][] parcel, int x, int y, int z) {
 
-        int[][][] parcel = HelperMethods.createShapeRotation(parcel2, 3, 0, 0);
+        //int[][][] parcel = HelperMethods.createShapeRotation(parcel2, 3, 0, 0);
 
         // Box array
         Box[][][] boxArray = new Box[parcel.length][parcel[0].length][parcel[0][0].length];
