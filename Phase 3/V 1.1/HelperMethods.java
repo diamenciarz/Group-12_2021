@@ -958,23 +958,21 @@ public class HelperMethods {
 
     // region Display
 
-    // public static void displayCargo(Cargo cargo, GUI gui) {
-    // for (ParcelPlacement placement : cargo.placements) {
-    // displayParcelPlacement(placement, gui);
-    // }
-    // }
+    public static void displayCargo(Cargo cargo/*, GUI gui*/) {
+        for (ParcelPlacement placement : cargo.placements) {
+            displayParcelPlacement(placement/*, gui*/);
+        }
+    }
 
-    // public static void displayBlock(Block block, GUI gui) {
-    // for (ParcelPlacement placement : block.placements) {
-    // displayParcelPlacement(placement, gui);
-    // }
-    // }
+    public static void displayBlock(Block block/*, GUI gui*/) {
+        for (ParcelPlacement placement : block.placements) {
+            displayParcelPlacement(placement/*, gui*/);
+        }
+    }
 
-    // private static void displayParcelPlacement(ParcelPlacement placement, GUI
-    // gui) {
-    // gui.addToParcelList(placement.parcel.getShape(), placement.pos.x,
-    // placement.pos.y, placement.pos.z);
-    // }
+    private static void displayParcelPlacement(ParcelPlacement placement/*, GUI gui*/) {
+        GUI.addToParcelList(placement.parcel.getShape(), placement.pos.z,placement.pos.y, placement.pos.x);
+    }
 
     // endregion
 }

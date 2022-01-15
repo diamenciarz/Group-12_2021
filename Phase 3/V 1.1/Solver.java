@@ -21,31 +21,34 @@ public class Solver {
     }
 
     private static int[] getParcelCount() {
-        int[] parcelCount = { 100, 20, 10, 50, 100, 300 };
+        int[] parcelCount = { 0, 0, 0, 50, 100, 300 };
         // int[] parcelCount = { 500, 200, 300, 40, 4, 252 };
 
         return parcelCount;
     }
 
     private static int[] getInventoryDimensions() {
-        int[] dim = { 9, 7, 33 };
+        int[] dim = { GUI.containerZ, GUI.containerY, GUI.containerX };
         return dim;
     }
 
-    public static void solver( /* GUI gui */) {
+    public static void solver(/*GUI gui*/) {
         BlockHolder.startup(getInventoryDimensions(), false);
         System.out.println("Blocks generated: " + BlockHolder.getBlocks().size());
 
         Cargo cargo = createCargo();
         HelperMethods.print(cargo.parcelsCount);
+        // HelperMethods.displayBlock(ParcelHolder.Lparcel().getAsBlock() /* gui*/);
+        
         cargo.print();
-
+        
         fillCargo(cargo);
+        HelperMethods.displayCargo(cargo /* gui*/);
     }
 
     // endregion
     public static void main(String[] args) {
-        solver();
+        //solver();
     }
 
     private static Cargo fillCargo(Cargo cargo) {
