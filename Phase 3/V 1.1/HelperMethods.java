@@ -971,7 +971,7 @@ public class HelperMethods {
     }
 
     private static void displayParcelPlacement(ParcelPlacement placement/*, GUI gui*/) {
-        GUI.addToParcelList(placement.parcel.getShape(), placement.pos.z,placement.pos.y, placement.pos.x);
+        GUI.addToParcelList(placement.parcel.getShape(), placement.pos.x,placement.pos.y, placement.pos.z);
     }
 
     // endregion
