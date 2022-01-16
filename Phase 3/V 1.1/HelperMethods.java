@@ -954,14 +954,13 @@ public class HelperMethods {
         return currentBestBlock;
     }
     // endregion
-    // endregion
 
     // region Display
-
+    
     public static void displayCargo(Cargo cargo/*, GUI gui*/) {
-        for (ParcelPlacement placement : cargo.placements) {
-            displayParcelPlacement(placement/*, gui*/);
-        }
+        int[][][] rotatedCargo = HelperMethods.copy(cargo.shape);
+        rotatedCargo = HelperMethods.createShapeRotation(rotatedCargo, 3, 0, 2);
+        GUI.addToParcelList(rotatedCargo, 0,0,0);
     }
 
     public static void displayBlock(Block block/*, GUI gui*/) {
@@ -970,8 +969,58 @@ public class HelperMethods {
         }
     }
 
+    // region debug code
+
+    public static ArrayList<ParcelPlacement> generateAllPlacements(ArrayList<ParcelPlacement> placements) {
+        for (ParcelPlacement placement : placements) {
+            placement.parcel.rotate(3, 0, 3);
+        }
+        ArrayList<ParcelPlacement> translatedPlacements = new ArrayList<>();
+        int deltaZ = 10;
+        for (ParcelPlacement placement : placements) {
+            ParcelPlacement newPlacement = placement.copy();
+            newPlacement.pos = new Position(placement.pos.x, placement.pos.y, placement.pos.z + deltaZ * 0);
+            translatedPlacements.add(newPlacement);
+        }
+        for (ParcelPlacement placement : placements) {
+            ParcelPlacement newPlacement = placement.copy();
+            newPlacement.pos = new Position(placement.pos.x, placement.pos.z, placement.pos.y + deltaZ * 1);
+            translatedPlacements.add(newPlacement);
+        }
+        for (ParcelPlacement placement : placements) {
+            ParcelPlacement newPlacement = placement.copy();
+            newPlacement.pos = new Position(placement.pos.y, placement.pos.x, placement.pos.z + deltaZ * 2);
+            translatedPlacements.add(newPlacement);
+        }
+        for (ParcelPlacement placement : placements) {
+            ParcelPlacement newPlacement = placement.copy();
+            newPlacement.pos = new Position(placement.pos.y, placement.pos.z, placement.pos.x + deltaZ * 3);
+            translatedPlacements.add(newPlacement);
+        }
+        for (ParcelPlacement placement : placements) {
+            ParcelPlacement newPlacement = placement.copy();
+            newPlacement.pos = new Position(placement.pos.z, placement.pos.y, placement.pos.x + deltaZ * 4);
+            translatedPlacements.add(newPlacement);
+        }
+        for (ParcelPlacement placement : placements) {
+            ParcelPlacement newPlacement = placement.copy();
+            newPlacement.pos = new Position(placement.pos.z, placement.pos.x, placement.pos.y + deltaZ * 5);
+            translatedPlacements.add(newPlacement);
+        }
+        return translatedPlacements;
+    }
+
+    // end region
+
     private static void displayParcelPlacement(ParcelPlacement placement/*, GUI gui*/) {
-        GUI.addToParcelList(placement.parcel.getShape(), placement.pos.x,placement.pos.y, placement.pos.z);
+        ParcelPlacement translatedPlacement = placement.copy();
+        
+        Parcel translatedParcel = translatedPlacement.parcel.createRotation(3, 0, 3);
+        translatedPlacement.pos = new Position(placement.pos.x, placement.pos.y, placement.pos.z);
+
+        translatedPlacement.parcel = translatedParcel;
+
+        GUI.addToParcelList(translatedPlacement.parcel.getShape(), translatedPlacement.pos.x, translatedPlacement.pos.y, translatedPlacement.pos.z);
     }
 
     // endregion

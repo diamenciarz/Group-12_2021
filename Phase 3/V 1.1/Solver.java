@@ -21,7 +21,7 @@ public class Solver {
     }
 
     private static int[] getParcelCount() {
-        int[] parcelCount = { 0, 0, 0, 50, 100, 300 };
+        int[] parcelCount = { GUI.aCount, GUI.bCount, GUI.cCount, GUI.lCount, GUI.pCount, GUI.tCount };
         // int[] parcelCount = { 500, 200, 300, 40, 4, 252 };
 
         return parcelCount;
@@ -32,8 +32,8 @@ public class Solver {
         return dim;
     }
 
-    public static void solver(/*GUI gui*/) {
-        BlockHolder.startup(getInventoryDimensions(), false);
+    public static void solver(/*GUI gui*/ Boolean notABC) {
+        BlockHolder.startup(getInventoryDimensions(), notABC);
         System.out.println("Blocks generated: " + BlockHolder.getBlocks().size());
 
         Cargo cargo = createCargo();
@@ -44,6 +44,10 @@ public class Solver {
         
         fillCargo(cargo);
         HelperMethods.displayCargo(cargo /* gui*/);
+
+        // Block displayBlock = new Block(HelperMethods.generateAllPlacements(BlockHolder.getDisplay7().placements));
+        // HelperMethods.displayBlock(BlockHolder.getDisplay7());
+
     }
 
     // endregion

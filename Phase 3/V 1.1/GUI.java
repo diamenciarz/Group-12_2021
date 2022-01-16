@@ -62,32 +62,23 @@ public class GUI extends Application {
 
     static int zoomFactor = containerZ > (containerX > containerY ? containerX : containerY) ? containerZ : ((containerX > containerY) ? containerX : containerY);;
 
-
-
-        static SubScene viewScene = new SubScene(
-                viewRoot,
-                1000,800,
-                true,
-                SceneAntialiasing.BALANCED
-        );
-
+    static SubScene viewScene = new SubScene(
+            viewRoot,
+            1000,800,
+            true,
+            SceneAntialiasing.BALANCED
+    );
         
     @Override
     public void start(Stage stage) throws Exception {
         
         launchGUI(stage);
 
-        //displayGraphic();
-        
-        
-
     }
 
     private void launchGUI(Stage stage) {
 
-
         // CAMERA
-        
         camera.getTransforms().addAll (
                 cameraPivot,
                 yRotation,
@@ -106,9 +97,6 @@ public class GUI extends Application {
         zoomSlider.setOrientation(Orientation.VERTICAL);
         zoomSlider.setTranslateZ(-20);
         zoomSlider.setStyle("-fx-based: black");
-
-        // Subscene
-        
 
         HBox box = new HBox();
 
@@ -163,12 +151,9 @@ public class GUI extends Application {
         cargoSizeBox.getChildren().add(xyzLabel);
         cargoSizeBox.getChildren().add(cargoSizeInputBox);
 
-        //cargoSizeBox.setPadding(new Insets(5));
-
         Button abcButton = new Button("Find solution");
         Button ltpButton = new Button("Find Solution");
         Button clearButton = new Button("Clear all");
-
 
         abcButton.setPrefWidth(120);
         ltpButton.setPrefWidth(120);
@@ -192,9 +177,6 @@ public class GUI extends Application {
         parcelTbox.getChildren().add(labelParcelT);
         parcelTbox.getChildren().add(tfParcelT);
 
-        // controlPane.getChildren().add(xyzLabel);
-        // controlPane.getChildren().add(cargoSizeInputBox);
-
         parcelsABCbox.getChildren().add(parcelAbox);
         parcelsABCbox.getChildren().add(parcelBbox);
         parcelsABCbox.getChildren().add(parcelCbox);
@@ -214,8 +196,6 @@ public class GUI extends Application {
         viewScene.setFill(Color.WHITE);
         viewScene.setCamera(camera);
 
-        //viewScene.setResizable(true);
-
         box.getChildren().add(viewScene);
         box.getChildren().add(controlPane);
 
@@ -229,15 +209,32 @@ public class GUI extends Application {
                 @Override
                 public void handle(ActionEvent arg0) {
 
+                    clearParcels();
+
+                    System.out.println("ABCABCABC");
+
+                    GUI.aCount = 0;
+                    GUI.bCount = 0;
+                    GUI.cCount = 0;
+
                     GUI.containerX = Integer.parseInt(containerX.getText());
                     GUI.containerY = Integer.parseInt(containerY.getText());
                     GUI.containerZ = Integer.parseInt(containerZ.getText());
 
-                    System.out.println("A: " + tfParcelA.getText());
-                    System.out.println("B: " + tfParcelB.getText());
-                    System.out.println("C: " + tfParcelC.getText());
+                    if (!(tfParcelA.getText().equals(""))) {
+                        GUI.aCount = Integer.parseInt(tfParcelA.getText());
+                    }
+                    if (!(tfParcelB.getText().equals(""))) {
+                        GUI.bCount = Integer.parseInt(tfParcelB.getText());
+                    }
+                    if (!(tfParcelC.getText().equals(""))) {
+                        GUI.cCount = Integer.parseInt(tfParcelC.getText());
+                    }
+
+                    Solver.solver(true);
+
+                    displayGraphic();
                 }
-                
             }
         );
 
@@ -247,36 +244,29 @@ public class GUI extends Application {
                 @Override
                 public void handle(ActionEvent arg0) {
 
+                    clearParcels();
+
+                    GUI.lCount = 0;
+                    GUI.pCount = 0;
+                    GUI.tCount = 0;
+
                     GUI.containerX = Integer.parseInt(containerX.getText());
                     GUI.containerY = Integer.parseInt(containerY.getText());
                     GUI.containerZ = Integer.parseInt(containerZ.getText());
-                    
-                    System.out.println("L: " + tfParcelL.getText());
-                    System.out.println("T: " + tfParcelT.getText());
-                    System.out.println("P: " + tfParcelP.getText());
 
-                    clearParcels();
-                    
-                    Solver.solver();
-
-                    displayGraphic();
-                    
-
-                    try {
-                        // Class<?> cls = Class.forName("Solver");
-                        // //System.setProperty(FILENAME, FILEPATH);
-                        // Method meth = cls.getMethod("main", String[].class);
-                        // meth.invoke(null,(Object)arg0);
-
-                        
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (!(tfParcelL.getText().equals(""))) {
+                        GUI.lCount = Integer.parseInt(tfParcelL.getText());
+                    }
+                    if (!(tfParcelP.getText().equals(""))) {
+                        GUI.pCount = Integer.parseInt(tfParcelP.getText());
+                    }
+                    if (!(tfParcelT.getText().equals(""))) {
+                        GUI.tCount = Integer.parseInt(tfParcelT.getText());
                     }
                     
-                    
-                    //displayGraphic();
+                    Solver.solver(false);
+
+                    displayGraphic();
 
                 }
             }
@@ -305,7 +295,6 @@ public class GUI extends Application {
 
     public static void addToParcelList(int[][][] shape, int x, int y, int z) {
         parcelList.add(generateGraphic(shape, x, y, z));
-        //displayGraphic();
     }
 
     public void removeParcel() {
@@ -316,7 +305,6 @@ public class GUI extends Application {
     public static void clearParcels() {
         parcelList.clear();
         viewRoot.getChildren().clear();
-        //displayGraphic();
     }
 
     /**
@@ -353,10 +341,7 @@ public class GUI extends Application {
 
         stage.addEventHandler(ScrollEvent.SCROLL, event -> {
 
-            //camera.translateZProperty().set(arg0);
-
             double movement = event.getDeltaY();
-            // viewRoot.translateZProperty().set(viewRoot.getTranslateZ() + movement);
 
             // Adjust the zoom factor as per your requirement
             double zoomFactor = 1.05;
@@ -367,18 +352,6 @@ public class GUI extends Application {
             viewRoot.setScaleX(viewRoot.getScaleX() * zoomFactor);
             viewRoot.setScaleY(viewRoot.getScaleY() * zoomFactor);
             viewRoot.setScaleZ(viewRoot.getScaleZ() * zoomFactor);
-
-            // double zoomFactor = 1.05;
-            // double delta = event.getDeltaY();
-            // if (delta < 0){
-            //     zoomFactor = 2.0 - zoomFactor;
-            // }
-            //camera.setScaleZ(viewRoot.getScaleZ() * zoomFactor);
-            
-            //camera.translateZProperty().set(camera.getTranslateZ() + movement);
-            
-            //viewRoot.setScaleY(viewRoot.getScaleY() * zoomFactor);
-        
         });
 
     }
@@ -404,7 +377,7 @@ public class GUI extends Application {
                 for (int dep = 0 ; dep < parcel[0][0].length; dep++) {
 
                     boxArray[row][col][dep] = new Box(1, 1, 1);
-                    boxArray[row][col][dep].setMaterial(GetColorOfID(parcel[row][col][dep]));
+                    boxArray[row][col][dep].setMaterial(getColour(parcel[row][col][dep]));
                     boxArray[row][col][dep].setTranslateY(row + y - containerY/2);
                     boxArray[row][col][dep].setTranslateX(col + x - containerX/2);
                     boxArray[row][col][dep].setTranslateZ(dep + z - containerZ/2);
@@ -843,7 +816,7 @@ public class GUI extends Application {
      * @param i
      * @return
      */
-    private static PhongMaterial GetColorOfID(int i) {
+    private static PhongMaterial getColour(int i) {
         if (i == 1) {
             return new PhongMaterial(Color.RED); 
         } else if (i == 2) {
